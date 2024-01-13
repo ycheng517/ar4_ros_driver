@@ -57,7 +57,7 @@
 const char* VERSION = "0.0.1";
 
 // approx encoder counts at rest position, 0 degree joint angle
-const int REST_ENC_POSITIONS[] = { 38681, 11264, 0, 36652, 5839, 15671 };
+const int REST_ENC_POSITIONS[] = { 75507, 23318, 49234, 70489, 11470, 34311 };
 
 String cmdBuffer1;
 String cmdBuffer2;
@@ -104,15 +104,11 @@ const int CAL_PINS[] = { J1calPin, J2calPin, J3calPin, J4calPin, J5calPin, J6cal
 // TODO: These are all 1, so can be removed
 const int LIMIT_SWITCH_HIGH[] = { 1, 1, 1, 1, 1, 1 }; // to account for both NC and NO limit switches
 const int CAL_DIR[] = { -1, -1, 1, -1, -1, 1 }; // joint rotation direction to limit switch
-const int CAL_SPEED = 600; // motor steps per second
+const int CAL_SPEED = 300; // motor steps per second
 const int CAL_SPEED_MULT[] = { 1, 1, 1, 2, 1, 1 }; // multiplier to account for motor steps/rev
 
 // motor and encoder steps per revolution
 const int MOTOR_STEPS_PER_REV[] = { 400, 400, 400, 400, 800, 400 };
-
-// num of steps in range of motion of joint, may vary depending on your limit switch
-// defaults 77363, 36854, 40878, 71967, 23347, 32358
-const int ENC_RANGE_STEPS[] = { 77363, 36854, 40878, 71967, 23347, 32358 };
 
 //set encoder multiplier, encoder steps per motor step
 
@@ -144,16 +140,14 @@ Encoder J6encPos(24, 25);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const int NUM_JOINTS = 6;
-// TODO: calculate this
-const float ENC_STEPS_PER_DEG[] = { 
-    227.5555555555556, 284.4444444444444, 284.4444444444444, 223.0044444444444, 56.04224675948152, 108.0888888888889 };
 
 // speed and acceleration settings
 float JOINT_MAX_SPEED[] = { 20.0, 20.0, 20.0, 20.0, 20.0, 20.0 }; // deg/s
 float JOINT_MAX_ACCEL[] = { 5.0, 5.0, 5.0, 5.0, 5.0, 5.0 }; // deg/s^2
 int MOTOR_MAX_SPEED[] = { 1500, 15000, 1500, 2000, 1500, 1500 }; // motor steps per sec
 int MOTOR_MAX_ACCEL[] = { 250, 2500, 250, 250, 250, 250 }; // motor steps per sec^2
-float MOTOR_ACCEL_MULT[] = { 1.0, 1.0, 2.0, 1.0, 1.0, 1.0 }; // for tuning position control
+// TODO J3 was 2.0 before
+float MOTOR_ACCEL_MULT[] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 }; // for tuning position control
 
 AccelStepper stepperJoints[NUM_JOINTS];
 
@@ -204,6 +198,19 @@ float J6StepDeg = 22.22222222;
 float J7StepDeg = 14.28571429;
 float J8StepDeg = 14.28571429;
 float J9StepDeg = 14.28571429;
+const float ENC_STEPS_PER_DEG[] = {
+    J1StepDeg, J2StepDeg, J3StepDeg, J4StepDeg, J5StepDeg, J6StepDeg };
+
+// num of steps in range of motion of joint, may vary depending on your limit switch
+// defaults 71952, 60521, 100908, 65091, 15390, 34206
+const int ENC_RANGE_STEPS[] = { 
+    static_cast<int>(J1StepDeg * J1axisLim), 
+    static_cast<int>(J2StepDeg * J2axisLim), 
+    static_cast<int>(J3StepDeg * J3axisLim), 
+    static_cast<int>(J4StepDeg * J4axisLim), 
+    static_cast<int>(J5StepDeg * J5axisLim), 
+    static_cast<int>(J6StepDeg * J6axisLim),
+};
 
 //steps full movement of each axis
 int J1StepLim = J1axisLim * J1StepDeg;
@@ -8212,12 +8219,12 @@ bool initStateTraj(String inData)
 
 void readEncPos(int* encPos)
 {
-  encPos[0] = J1encPos.read() * ENC_DIR[0];
-  encPos[1] = J2encPos.read() * ENC_DIR[1];
-  encPos[2] = J3encPos.read() * ENC_DIR[2];
-  encPos[3] = J4encPos.read() * ENC_DIR[3];
-  encPos[4] = J5encPos.read() * ENC_DIR[4];
-  encPos[5] = J6encPos.read() * ENC_DIR[5];
+  encPos[0] = J1encPos.read();
+  encPos[1] = J2encPos.read();
+  encPos[2] = J3encPos.read();
+  encPos[3] = J4encPos.read();
+  encPos[4] = J5encPos.read();
+  encPos[5] = J6encPos.read();
 }
 
 void updateStepperSpeed(String inData)
@@ -8339,6 +8346,7 @@ void stateTRAJ()
     stepperJoints[i].setPinsInverted(true, false, false); // DM542T CW
     stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
     stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
+    stepperJoints[i].setMinPulseWidth(10);
   }
   stepperJoints[3].setPinsInverted(false, false, false); // J4 DM320T CCW
 
@@ -8386,7 +8394,7 @@ void stateTRAJ()
         readEncPos(curEncSteps);
         for (int i = 0; i < NUM_JOINTS; ++i)
         { 
-          curEncSteps[1] = J2encPos.read() * ENC_DIR[1];
+          curEncSteps[1] = J2encPos.read();
           int diffEncSteps = cmdEncSteps[i] - curEncSteps[i];
           if (abs(diffEncSteps) > 2)
           {
@@ -8409,18 +8417,18 @@ void stateTRAJ()
         calibrateJoints(calJoint6);
 
         // record encoder steps
-        int calStepJ6 = J6encPos.read() * ENC_DIR[5];
+        int calStepJ6 = J6encPos.read();
 
         // calibrate joints 1 to 5
         int calJoints[] = { 1, 1, 1, 1, 1, 0 }; // 111110
         calibrateJoints(calJoints);
 
         // record encoder steps
-        int calStepJ1 = J1encPos.read() * ENC_DIR[0];
-        int calStepJ2 = J2encPos.read() * ENC_DIR[1];
-        int calStepJ3 = J3encPos.read() * ENC_DIR[2];
-        int calStepJ4 = J4encPos.read() * ENC_DIR[3];
-        int calStepJ5 = J5encPos.read() * ENC_DIR[4];
+        int calStepJ1 = J1encPos.read();
+        int calStepJ2 = J2encPos.read();
+        int calStepJ3 = J3encPos.read();
+        int calStepJ4 = J4encPos.read();
+        int calStepJ5 = J5encPos.read();
 
         // if limit switch at lower end, set encoder to 0
         // otherwise set to encoder upper limit
@@ -8539,7 +8547,7 @@ void stateERR()
 void loop() 
 {  
   //test traj state
-  // STATE = STATE_TRAJ;
+  STATE = STATE_TRAJ;
 
   // state control
   switch (STATE)
