@@ -144,8 +144,8 @@ const int NUM_JOINTS = 6;
 // speed and acceleration settings
 float JOINT_MAX_SPEED[] = { 20.0, 20.0, 20.0, 20.0, 20.0, 20.0 }; // deg/s
 float JOINT_MAX_ACCEL[] = { 5.0, 5.0, 5.0, 5.0, 5.0, 5.0 }; // deg/s^2
-int MOTOR_MAX_SPEED[] = { 1500, 15000, 1500, 2000, 1500, 1500 }; // motor steps per sec
-int MOTOR_MAX_ACCEL[] = { 250, 2500, 250, 250, 250, 250 }; // motor steps per sec^2
+int MOTOR_MAX_SPEED[] = { 300, 15000, 600, 2000, 1500, 1500 }; // motor steps per sec
+int MOTOR_MAX_ACCEL[] = { 100, 2500, 200, 250, 250, 250 }; // motor steps per sec^2
 // TODO J3 was 2.0 before
 float MOTOR_ACCEL_MULT[] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 }; // for tuning position control
 
@@ -201,15 +201,14 @@ float J9StepDeg = 14.28571429;
 const float ENC_STEPS_PER_DEG[] = {
     J1StepDeg, J2StepDeg, J3StepDeg, J4StepDeg, J5StepDeg, J6StepDeg };
 
-// num of steps in range of motion of joint, may vary depending on your limit switch
-// defaults 71952, 60521, 100908, 65091, 15390, 34206
+// num of steps in range of motion of joint
 const int ENC_RANGE_STEPS[] = { 
-    static_cast<int>(J1StepDeg * J1axisLim), 
-    static_cast<int>(J2StepDeg * J2axisLim), 
-    static_cast<int>(J3StepDeg * J3axisLim), 
-    static_cast<int>(J4StepDeg * J4axisLim), 
-    static_cast<int>(J5StepDeg * J5axisLim), 
-    static_cast<int>(J6StepDeg * J6axisLim),
+    static_cast<int>(J1StepDeg * J1axisLim) * J1encMult, 
+    static_cast<int>(J2StepDeg * J2axisLim) * J2encMult, 
+    static_cast<int>(J3StepDeg * J3axisLim) * J3encMult,
+    static_cast<int>(J4StepDeg * J4axisLim) * J4encMult, 
+    static_cast<int>(J5StepDeg * J5axisLim) * J5encMult, 
+    static_cast<int>(J6StepDeg * J6axisLim) * J6encMult,
 };
 
 //steps full movement of each axis
@@ -8300,6 +8299,28 @@ void calibrateJoints(int* calJoints)
   return;
 }
 
+void moveOppositeABit()
+{
+  // first pass of calibration, fast speed
+  for (int i = 0; i < NUM_JOINTS; i++)
+  {
+    stepperJoints[i].setSpeed(CAL_SPEED * CAL_SPEED_MULT[i] * CAL_DIR[i] * -1);
+  }
+  for (int j = 0; j < 8000000; j++)
+  {
+    for (int i = 0; i < NUM_JOINTS; ++i)
+    {
+      stepperJoints[i].runSpeed();
+    } 
+  }
+  // redundancy
+  for (int i = 0; i < NUM_JOINTS; i++) {
+    stepperJoints[i].setSpeed(0);
+  }
+  delay(2000);
+  return;
+}
+
 bool reachedLimitSwitch(int joint)
 {
   int pin = CAL_PINS[joint];
@@ -8430,44 +8451,62 @@ void stateTRAJ()
         int calStepJ4 = J4encPos.read();
         int calStepJ5 = J5encPos.read();
 
-        // if limit switch at lower end, set encoder to 0
-        // otherwise set to encoder upper limit
-        J1encPos.write(0);
+        // calibration done, send calibration values
+        String cal_step_dbg_msg = String("DB: ") + String("A") + String(calStepJ1) + String("B") + String(calStepJ2) + String("C") + String(calStepJ3)
+                  + String("D") + String(calStepJ4) + String("E") + String(calStepJ5) + String("F") + String(calStepJ6) + String("\n");
+        Serial.print(cal_step_dbg_msg);
+
+        J1encPos.write(ENC_RANGE_STEPS[0]);
         J2encPos.write(0);
         J3encPos.write(ENC_RANGE_STEPS[2]);
         J4encPos.write(0);
         J5encPos.write(0);
         J6encPos.write(ENC_RANGE_STEPS[5]);
 
+
+        moveOppositeABit();
+
         // read current joint positions
         readEncPos(curEncSteps);
 
         // return to original position
+        String dbg_msg;
         for (int i = 0; i < NUM_JOINTS; ++i)
         {
-            stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
-            stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
-            cmdEncSteps[i] = curEncSteps[i];
-            stepperJoints[i].move((REST_ENC_POSITIONS[i] - curEncSteps[i]) / ENC_MULT[i]);
-        }
+          stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
+          stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
+          cmdEncSteps[i] = curEncSteps[i];
+          // float target_pos = (REST_ENC_POSITIONS[i] - curEncSteps[i]) / ENC_MULT[i];
+          float target_pos = REST_ENC_POSITIONS[i] / ENC_MULT[i];
+          // stepperJoints[i].move(target_pos);
+          stepperJoints[i].moveTo(target_pos);
 
-        bool restPosReached = false;
-        while (!restPosReached)
-        {
-          restPosReached = true;
-          // read current joint positions
-          readEncPos(curEncSteps);
-          for (int i = 0; i < NUM_JOINTS; ++i)
-          {
-            if (abs(REST_ENC_POSITIONS[i] - curEncSteps[i]) > 5)
-            {
+          bool restPosReached = false;
+          int j = 0;
+          while (!restPosReached) {
+            restPosReached = true;
+            // read current joint positions
+            readEncPos(curEncSteps);
+            if (abs(REST_ENC_POSITIONS[i] - curEncSteps[i]) > 5) {
+
               restPosReached = false;
-              stepperJoints[i].move((REST_ENC_POSITIONS[i] - curEncSteps[i]) / ENC_MULT[i]);
+              long curr_pos = stepperJoints[i].currentPosition();
+              // target_pos = (REST_ENC_POSITIONS[i] - curEncSteps[i]) / ENC_MULT[i];
+              target_pos = REST_ENC_POSITIONS[i] / ENC_MULT[i];
+              // stepperJoints[i].move(target_pos);
+              stepperJoints[i].moveTo(target_pos);
               stepperJoints[i].run();
+              if(j % 500000 == 0) {
+                dbg_msg = "DB: moving to " + String(target_pos) + \
+                  " curr enc: " + String(curEncSteps[i]) + \
+                  " curr pos: " + String(curr_pos) + "\n";
+                Serial.print(dbg_msg);
+              }
             }
+            j += 1;
           }
         }
-        
+
         // calibration done, send calibration values
         String msg = String("JC") + String("A") + String(calStepJ1) + String("B") + String(calStepJ2) + String("C") + String(calStepJ3)
                   + String("D") + String(calStepJ4) + String("E") + String(calStepJ5) + String("F") + String(calStepJ6) + String("\n");

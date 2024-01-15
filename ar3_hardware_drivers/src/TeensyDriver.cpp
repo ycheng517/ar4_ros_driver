@@ -132,32 +132,46 @@ void TeensyDriver::exchange(std::string outMsg)
         // print err
     }
 
-    if (!receive(inMsg, errReceive))
+    bool done = false;
+    while(!done)
     {
-        // print err
+        if (!receive(inMsg, errReceive))
+        {
+            // print err
+        }
+        ROS_INFO(inMsg.substr(0, inMsg.size() - 1).c_str());
+        // parse msg
+        std::string header = inMsg.substr(0, 2);
+        if (header == "ST")
+        {
+            // init acknowledgement
+            checkInit(inMsg);
+            done = true;
+        }
+        else if (header == "JC")
+        {
+            // encoder calibration values
+            updateEncoderCalibrations(inMsg);
+            done = true;
+        }
+        else if (header == "JP")
+        {
+            // encoder steps
+            updateEncoderSteps(inMsg);
+            done = true;
+        }
+        else if (header == "DB")
+        {
+
+        }
+        else
+        {
+            // unknown header
+            ROS_WARN("Unknown header %s", header);
+            done = true;
+        } 
     }
-    // parse msg
-    std::string header = inMsg.substr(0, 2);
-    if (header == "ST")
-    {
-        // init acknowledgement
-        checkInit(inMsg);   
-    }
-    else if (header == "JC")
-    {
-        // encoder calibration values
-        updateEncoderCalibrations(inMsg);
-    }
-    else if (header == "JP")
-    {
-        // encoder steps
-        updateEncoderSteps(inMsg);
-    }
-    else
-    {
-        // unknown header
-        ROS_WARN("Unknown header %s", header);
-    } 
+
 }
 
 bool TeensyDriver::transmit(std::string msg, std::string& err)
