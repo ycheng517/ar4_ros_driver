@@ -57,7 +57,7 @@
 const char* VERSION = "0.0.1";
 
 // approx encoder counts at rest position, 0 degree joint angle
-const int REST_ENC_POSITIONS[] = { 75507, 23318, 49234, 70489, 11470, 34311 };
+const int REST_ENC_POSITIONS[] = { 75507, 23000, 49234, 70489, 11470, 34311 };
 
 String cmdBuffer1;
 String cmdBuffer2;
@@ -134,6 +134,8 @@ Encoder J3encPos(19, 18);
 Encoder J4encPos(20, 21);
 Encoder J5encPos(23, 22);
 Encoder J6encPos(24, 25);
+
+int ENC_DIR[] = { -1, 1, 1, 1, 1, 1 }; // +1 if encoder direction matches motor direction
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ROS Driver Params
@@ -1989,6 +1991,7 @@ void driveMotorsJ(int J1step, int J2step, int J3step, int J4step, int J5step, in
   int J6cur = 0;
   int J7cur = 0;
   int J8cur = 0;
+  
   int J9cur = 0;
 
   int J1_PEcur = 0;
@@ -8306,7 +8309,7 @@ void moveOppositeABit()
   {
     stepperJoints[i].setSpeed(CAL_SPEED * CAL_SPEED_MULT[i] * CAL_DIR[i] * -1);
   }
-  for (int j = 0; j < 8000000; j++)
+  for (int j = 0; j < 10000000; j++)
   {
     for (int i = 0; i < NUM_JOINTS; ++i)
     {
@@ -8437,8 +8440,6 @@ void stateTRAJ()
         int calJoint6[] = { 0, 0, 0, 0, 0, 1 }; // 000001
         calibrateJoints(calJoint6);
 
-        // record encoder steps
-        int calStepJ6 = J6encPos.read();
 
         // calibrate joints 1 to 5
         int calJoints[] = { 1, 1, 1, 1, 1, 0 }; // 111110
@@ -8450,8 +8451,8 @@ void stateTRAJ()
         int calStepJ3 = J3encPos.read();
         int calStepJ4 = J4encPos.read();
         int calStepJ5 = J5encPos.read();
+        int calStepJ6 = J6encPos.read();
 
-        // calibration done, send calibration values
         String cal_step_dbg_msg = String("DB: ") + String("A") + String(calStepJ1) + String("B") + String(calStepJ2) + String("C") + String(calStepJ3)
                   + String("D") + String(calStepJ4) + String("E") + String(calStepJ5) + String("F") + String(calStepJ6) + String("\n");
         Serial.print(cal_step_dbg_msg);
@@ -8463,7 +8464,6 @@ void stateTRAJ()
         J5encPos.write(0);
         J6encPos.write(ENC_RANGE_STEPS[5]);
 
-
         moveOppositeABit();
 
         // read current joint positions
@@ -8471,15 +8471,9 @@ void stateTRAJ()
 
         // return to original position
         String dbg_msg;
-        for (int i = 0; i < NUM_JOINTS; ++i)
-        {
+        for (int i = 0; i < NUM_JOINTS; ++i) {
           stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
           stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
-          cmdEncSteps[i] = curEncSteps[i];
-          // float target_pos = (REST_ENC_POSITIONS[i] - curEncSteps[i]) / ENC_MULT[i];
-          float target_pos = REST_ENC_POSITIONS[i] / ENC_MULT[i];
-          // stepperJoints[i].move(target_pos);
-          stepperJoints[i].moveTo(target_pos);
 
           bool restPosReached = false;
           int j = 0;
@@ -8490,18 +8484,9 @@ void stateTRAJ()
             if (abs(REST_ENC_POSITIONS[i] - curEncSteps[i]) > 5) {
 
               restPosReached = false;
-              long curr_pos = stepperJoints[i].currentPosition();
-              // target_pos = (REST_ENC_POSITIONS[i] - curEncSteps[i]) / ENC_MULT[i];
-              target_pos = REST_ENC_POSITIONS[i] / ENC_MULT[i];
-              // stepperJoints[i].move(target_pos);
-              stepperJoints[i].moveTo(target_pos);
+              float target_pos = (REST_ENC_POSITIONS[i] - curEncSteps[i]) / ENC_MULT[i] * ENC_DIR[i];
+              stepperJoints[i].move(target_pos);
               stepperJoints[i].run();
-              if(j % 500000 == 0) {
-                dbg_msg = "DB: moving to " + String(target_pos) + \
-                  " curr enc: " + String(curEncSteps[i]) + \
-                  " curr pos: " + String(curr_pos) + "\n";
-                Serial.print(dbg_msg);
-              }
             }
             j += 1;
           }
@@ -8512,8 +8497,7 @@ void stateTRAJ()
                   + String("D") + String(calStepJ4) + String("E") + String(calStepJ5) + String("F") + String(calStepJ6) + String("\n");
         Serial.print(msg);
 
-        for (int i = 0; i < NUM_JOINTS; ++i)
-        {
+        for (int i = 0; i < NUM_JOINTS; ++i) {
             stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
             stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
         }
