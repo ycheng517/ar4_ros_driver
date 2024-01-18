@@ -57,7 +57,7 @@
 const char* VERSION = "0.0.1";
 
 // approx encoder counts at rest position, 0 degree joint angle
-const int REST_ENC_POSITIONS[] = { 75507, 23000, 49234, 70489, 11470, 34311 };
+const int REST_ENC_POSITIONS[] = { 75507, 20000, 49234, 70489, 11470, 34311 };
 
 String cmdBuffer1;
 String cmdBuffer2;
@@ -8221,12 +8221,12 @@ bool initStateTraj(String inData)
 
 void readEncPos(int* encPos)
 {
-  encPos[0] = J1encPos.read();
-  encPos[1] = J2encPos.read();
-  encPos[2] = J3encPos.read();
-  encPos[3] = J4encPos.read();
-  encPos[4] = J5encPos.read();
-  encPos[5] = J6encPos.read();
+  encPos[0] = J1encPos.read() / ENC_MULT[0];
+  encPos[1] = J2encPos.read() / ENC_MULT[1];
+  encPos[2] = J3encPos.read() / ENC_MULT[2];
+  encPos[3] = J4encPos.read() / ENC_MULT[3];
+  encPos[4] = J5encPos.read() / ENC_MULT[4];
+  encPos[5] = J6encPos.read() / ENC_MULT[5];
 }
 
 void updateStepperSpeed(String inData)
@@ -8418,7 +8418,6 @@ void stateTRAJ()
         readEncPos(curEncSteps);
         for (int i = 0; i < NUM_JOINTS; ++i)
         { 
-          curEncSteps[1] = J2encPos.read();
           int diffEncSteps = cmdEncSteps[i] - curEncSteps[i];
           if (abs(diffEncSteps) > 2)
           {
@@ -8453,10 +8452,6 @@ void stateTRAJ()
         int calStepJ5 = J5encPos.read();
         int calStepJ6 = J6encPos.read();
 
-        String cal_step_dbg_msg = String("DB: ") + String("A") + String(calStepJ1) + String("B") + String(calStepJ2) + String("C") + String(calStepJ3)
-                  + String("D") + String(calStepJ4) + String("E") + String(calStepJ5) + String("F") + String(calStepJ6) + String("\n");
-        Serial.print(cal_step_dbg_msg);
-
         J1encPos.write(ENC_RANGE_STEPS[0]);
         J2encPos.write(0);
         J3encPos.write(ENC_RANGE_STEPS[2]);
@@ -8466,11 +8461,7 @@ void stateTRAJ()
 
         moveOppositeABit();
 
-        // read current joint positions
-        readEncPos(curEncSteps);
-
         // return to original position
-        String dbg_msg;
         for (int i = 0; i < NUM_JOINTS; ++i) {
           stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
           stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
@@ -8481,10 +8472,9 @@ void stateTRAJ()
             restPosReached = true;
             // read current joint positions
             readEncPos(curEncSteps);
-            if (abs(REST_ENC_POSITIONS[i] - curEncSteps[i]) > 5) {
-
+            if (abs(REST_ENC_POSITIONS[i] / ENC_MULT[i] - curEncSteps[i]) > 5) {
               restPosReached = false;
-              float target_pos = (REST_ENC_POSITIONS[i] - curEncSteps[i]) / ENC_MULT[i] * ENC_DIR[i];
+              float target_pos = (REST_ENC_POSITIONS[i] / ENC_MULT[i] - curEncSteps[i]) * ENC_DIR[i];
               stepperJoints[i].move(target_pos);
               stepperJoints[i].run();
             }
