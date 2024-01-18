@@ -3,9 +3,9 @@ ar3:
         serial_port: "/dev/ttyACM0" # /dev/ttyACM0
         baudrate: 9600
         encoder_steps_per_deg: # encoder steps per joint angle degree
-            joint_1: 44.44444444 # default 227.5555555555556
-            joint_2: 55.55555556 # default 284.4444444444444 # joint enc 22.75555555555556
-            joint_3: 55.55555556 # default 284.4444444444444
-            joint_4: 42.72664356 # default 223.0044444444444
-            joint_5: 21.86024888 # default 56.04224675948152 # joint enc 22.75555555555556
-            joint_6: 22.22222222 # default 108.0888888888889
+            joint_1: -44.44444444
+            joint_2: 55.55555556
+            joint_3: 55.55555556
+            joint_4: 42.72664356
+            joint_5: 21.86024888
+            joint_6: 22.22222222

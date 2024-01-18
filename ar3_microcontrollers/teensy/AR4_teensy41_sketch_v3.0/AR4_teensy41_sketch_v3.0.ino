@@ -104,7 +104,7 @@ const int CAL_PINS[] = { J1calPin, J2calPin, J3calPin, J4calPin, J5calPin, J6cal
 // TODO: These are all 1, so can be removed
 const int LIMIT_SWITCH_HIGH[] = { 1, 1, 1, 1, 1, 1 }; // to account for both NC and NO limit switches
 const int CAL_DIR[] = { -1, -1, 1, -1, -1, 1 }; // joint rotation direction to limit switch
-const int CAL_SPEED = 300; // motor steps per second
+const int CAL_SPEED = 600; // motor steps per second
 const int CAL_SPEED_MULT[] = { 1, 1, 1, 2, 1, 1 }; // multiplier to account for motor steps/rev
 
 // motor and encoder steps per revolution
@@ -146,10 +146,9 @@ const int NUM_JOINTS = 6;
 // speed and acceleration settings
 float JOINT_MAX_SPEED[] = { 20.0, 20.0, 20.0, 20.0, 20.0, 20.0 }; // deg/s
 float JOINT_MAX_ACCEL[] = { 5.0, 5.0, 5.0, 5.0, 5.0, 5.0 }; // deg/s^2
-int MOTOR_MAX_SPEED[] = { 300, 15000, 600, 2000, 1500, 1500 }; // motor steps per sec
-int MOTOR_MAX_ACCEL[] = { 100, 2500, 200, 250, 250, 250 }; // motor steps per sec^2
-// TODO J3 was 2.0 before
-float MOTOR_ACCEL_MULT[] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 }; // for tuning position control
+int MOTOR_MAX_SPEED[] = { 1500, 15000, 1500, 2000, 1500, 1500 }; // motor steps per sec
+int MOTOR_MAX_ACCEL[] = { 250, 2500, 250, 250, 250, 250 }; // motor steps per sec^2
+float MOTOR_ACCEL_MULT[] = { 1.0, 1.0, 2.0, 1.0, 1.0, 1.0 }; // for tuning position control
 
 AccelStepper stepperJoints[NUM_JOINTS];
 
@@ -8421,7 +8420,7 @@ void stateTRAJ()
           int diffEncSteps = cmdEncSteps[i] - curEncSteps[i];
           if (abs(diffEncSteps) > 2)
           {
-            int diffMotSteps = diffEncSteps / ENC_MULT[i];
+            int diffMotSteps = diffEncSteps / ENC_MULT[i] * ENC_DIR[i];
             if (diffMotSteps < MOTOR_STEPS_PER_REV[i])
             {
               // for the last rev of motor, introduce artificial decceleration
@@ -8465,20 +8464,20 @@ void stateTRAJ()
         for (int i = 0; i < NUM_JOINTS; ++i) {
           stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
           stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
+        }
 
-          bool restPosReached = false;
-          int j = 0;
-          while (!restPosReached) {
-            restPosReached = true;
-            // read current joint positions
-            readEncPos(curEncSteps);
+        bool restPosReached = false;
+        while (!restPosReached) {
+          restPosReached = true;
+          readEncPos(curEncSteps);
+
+          for (int i = 0; i < NUM_JOINTS; ++i) {
             if (abs(REST_ENC_POSITIONS[i] / ENC_MULT[i] - curEncSteps[i]) > 5) {
               restPosReached = false;
               float target_pos = (REST_ENC_POSITIONS[i] / ENC_MULT[i] - curEncSteps[i]) * ENC_DIR[i];
               stepperJoints[i].move(target_pos);
               stepperJoints[i].run();
             }
-            j += 1;
           }
         }
 
