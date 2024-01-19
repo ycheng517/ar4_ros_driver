@@ -146,8 +146,8 @@ const int NUM_JOINTS = 6;
 // speed and acceleration settings
 float JOINT_MAX_SPEED[] = { 20.0, 20.0, 20.0, 20.0, 20.0, 20.0 }; // deg/s
 float JOINT_MAX_ACCEL[] = { 5.0, 5.0, 5.0, 5.0, 5.0, 5.0 }; // deg/s^2
-int MOTOR_MAX_SPEED[] = { 1500, 15000, 1500, 2000, 1500, 1500 }; // motor steps per sec
-int MOTOR_MAX_ACCEL[] = { 250, 2500, 250, 250, 250, 250 }; // motor steps per sec^2
+int MOTOR_MAX_SPEED[] = { 1500, 1500, 1500, 2000, 1500, 1500 }; // motor steps per sec
+int MOTOR_MAX_ACCEL[] = { 250, 250, 250, 250, 250, 250 }; // motor steps per sec^2
 float MOTOR_ACCEL_MULT[] = { 1.0, 1.0, 2.0, 1.0, 1.0, 1.0 }; // for tuning position control
 
 AccelStepper stepperJoints[NUM_JOINTS];
@@ -8396,8 +8396,8 @@ void stateTRAJ()
 
         // update host with joint positions
         String msg = String("JP") + String("A") + String(curEncSteps[0]) + String("B") + String(curEncSteps[1]) + String("C") + String(curEncSteps[2])
-                   + String("D") + String(curEncSteps[3]) + String("E") + String(curEncSteps[4]) + String("F") + String(curEncSteps[5]) + String("\n");
-        Serial.print(msg);
+                   + String("D") + String(curEncSteps[3]) + String("E") + String(curEncSteps[4]) + String("F") + String(curEncSteps[5]);
+        Serial.println(msg);
 
         // get new position commands
         int msgIdxJ1 = inData.indexOf('A');
@@ -8420,13 +8420,13 @@ void stateTRAJ()
           int diffEncSteps = cmdEncSteps[i] - curEncSteps[i];
           if (abs(diffEncSteps) > 2)
           {
-            int diffMotSteps = diffEncSteps / ENC_MULT[i] * ENC_DIR[i];
-            if (diffMotSteps < MOTOR_STEPS_PER_REV[i])
-            {
-              // for the last rev of motor, introduce artificial decceleration
-              // to help prevent overshoot
-              diffMotSteps = diffMotSteps / 2;
-            }
+            int diffMotSteps = diffEncSteps * ENC_DIR[i];
+            // if (diffMotSteps < MOTOR_STEPS_PER_REV[i])
+            // {
+            //   // for the last rev of motor, introduce artificial decceleration
+            //   // to help prevent overshoot
+            //   diffMotSteps = diffMotSteps / 2;
+            // }
             stepperJoints[i].move(diffMotSteps);
             stepperJoints[i].run();
           }
@@ -8483,8 +8483,8 @@ void stateTRAJ()
 
         // calibration done, send calibration values
         String msg = String("JC") + String("A") + String(calStepJ1) + String("B") + String(calStepJ2) + String("C") + String(calStepJ3)
-                  + String("D") + String(calStepJ4) + String("E") + String(calStepJ5) + String("F") + String(calStepJ6) + String("\n");
-        Serial.print(msg);
+                  + String("D") + String(calStepJ4) + String("E") + String(calStepJ5) + String("F") + String(calStepJ6);
+        Serial.println(msg);
 
         for (int i = 0; i < NUM_JOINTS; ++i) {
             stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
@@ -8507,8 +8507,8 @@ void stateTRAJ()
         // set motor speed and acceleration
         for (int i = 0; i < NUM_JOINTS; ++i)
         {
-          MOTOR_MAX_SPEED[i] = JOINT_MAX_SPEED[i] * ENC_STEPS_PER_DEG[i] / ENC_MULT[i];
-          MOTOR_MAX_ACCEL[i] = JOINT_MAX_ACCEL[i] * ENC_STEPS_PER_DEG[i] / ENC_MULT[i];
+          MOTOR_MAX_SPEED[i] = JOINT_MAX_SPEED[i] * ENC_STEPS_PER_DEG[i];
+          MOTOR_MAX_ACCEL[i] = JOINT_MAX_ACCEL[i] * ENC_STEPS_PER_DEG[i];
           stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i] * MOTOR_ACCEL_MULT[i]);
           stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
         }
