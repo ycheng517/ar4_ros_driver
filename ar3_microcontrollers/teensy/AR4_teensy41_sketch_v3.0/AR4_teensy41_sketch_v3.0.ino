@@ -199,7 +199,7 @@ float J6StepDeg = 22.22222222;
 float J7StepDeg = 14.28571429;
 float J8StepDeg = 14.28571429;
 float J9StepDeg = 14.28571429;
-const float ENC_STEPS_PER_DEG[] = {
+const float MOTOR_STEPS_PER_DEG[] = {
     J1StepDeg, J2StepDeg, J3StepDeg, J4StepDeg, J5StepDeg, J6StepDeg };
 
 // num of steps in range of motion of joint
@@ -8218,14 +8218,14 @@ bool initStateTraj(String inData)
   return versionMatches ? true : false;
 }
 
-void readEncPos(int* encPos)
+void readMotorSteps(int* motorSteps)
 {
-  encPos[0] = J1encPos.read() / ENC_MULT[0];
-  encPos[1] = J2encPos.read() / ENC_MULT[1];
-  encPos[2] = J3encPos.read() / ENC_MULT[2];
-  encPos[3] = J4encPos.read() / ENC_MULT[3];
-  encPos[4] = J5encPos.read() / ENC_MULT[4];
-  encPos[5] = J6encPos.read() / ENC_MULT[5];
+  motorSteps[0] = J1encPos.read() / ENC_MULT[0];
+  motorSteps[1] = J2encPos.read() / ENC_MULT[1];
+  motorSteps[2] = J3encPos.read() / ENC_MULT[2];
+  motorSteps[3] = J4encPos.read() / ENC_MULT[3];
+  motorSteps[4] = J5encPos.read() / ENC_MULT[4];
+  motorSteps[5] = J6encPos.read() / ENC_MULT[5];
 }
 
 void updateStepperSpeed(String inData)
@@ -8354,7 +8354,7 @@ void stateTRAJ()
 
   // initialise joint steps
   int curEncSteps[NUM_JOINTS];
-  readEncPos(curEncSteps);
+  readMotorSteps(curEncSteps);
 
   int cmdEncSteps[NUM_JOINTS];
   for (int i = 0; i < NUM_JOINTS; ++i)
@@ -8392,7 +8392,7 @@ void stateTRAJ()
       if (function == "MT")
       {
         // read current joint positions
-        readEncPos(curEncSteps);
+        readMotorSteps(curEncSteps);
 
         // update host with joint positions
         String msg = String("JP") + String("A") + String(curEncSteps[0]) + String("B") + String(curEncSteps[1]) + String("C") + String(curEncSteps[2])
@@ -8414,7 +8414,7 @@ void stateTRAJ()
         cmdEncSteps[5] = inData.substring(msgIdxJ6 + 1).toInt();
 
         // update target joint positions
-        readEncPos(curEncSteps);
+        readMotorSteps(curEncSteps);
         for (int i = 0; i < NUM_JOINTS; ++i)
         { 
           int diffEncSteps = cmdEncSteps[i] - curEncSteps[i];
@@ -8469,7 +8469,7 @@ void stateTRAJ()
         bool restPosReached = false;
         while (!restPosReached) {
           restPosReached = true;
-          readEncPos(curEncSteps);
+          readMotorSteps(curEncSteps);
 
           for (int i = 0; i < NUM_JOINTS; ++i) {
             if (abs(REST_ENC_POSITIONS[i] / ENC_MULT[i] - curEncSteps[i]) > 5) {
@@ -8494,7 +8494,7 @@ void stateTRAJ()
       else if (function == "JP")
       {
         // read current joint positions
-        readEncPos(curEncSteps);
+        readMotorSteps(curEncSteps);
 
         // update host with joint positions
         String msg = String("JP") + String("A") + String(curEncSteps[0]) + String("B") + String(curEncSteps[1]) + String("C") + String(curEncSteps[2])
@@ -8507,13 +8507,13 @@ void stateTRAJ()
         // set motor speed and acceleration
         for (int i = 0; i < NUM_JOINTS; ++i)
         {
-          MOTOR_MAX_SPEED[i] = JOINT_MAX_SPEED[i] * ENC_STEPS_PER_DEG[i];
-          MOTOR_MAX_ACCEL[i] = JOINT_MAX_ACCEL[i] * ENC_STEPS_PER_DEG[i];
+          MOTOR_MAX_SPEED[i] = JOINT_MAX_SPEED[i] * MOTOR_STEPS_PER_DEG[i];
+          MOTOR_MAX_ACCEL[i] = JOINT_MAX_ACCEL[i] * MOTOR_STEPS_PER_DEG[i];
           stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i] * MOTOR_ACCEL_MULT[i]);
           stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
         }
         // read current joint positions
-        readEncPos(curEncSteps);
+        readMotorSteps(curEncSteps);
 
         // update host with joint positions
         String msg = String("JP") + String("A") + String(curEncSteps[0]) + String("B") + String(curEncSteps[1]) + String("C") + String(curEncSteps[2])
