@@ -1,53 +1,3 @@
-//VERSION 3.0
-
-/*  AR4 - Stepper motor robot control software
-    Copyright (c) 2023, Chris Annin
-    All rights reserved.
-
-    You are free to share, copy and redistribute in any medium
-    or format.  You are free to remix, transform and build upon
-    this material.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-          Redistributions of source code must retain the above copyright
-          notice, this list of conditions and the following disclaimer.
-          Redistribution of this software in source or binary forms shall be free
-          of all charges or fees to the recipient of this software.
-          Redistributions in binary form must reproduce the above copyright
-          notice, this list of conditions and the following disclaimer in the
-          documentation and/or other materials provided with the distribution.
-          you must give appropriate credit and indicate if changes were made. You may do
-          so in any reasonable manner, but not in any way that suggests the
-          licensor endorses you or your use.
-          Selling Annin Robotics software, robots, robot parts, or any versions of robots or software based on this
-          work is strictly prohibited.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL CHRIS ANNIN BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    chris.annin@gmail.com
-
-*/
-
-
-// VERSION LOG
-// 1.0 - 2/6/21 - initial release
-// 1.1 - 2/20/21 - bug fix, calibration offset on negative axis calibration direction axis 2,4,5
-// 2.0 - 10/1/22 - added lookahead and spline functionality
-// 2.2 - 11/6/22 - added Move V for open cv integrated vision
-// 3.0 - 2/3/23 - open loop bypass moved to teensy board / add external axis 8 & 9 / bug fix live jog drift
-
-
 #include <math.h>
 #include <avr/pgmspace.h>
 #include <Encoder.h>
@@ -56,42 +6,19 @@
 // Firmware version
 const char* VERSION = "0.0.1";
 
-// approx encoder counts at rest position, 0 degree joint angle
-const int REST_ENC_POSITIONS[] = { 75507, 20000, 49234, 70489, 11470, 34311 };
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// AR4 Params
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const int J1stepPin = 0;
-const int J1dirPin = 1;
-const int J2stepPin = 2;
-const int J2dirPin = 3;
-const int J3stepPin = 4;
-const int J3dirPin = 5;
-const int J4stepPin = 6;
-const int J4dirPin = 7;
-const int J5stepPin = 8;
-const int J5dirPin = 9;
-const int J6stepPin = 10;
-const int J6dirPin = 11;
-const int STEP_PINS[] = { J1stepPin, J2stepPin, J3stepPin, J4stepPin, J5stepPin, J6stepPin };
-const int DIR_PINS[] = { J1dirPin, J2dirPin, J3dirPin, J4dirPin, J5dirPin, J6dirPin };
+const int STEP_PINS[] = { 0, 2, 4, 6, 8, 10 };
+const int DIR_PINS[] = { 1, 3, 5, 7, 9, 11 };
+const int LIMIT_PINS[] = { 26, 27, 28, 29, 30, 31 };
 
-const int J1calPin = 26;
-const int J2calPin = 27;
-const int J3calPin = 28;
-const int J4calPin = 29;
-const int J5calPin = 30;
-const int J6calPin = 31;
-const int CAL_PINS[] = { J1calPin, J2calPin, J3calPin, J4calPin, J5calPin, J6calPin };
-
-//set encoder multiplier
-const float ENC_MULT[] = { 10, 10, 10, 10, 5, 10 };
+const float MOTOR_STEPS_PER_DEG[] = {
+    44.44444444, 55.55555556, 55.55555556, 42.72664356, 21.86024888, 22.22222222 };
+const int MOTOR_STEPS_PER_REV[] = { 400, 400, 400, 400, 800, 400 };
 
 //set encoder pins
-Encoder J1encPos(14, 15);
-Encoder J2encPos(17, 16);
-Encoder J3encPos(19, 18);
-Encoder J4encPos(20, 21);
-Encoder J5encPos(23, 22);
-Encoder J6encPos(24, 25);
 Encoder encPos[6] = {
     Encoder(14, 15),
     Encoder(17, 16),
@@ -100,18 +27,32 @@ Encoder encPos[6] = {
     Encoder(23, 22),
     Encoder(24, 25)
 };
-int ENC_DIR[] = { -1, 1, 1, 1, 1, 1 }; // +1 if encoder direction matches motor direction
+ // +1 if encoder direction matches motor direction, -1 otherwise
+int ENC_DIR[] = { -1, 1, 1, 1, 1, 1 };
+ // +1 if encoder max value is at the minimum joint angle, 0 otherwise
+int ENC_MAX_AT_ANGLE_MIN[] = { 1, 0, 1, 0, 0, 1 };
+// motor steps * ENC_MULT = encoder steps
+const float ENC_MULT[] = { 10, 10, 10, 10, 5, 10 };
+
+//define axis limits in degrees, for calibration
+int JOINT_LIMIT_MIN[] = { -170, -42, -89, -165, -105, -155 };
+int JOINT_LIMIT_MAX[] = { 170, 90, 52, 165, 105, 155 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ROS Driver Params
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const int REST_ENC_POSITIONS[] = { 75507, 20000, 49234, 70489, 11470, 34311 };
+enum SM { STATE_TRAJ, STATE_ERR };
+SM STATE = STATE_TRAJ;
+
 const int NUM_JOINTS = 6;
+AccelStepper stepperJoints[NUM_JOINTS];
 
 // calibration settings
 const int LIMIT_SWITCH_HIGH[] = { 1, 1, 1, 1, 1, 1 }; // to account for both NC and NO limit switches
 const int CAL_DIR[] = { -1, -1, 1, -1, -1, 1 }; // joint rotation direction to limit switch
-const int CAL_SPEED = 600; // motor steps per second
+const int CAL_SPEED = 500; // motor steps per second
 const int CAL_SPEED_MULT[] = { 1, 1, 1, 2, 1, 1 }; // multiplier to account for motor steps/rev
 
 // speed and acceleration settings
@@ -121,79 +62,22 @@ int MOTOR_MAX_SPEED[] = { 1500, 1500, 1500, 2000, 1500, 1500 }; // motor steps p
 int MOTOR_MAX_ACCEL[] = { 250, 250, 250, 250, 250, 250 }; // motor steps per sec^2
 float MOTOR_ACCEL_MULT[] = { 1.0, 1.0, 2.0, 1.0, 1.0, 1.0 }; // for tuning position control
 
-AccelStepper stepperJoints[NUM_JOINTS];
+// num of encoder steps in range of motion of joint
+int ENC_RANGE_STEPS[NUM_JOINTS];
 
-enum SM { STATE_TRAJ, STATE_ERR };
-SM STATE = STATE_TRAJ;
-
-//define axis limits in degrees, for calibration
-float J1axisLimPos = 170;
-float J1axisLimNeg = 170;
-float J2axisLimPos = 90;
-float J2axisLimNeg = 42;
-float J3axisLimPos = 52;
-float J3axisLimNeg = 89;
-float J4axisLimPos = 165;
-float J4axisLimNeg = 165;
-float J5axisLimPos = 105;
-float J5axisLimNeg = 105;
-float J6axisLimPos = 155;
-float J6axisLimNeg = 155;
-
-//define total axis travel
-float J1axisLim = J1axisLimPos + J1axisLimNeg;
-float J2axisLim = J2axisLimPos + J2axisLimNeg;
-float J3axisLim = J3axisLimPos + J3axisLimNeg;
-float J4axisLim = J4axisLimPos + J4axisLimNeg;
-float J5axisLim = J5axisLimPos + J5axisLimNeg;
-float J6axisLim = J6axisLimPos + J6axisLimNeg;
-
-const float MOTOR_STEPS_PER_DEG[] = {
-    44.44444444, 55.55555556, 55.55555556, 42.72664356, 21.86024888, 22.22222222 };
-const int MOTOR_STEPS_PER_REV[] = { 400, 400, 400, 400, 800, 400 };
-
-// num of steps in range of motion of joint
-const int ENC_RANGE_STEPS[] = { 
-    static_cast<int>(MOTOR_STEPS_PER_DEG[0] * J1axisLim * ENC_MULT[0]),
-    static_cast<int>(MOTOR_STEPS_PER_DEG[1] * J2axisLim * ENC_MULT[1]),
-    static_cast<int>(MOTOR_STEPS_PER_DEG[2] * J3axisLim * ENC_MULT[2]),
-    static_cast<int>(MOTOR_STEPS_PER_DEG[3] * J4axisLim * ENC_MULT[3]),
-    static_cast<int>(MOTOR_STEPS_PER_DEG[4] * J5axisLim * ENC_MULT[4]),
-    static_cast<int>(MOTOR_STEPS_PER_DEG[5] * J6axisLim * ENC_MULT[5]),
-};
-
-String inData;
-
-void setup() {
-  // run once:
+void setup()
+{
   Serial.begin(9600);
 
-  pinMode(J1stepPin, OUTPUT);
-  pinMode(J1dirPin, OUTPUT);
-  pinMode(J2stepPin, OUTPUT);
-  pinMode(J2dirPin, OUTPUT);
-  pinMode(J3stepPin, OUTPUT);
-  pinMode(J3dirPin, OUTPUT);
-  pinMode(J4stepPin, OUTPUT);
-  pinMode(J4dirPin, OUTPUT);
-  pinMode(J5stepPin, OUTPUT);
-  pinMode(J5dirPin, OUTPUT);
-  pinMode(J6stepPin, OUTPUT);
-  pinMode(J6dirPin, OUTPUT);
+  for (int i = 0; i < NUM_JOINTS; ++i)
+  {
+    pinMode(STEP_PINS[i], OUTPUT);
+    pinMode(DIR_PINS[i], OUTPUT);
+    pinMode(LIMIT_PINS[i], INPUT);
 
-  pinMode(J1calPin, INPUT);
-  pinMode(J2calPin, INPUT);
-  pinMode(J3calPin, INPUT);
-  pinMode(J4calPin, INPUT);
-  pinMode(J5calPin, INPUT);
-  pinMode(J6calPin, INPUT);
-
-  digitalWrite(J1stepPin, HIGH);
-  digitalWrite(J2stepPin, HIGH);
-  digitalWrite(J3stepPin, HIGH);
-  digitalWrite(J4stepPin, HIGH);
-  digitalWrite(J5stepPin, HIGH);
-  digitalWrite(J6stepPin, HIGH);
+    int joint_range = JOINT_LIMIT_MAX[i] - JOINT_LIMIT_MIN[i];
+    ENC_RANGE_STEPS[i] = static_cast<int>(MOTOR_STEPS_PER_DEG[i] * joint_range * ENC_MULT[i]);
+  }
 }
 
 bool initStateTraj(String inData)
@@ -204,8 +88,8 @@ bool initStateTraj(String inData)
   int versionMatches = (softwareVersion == VERSION);
 
   // return acknowledgement with result
-  String msg = String("ST") + String("A") + String(versionMatches) + String("B") + String(VERSION) + String("\n");
-  Serial.print(msg);
+  String msg = String("ST") + "A" + versionMatches + "B" + VERSION;
+  Serial.println(msg);
 
   return versionMatches ? true : false;
 }
@@ -291,9 +175,8 @@ void calibrateJoints(int* calJoints)
   return;
 }
 
-void moveOppositeABit()
+void moveAwayFromLimitSwitch()
 {
-  // first pass of calibration, fast speed
   for (int i = 0; i < NUM_JOINTS; i++)
   {
     stepperJoints[i].setSpeed(CAL_SPEED * CAL_SPEED_MULT[i] * CAL_DIR[i] * -1);
@@ -306,7 +189,8 @@ void moveOppositeABit()
     } 
   }
   // redundancy
-  for (int i = 0; i < NUM_JOINTS; i++) {
+  for (int i = 0; i < NUM_JOINTS; i++)
+  {
     stepperJoints[i].setSpeed(0);
   }
   delay(2000);
@@ -315,32 +199,23 @@ void moveOppositeABit()
 
 bool reachedLimitSwitch(int joint)
 {
-  int pin = CAL_PINS[joint];
+  int pin = LIMIT_PINS[joint];
   // check multiple times to deal with noise
   // possibly EMI from motor cables?
-  if (digitalRead(pin) == LIMIT_SWITCH_HIGH[joint])
+  for (int i = 0; i < 5; ++i)
   {
-    if (digitalRead(pin) == LIMIT_SWITCH_HIGH[joint])
+    if (digitalRead(pin) != LIMIT_SWITCH_HIGH[joint])
     {
-      if (digitalRead(pin) == LIMIT_SWITCH_HIGH[joint])
-      {
-        if (digitalRead(pin) == LIMIT_SWITCH_HIGH[joint])
-        {
-          if (digitalRead(pin) == LIMIT_SWITCH_HIGH[joint])
-          {
-            return true;
-          }
-        }
-      }
+      return false;
     }
   }
-  return false;
+  return true;
 }
 
 void stateTRAJ()
 {
   // clear message
-  inData = "";
+  String inData = "";
 
   // initialise joint steps
   int curMotorSteps[NUM_JOINTS];
@@ -385,8 +260,8 @@ void stateTRAJ()
         readMotorSteps(curMotorSteps);
 
         // update host with joint positions
-        String msg = String("JP") + String("A") + String(curMotorSteps[0]) + String("B") + String(curMotorSteps[1]) + String("C") + String(curMotorSteps[2])
-                   + String("D") + String(curMotorSteps[3]) + String("E") + String(curMotorSteps[4]) + String("F") + String(curMotorSteps[5]);
+        String msg = String("JP") + "A" + curMotorSteps[0] + "B" + curMotorSteps[1] + "C" + curMotorSteps[2]
+                   + "D" + curMotorSteps[3] + "E" + curMotorSteps[4] + "F" + curMotorSteps[5];
         Serial.println(msg);
 
         // get new position commands
@@ -424,13 +299,8 @@ void stateTRAJ()
       }
       else if (function == "JC")
       {
-        // calibrate joint 6
-        int calJoint6[] = { 0, 0, 0, 0, 0, 1 }; // 000001
-        calibrateJoints(calJoint6);
-
-
-        // calibrate joints 1 to 5
-        int calJoints[] = { 1, 1, 1, 1, 1, 0 }; // 111110
+        // calibrate all joints
+        int calJoints[] = { 1, 1, 1, 1, 1, 1 };
         calibrateJoints(calJoints);
 
         // record encoder steps
@@ -440,28 +310,32 @@ void stateTRAJ()
           calSteps[i] = encPos[i].read();
         }
 
-        J1encPos.write(ENC_RANGE_STEPS[0]);
-        J2encPos.write(0);
-        J3encPos.write(ENC_RANGE_STEPS[2]);
-        J4encPos.write(0);
-        J5encPos.write(0);
-        J6encPos.write(ENC_RANGE_STEPS[5]);
+        for (int i = 0; i < NUM_JOINTS; ++i)
+        {
+          encPos[i].write(ENC_RANGE_STEPS[i] * ENC_MAX_AT_ANGLE_MIN[i]);
+        }
 
-        moveOppositeABit();
+        // move away from the limit switches a bit so that if the next command is in the wrong
+        // direction, the limit switches will not be run over immediately and become damaged.
+        moveAwayFromLimitSwitch();
 
         // return to original position
-        for (int i = 0; i < NUM_JOINTS; ++i) {
+        for (int i = 0; i < NUM_JOINTS; ++i)
+        {
           stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
           stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
         }
 
         bool restPosReached = false;
-        while (!restPosReached) {
+        while (!restPosReached)
+        {
           restPosReached = true;
           readMotorSteps(curMotorSteps);
 
-          for (int i = 0; i < NUM_JOINTS; ++i) {
-            if (abs(REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) > 5) {
+          for (int i = 0; i < NUM_JOINTS; ++i)
+          {
+            if (abs(REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) > 5)
+            {
               restPosReached = false;
               float target_pos = (REST_ENC_POSITIONS[i] / ENC_MULT[i]  - curMotorSteps[i]) * ENC_DIR[i];
               stepperJoints[i].move(target_pos);
@@ -471,14 +345,9 @@ void stateTRAJ()
         }
 
         // calibration done, send calibration values
-        String msg = String("JC") + "A" + String(calSteps[0]) + "B" + String(calSteps[1]) + "C" + String(calSteps[2])
-                   + "D" + String(calSteps[3]) + "E" + String(calSteps[4]) + "F" + String(calSteps[5]);
+        String msg = String("JC") + "A" + calSteps[0] + "B" + calSteps[1] + "C" + calSteps[2]
+                   + "D" + calSteps[3] + "E" + calSteps[4] + "F" + calSteps[5];
         Serial.println(msg);
-
-        for (int i = 0; i < NUM_JOINTS; ++i) {
-            stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
-            stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
-        }
       }
       else if (function == "JP")
       {
@@ -486,8 +355,8 @@ void stateTRAJ()
         readMotorSteps(curMotorSteps);
 
         // update host with joint positions
-        String msg = String("JP") + "A" + String(curMotorSteps[0]) + "B" + String(curMotorSteps[1]) + "C" + String(curMotorSteps[2])
-                   + "D" + String(curMotorSteps[3]) + "E" + String(curMotorSteps[4]) + "F" + String(curMotorSteps[5]);
+        String msg = String("JP") + "A" + curMotorSteps[0] + "B" + curMotorSteps[1] + "C" + curMotorSteps[2]
+                   + "D" + curMotorSteps[3] + "E" + curMotorSteps[4] + "F" + curMotorSteps[5];
         Serial.println(msg);
       }
       else if (function == "SS")
@@ -505,8 +374,8 @@ void stateTRAJ()
         readMotorSteps(curMotorSteps);
 
         // update host with joint positions
-        String msg = String("JP") + "A" + String(curMotorSteps[0]) + "B" + String(curMotorSteps[1]) + "C" + String(curMotorSteps[2])
-                   + "D" + String(curMotorSteps[3]) + "E" + String(curMotorSteps[4]) + "F" + String(curMotorSteps[5]);
+        String msg = String("JP") + "A" + curMotorSteps[0] + "B" + curMotorSteps[1] + "C" + curMotorSteps[2]
+                   + "D" + curMotorSteps[3] + "E" + curMotorSteps[4] + "F" + curMotorSteps[5];
         Serial.println(msg);
       }
       else if (function == "ST")
@@ -516,33 +385,27 @@ void stateTRAJ()
           STATE = STATE_ERR;
           return;
         }
-
       }
       
       // clear message
       inData = "";
     }
-    // // execute motor commands
-    // for (int i = 0; i < NUM_JOINTS; ++i)
-    // {
-    //   // target joint positions are already updated, just call run()
-    //   stepperJoints[i].run();
-    // }
   }
 }
 
 void stateERR()
 {
   // enter holding state
-  digitalWrite(J1stepPin, LOW);
-  digitalWrite(J2stepPin, LOW);
-  digitalWrite(J3stepPin, LOW);
-  digitalWrite(J4stepPin, LOW);
-  digitalWrite(J5stepPin, LOW);
-  digitalWrite(J6stepPin, LOW);
+  for (int i = 0; i < NUM_JOINTS; ++i)
+  {
+    digitalWrite(STEP_PINS[i], LOW);
+  }
 
-  // do recovery
-  while (STATE == STATE_ERR) {}
+  while (STATE == STATE_ERR)
+  {
+    Serial.println("DB: Error state entered");
+    delay(1000);
+  }
 }
 
 void loop() 
@@ -564,5 +427,3 @@ void loop()
       break;
   }
 }
-
-
