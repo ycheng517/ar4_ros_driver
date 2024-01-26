@@ -19,7 +19,7 @@
     <rosparam file="$(find ar3_moveit_config)/config/joint_limits.yaml" command="load" ns="ar3"/>
 
     <!-- Load universal robot description format (URDF) -->
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ar3_description)/urdf/ar3.urdf.xacro"/>
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ar_description)/urdf/ar3.urdf.xacro"/>
 
     <!-- The semantic description that corresponds to the URDF -->
     <param name="robot_description_semantic" textfile="$(find ar3_moveit_config)/config/ar3.srdf" />

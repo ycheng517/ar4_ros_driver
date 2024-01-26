@@ -14,7 +14,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/base_link.STL"/>
+        <mesh filename="package://ar_description/meshes/base_link.STL"/>
       </geometry>
       <material name="">
         <color rgba="1 1 0 1"/>
@@ -23,7 +23,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/base_link.STL"/>
+        <mesh filename="package://ar_description/meshes/base_link.STL"/>
       </geometry>
     </collision>
   </link>
@@ -41,7 +41,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_1.STL"/>
+        <mesh filename="package://ar_description/meshes/link_1.STL"/>
       </geometry>
       <material name="">
         <color rgba="1 1 0 1"/>
@@ -50,7 +50,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_1.STL"/>
+        <mesh filename="package://ar_description/meshes/link_1.STL"/>
       </geometry>
     </collision>
   </link>
@@ -70,7 +70,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_2.STL"/>
+        <mesh filename="package://ar_description/meshes/link_2.STL"/>
       </geometry>
       <material name="">
         <color rgba="1 1 0 1"/>
@@ -79,7 +79,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_2.STL"/>
+        <mesh filename="package://ar_description/meshes/link_2.STL"/>
       </geometry>
     </collision>
   </link>
@@ -99,7 +99,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_3.STL"/>
+        <mesh filename="package://ar_description/meshes/link_3.STL"/>
       </geometry>
       <material name="">
         <color rgba="1 1 0 1"/>
@@ -108,7 +108,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_3.STL"/>
+        <mesh filename="package://ar_description/meshes/link_3.STL"/>
       </geometry>
     </collision>
   </link>
@@ -128,7 +128,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_4.STL"/>
+        <mesh filename="package://ar_description/meshes/link_4.STL"/>
       </geometry>
       <material name="">
         <color rgba="1 1 0 1"/>
@@ -137,7 +137,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_4.STL"/>
+        <mesh filename="package://ar_description/meshes/link_4.STL"/>
       </geometry>
     </collision>
   </link>  
@@ -157,7 +157,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_5.STL"/>
+        <mesh filename="package://ar_description/meshes/link_5.STL"/>
       </geometry>
       <material name="">
         <color rgba="1 1 0 1"/>
@@ -166,7 +166,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_5.STL"/>
+        <mesh filename="package://ar_description/meshes/link_5.STL"/>
       </geometry>
     </collision>
   </link>
@@ -186,7 +186,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_6.STL"/>
+        <mesh filename="package://ar_description/meshes/link_6.STL"/>
       </geometry>
       <material name="">
         <color rgba="1 1 0 1"/>
@@ -195,7 +195,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://ar3_description/meshes/link_6.STL"/>
+        <mesh filename="package://ar_description/meshes/link_6.STL"/>
       </geometry>
     </collision>
   </link>

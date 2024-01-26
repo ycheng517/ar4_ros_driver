@@ -2,7 +2,7 @@
 <launch>
 
     <!-- URDF -->
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ar3_description)/urdf/ar3_gazebo.urdf.xacro" />
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ar_description)/urdf/ar3_gazebo.urdf.xacro" />
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find ar3_gazebo)/config/ar3_gazebo_controllers.yaml" command="load"/>

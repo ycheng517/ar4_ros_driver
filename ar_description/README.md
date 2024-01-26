@@ -1,2 +1,2 @@
-# ar3_description
-This module contains the hardware description for the AR3. The URDFs were modified from the original ones. The main modifications were to fix some of the joint rotation directions and to specify revolute joints. Note that there is a seperate URDF for simulation which contains the Gazebo plugins.
+# ar_description
+This module contains the hardware description for the AR series of robots. The URDFs were modified from the original ones. The main modifications were to fix some of the joint rotation directions and to specify revolute joints. Note that there is a seperate URDF for simulation which contains the Gazebo plugins.

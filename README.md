@@ -14,7 +14,7 @@ You may also wish to check out some hardware modifications that I've made for jo
     + Controlling the arm through the MoveIt user interfaces
     + Provides demo for the move group interface
     
-+ **ar3_description**
++ **ar_description**
     + Hardware description of arm, urdf etc.
     
 + **ar3_hardware_interface**
@@ -58,7 +58,7 @@ You may also wish to check out some hardware modifications that I've made for jo
   ar_ws
   +-- src
   |   +-- ar3_control
-  |   +-- ar3_description
+  |   +-- ar_description
   |   +-- ...
   ```
 * Build the workspace:
@@ -91,7 +91,7 @@ You may also wish to check out some hardware modifications that I've made for jo
   ar_ws
   +-- src
   |   +-- ar3_control
-  |   +-- ar3_description
+  |   +-- ar_description
   |   +-- ...
   ```
 * Install workspace dependencies:

@@ -14,7 +14,7 @@
   <exec_depend>effort_controllers</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>gazebo_ros_control</exec_depend>
-  <exec_depend>ar3_description</exec_depend>
+  <exec_depend>ar_description</exec_depend>
 
   <export>
   </export>

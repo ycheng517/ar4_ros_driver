@@ -26,7 +26,7 @@
   <run_depend>hardware_interface</run_depend>
   <run_depend>controller_manager</run_depend>
   <run_depend>ros_controllers</run_depend>
-  <run_depend>ar3_description</run_depend>
+  <run_depend>ar_description</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>transmission_interface</run_depend>
   <run_depend>urdf</run_depend>

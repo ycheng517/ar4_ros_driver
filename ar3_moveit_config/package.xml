@@ -22,7 +22,7 @@
   <run_depend>joint_state_publisher</run_depend>
   <run_depend>robot_state_publisher</run_depend>
   <run_depend>xacro</run_depend>
-  <build_depend>ar3_description</build_depend>
-  <run_depend>ar3_description</run_depend>
+  <build_depend>ar_description</build_depend>
+  <run_depend>ar_description</run_depend>
 
 </package>
