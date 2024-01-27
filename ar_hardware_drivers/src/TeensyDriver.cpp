@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <chrono>
+#include <rclcpp/rclcpp.hpp>
 
 #define FW_VERSION "0.0.1"
 

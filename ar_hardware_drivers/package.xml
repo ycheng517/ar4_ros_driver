@@ -1,18 +1,18 @@
 <package format="3">
-  <name>ar3_hardware_drivers</name>
+  <name>ar_hardware_driver</name>
   <version>0.0.0</version>
-  <description>The ar3_hardware_drivers package</description>
+  <description>The ar_hardware_driver package</description>
 
   <maintainer email="dexterong94@gmail.com">Dexter Ong</maintainer>
+  <maintainer email="ycheng517@users.noreply.github.com">Yifei Cheng</maintainer>
 
   <license>MIT</license>
 
   <author email="dexterong94@gmail.com">Dexter Ong</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>roscpp</depend>
-  <depend>rospy</depend>
-  <depend>std_msgs</depend>
+  <depend>rclcpp</depend>
+  <depend>Boost</depend>
   
 </package>

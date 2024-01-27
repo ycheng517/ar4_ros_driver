@@ -6,7 +6,6 @@
 #include <string>
 #include "math.h"
 #include "time.h"
-#include <ros/ros.h>
 #include <boost/asio.hpp>
 
 namespace ar3_hardware_drivers {
