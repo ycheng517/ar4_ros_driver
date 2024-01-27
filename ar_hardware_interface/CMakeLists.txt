@@ -35,7 +35,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   urdf
   joint_limits_interface
-  ar3_hardware_drivers
+  ar_hardware_driver
 )
 
 catkin_package(
@@ -49,7 +49,7 @@ catkin_package(
     roscpp
     urdf
     joint_limits_interface
-    ar3_hardware_drivers
+    ar_hardware_driver
 )
 
 include_directories(

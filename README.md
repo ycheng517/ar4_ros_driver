@@ -20,7 +20,7 @@ Work-in-progress refresh of [ar3_core](https://github.com/ongdexter/ar3_core) th
     + ROS interface for the hardware driver, built on the ros_control framework
     + Manages joint offsets, limits and conversion between joint and actuator messages
     
-+ **ar3_hardware_drivers**
++ **ar_hardware_driver**
     + Handles communication with the motor controllers
 
 + **ar3_microcontrollers**

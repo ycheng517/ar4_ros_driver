@@ -1,12 +1,11 @@
-#include "ar3_hardware_drivers/TeensyDriver.h"
+#include "ar_hardware_driver/TeensyDriver.h"
 
 #include <thread>
 #include <chrono>
-#include <rclcpp/rclcpp.hpp>
 
 #define FW_VERSION "0.0.1"
 
-namespace ar3_hardware_drivers {
+namespace ar_hardware_driver {
 
 void TeensyDriver::init(std::string port, int baudrate, int num_joints, std::vector<double>& enc_steps_per_deg)
 {
@@ -19,14 +18,14 @@ void TeensyDriver::init(std::string port, int baudrate, int num_joints, std::vec
 
     if (ec)
     {
-        ROS_WARN("Failed to connect to serial port %s", port.c_str());
+        RCLCPP_WARN(logger_, "Failed to connect to serial port %s", port.c_str());
         return;
     }
     else
     {
         serial_port_.set_option(boost::asio::serial_port_base::baud_rate(static_cast<uint32_t>(baudrate)));
         serial_port_.set_option(boost::asio::serial_port_base::parity(boost::asio::serial_port_base::parity::none));
-        ROS_INFO("Successfully connected to serial port %s", port.c_str());
+        RCLCPP_INFO(logger_, "Successfully connected to serial port %s", port.c_str());
     }
     
     initialised_ = false;
@@ -34,11 +33,11 @@ void TeensyDriver::init(std::string port, int baudrate, int num_joints, std::vec
 
     while (!initialised_)
     {
-        ROS_INFO("Waiting for response from Teensy on port %s", port.c_str());
+        RCLCPP_INFO(logger_, "Waiting for response from Teensy on port %s", port.c_str());
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         exchange(msg);
     }
-    ROS_INFO("Successfully initialised driver on port %s", port.c_str());
+    RCLCPP_INFO(logger_, "Successfully initialised driver on port %s", port.c_str());
 
     // initialise joint and encoder calibration
     num_joints_ = num_joints;
@@ -140,7 +139,7 @@ void TeensyDriver::exchange(std::string outMsg)
         {
             // print err
         }
-        ROS_INFO(inMsg.substr(0, inMsg.size() - 1).c_str());
+        RCLCPP_INFO(logger_, inMsg.substr(0, inMsg.size() - 1).c_str());
         // parse msg
         std::string header = inMsg.substr(0, 2);
         if (header == "ST")
@@ -168,7 +167,7 @@ void TeensyDriver::exchange(std::string outMsg)
         else
         {
             // unknown header
-            ROS_WARN("Unknown header %s", header);
+            RCLCPP_WARN(logger_, "Unknown header %s", header.c_str());
             done = true;
         } 
     }
@@ -227,7 +226,7 @@ void TeensyDriver::checkInit(std::string msg)
     else
     {
         std::string version = msg.substr(version_idx);
-        ROS_ERROR("Firmware version mismatch %s", version);
+        RCLCPP_ERROR(logger_, "Firmware version mismatch %s", version.c_str());
     }  
 }
 
@@ -247,7 +246,7 @@ void TeensyDriver::updateEncoderCalibrations(std::string msg)
     enc_calibrations_[5] = std::stoi(msg.substr(idx6));
 
     // @TODO update config file
-    ROS_INFO("Successfully updated encoder calibrations");
+    RCLCPP_INFO(logger_, "Successfully updated encoder calibrations");
 }
 
 void TeensyDriver::updateEncoderSteps(std::string msg)
@@ -284,4 +283,4 @@ void TeensyDriver::jointPosToEncSteps(std::vector<double>& joint_positions, std:
     }
 }
 
-} // namespace ar3_hardware_drivers
+} // namespace ar_hardware_driver

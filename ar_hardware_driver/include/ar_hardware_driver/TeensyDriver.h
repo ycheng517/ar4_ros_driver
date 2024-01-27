@@ -7,8 +7,9 @@
 #include "math.h"
 #include "time.h"
 #include <boost/asio.hpp>
+#include <rclcpp/rclcpp.hpp>
 
-namespace ar3_hardware_drivers {
+namespace ar_hardware_driver {
 
 class TeensyDriver {
   public:
@@ -30,6 +31,7 @@ class TeensyDriver {
     std::vector<int> enc_steps_;
     std::vector<double> enc_steps_per_deg_;
     std::vector<int> enc_calibrations_;
+    rclcpp::Logger logger_ = rclcpp::get_logger("ar_hardware_driver");
 
 
     // Comms with teensy
@@ -47,6 +49,6 @@ class TeensyDriver {
     void jointPosToEncSteps(std::vector<double>& joint_positions, std::vector<int>& enc_steps);
 };
 
-} // namespace ar3_hardware_drivers
+} // namespace ar_hardware_driver
 
 #endif // TEENSY_DRIVER

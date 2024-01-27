@@ -3,12 +3,8 @@ project(ar_description)
 
 find_package(ament_cmake REQUIRED)
 
-catkin_package()
-
-find_package(roslaunch)
-
 install(
-  DIRECTORY config launch meshes urdf
+  DIRECTORY meshes urdf
   DESTINATION share/${PROJECT_NAME}
 )
 

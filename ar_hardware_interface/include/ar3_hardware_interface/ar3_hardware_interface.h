@@ -11,7 +11,7 @@
 #include <joint_limits_interface/joint_limits_rosparam.h>
 #include <controller_manager/controller_manager.h>
 #include <boost/scoped_ptr.hpp>
-#include "ar3_hardware_drivers/TeensyDriver.h"
+#include "ar_hardware_driver/TeensyDriver.h"
 
 #include <chrono>
 #include <thread>
@@ -46,7 +46,7 @@ namespace ar3_hardware_interface
 			double p_error_, v_error_, e_error_;
 
 			// Motor driver
-			ar3_hardware_drivers::TeensyDriver driver_;
+			ar_hardware_driver::TeensyDriver driver_;
 			std::vector<double> actuator_commands_;
 			std::vector<double> actuator_positions_;
 
