@@ -1,75 +1,47 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ar3_hardware_interface)
+project(ar_hardware_interface)
 
-if(WIN32)
-    macro(get_WIN32_WINNT version)
-        if(CMAKE_SYSTEM_VERSION)
-            set(ver ${CMAKE_SYSTEM_VERSION})
-            string(REGEX MATCH "^([0-9]+).([0-9])" ver ${ver})
-            string(REGEX MATCH "^([0-9]+)" verMajor ${ver})
-            # Check for Windows 10, b/c we'll need to convert to hex 'A'.
-            if("${verMajor}" MATCHES "10")
-                set(verMajor "A")
-                string(REGEX REPLACE "^([0-9]+)" ${verMajor} ver ${ver})
-            endif()
-            # Remove all remaining '.' characters.
-            string(REPLACE "." "" ver ${ver})
-            # Prepend each digit with a zero.
-            string(REGEX REPLACE "([0-9A-Z])" "0\\1" ver ${ver})
-            set(${version} "0x${ver}")
-        endif()
-    endmacro()
-
-    get_WIN32_WINNT(ver)
-    add_definitions(-D_WIN32_WINNT=${ver})
+if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
+  add_compile_options(-Wall -Wextra)
 endif()
 
-# Default to C++14
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
-
-find_package(catkin REQUIRED COMPONENTS
-  hardware_interface
-  controller_manager
-  roscpp
-  urdf
-  joint_limits_interface
+set(THIS_PACKAGE_INCLUDE_DEPENDS
   ar_hardware_driver
+  hardware_interface
+  pluginlib
+  rclcpp
+  rclcpp_lifecycle
 )
 
-catkin_package(
-  INCLUDE_DIRS 
-    include
-  LIBRARIES 
-    ar3_hardware_interface
-  CATKIN_DEPENDS 
-    hardware_interface
-    controller_manager
-    roscpp
-    urdf
-    joint_limits_interface
-    ar_hardware_driver
+find_package(ament_cmake REQUIRED)
+foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
+  find_package(${Dependency} REQUIRED)
+endforeach()
+
+add_library(ar_hardware_interface SHARED src/ar_hardware_interface.cpp)
+target_compile_features(ar_hardware_interface PUBLIC cxx_std_17)
+target_include_directories(ar_hardware_interface PUBLIC include)
+
+ament_target_dependencies(ar_hardware_interface PUBLIC
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
-include_directories(
-  include/
-  ${catkin_INCLUDE_DIRS})
+# Export hardware plugins
+pluginlib_export_plugin_description_file(hardware_interface ros2_control_demo_example_1.xml)
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
-  PATTERN ".svn" EXCLUDE)
-
-add_library(ar3_hardware_interface src/ar3_hardware_interface.cpp)
-target_link_libraries(ar3_hardware_interface
-	${catkin_LIBRARIES}
+# Install header files
+install(DIRECTORY include/
+  DESTINATION include
 )
 
-add_executable(ar3_hardware_interface_node src/ar3_hardware_interface_node.cpp)
-add_dependencies(ar3_hardware_interface_node ar3_hardware_interface)
-
-target_link_libraries(ar3_hardware_interface_node
-	ar3_hardware_interface
-	${catkin_LIBRARIES}
+# Install targets
+install(TARGETS ar_hardware_interface
+  EXPORT ar_hardware_interface
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
+
+ament_export_targets(ar_hardware_interface HAS_LIBRARY_TARGET)
+ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
+ament_package()

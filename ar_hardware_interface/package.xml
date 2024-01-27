@@ -1,36 +1,43 @@
 <?xml version="1.0"?>
-<package>
-  <name>ar3_hardware_interface</name>
+<package format="3">
+  <name>ar_hardware_interface</name>
   <version>0.0.1</version>
   <description>
-    The ar3_hardware_interface package provides the hardware interface for
-    running an AR3 robot using the ros_control software framework.
+    The ar_hardware_interface package provides the hardware interface for
+    running an AR3 or AR4 robot using the ros_control software framework.
   </description>
-
-  <maintainer email="dexterong94@gmail.com">Dexter Ong</maintainer>
-
+  <author email="dexterong94@gmail.com">Dexter Ong</author>
+  <author>Yifei Cheng</author>
+  <maintainer email="ycheng517@users.noreply.github.com">Yifei Cheng</maintainer>
   <license>MIT</license>
 
-  <author email="dexterong94@gmail.com">Dexter Ong</author>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  
+  <depend>hardware_interface</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <!-- <depend>ros2_control</depend> -->
+  <depend>ar_description</depend>
+  <!-- <depend>transmission_interface</depend>
+  <depend>joint_limits_interface</depend> -->
+  <depend>ar_hardware_driver</depend>
 
-  <build_depend>hardware_interface</build_depend>
-  <build_depend>controller_manager</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>transmission_interface</build_depend>
-  <build_depend>urdf</build_depend>
-  <build_depend>joint_limits_interface</build_depend>
-  <build_depend>ar_hardware_driver</build_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>forward_command_controller</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>joint_state_publisher_gui</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>ros2_control_demo_description</exec_depend>
+  <exec_depend>ros2_controllers_test_nodes</exec_depend>
+  <exec_depend>ros2controlcli</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>xacro</exec_depend>
 
-  <run_depend>hardware_interface</run_depend>
-  <run_depend>controller_manager</run_depend>
-  <run_depend>ros_controllers</run_depend>
-  <run_depend>ar_description</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>transmission_interface</run_depend>
-  <run_depend>urdf</run_depend>
-  <run_depend>joint_limits_interface</run_depend>
-  <run_depend>ar_hardware_driver</run_depend>
-
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

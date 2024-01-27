@@ -10,10 +10,10 @@
     <param name="/ar3/hardware_interface/use_existing_calibrations" type="bool" value="$(arg use_existing_calibrations)"/>
 
     <!-- Load hardware interface and driver configs -->
-    <rosparam file="$(find ar3_hardware_interface)/config/hardware_interface.yaml" command="load"/>
-    <rosparam file="$(find ar3_hardware_interface)/config/controllers.yaml" command="load"/>
-    <rosparam file="$(find ar3_hardware_interface)/config/joint_offsets.yaml" command="load"/>
-    <rosparam file="$(find ar3_hardware_interface)/config/hardware_driver.yaml" command="load"/>
+    <rosparam file="$(find ar_hardware_interface)/config/hardware_interface.yaml" command="load"/>
+    <rosparam file="$(find ar_hardware_interface)/config/controllers.yaml" command="load"/>
+    <rosparam file="$(find ar_hardware_interface)/config/joint_offsets.yaml" command="load"/>
+    <rosparam file="$(find ar_hardware_interface)/config/hardware_driver.yaml" command="load"/>
 
     <!-- Load moveit joint limits config in separate namespace to get velocity limits -->
     <rosparam file="$(find ar3_moveit_config)/config/joint_limits.yaml" command="load" ns="ar3"/>
@@ -25,7 +25,7 @@
     <param name="robot_description_semantic" textfile="$(find ar3_moveit_config)/config/ar3.srdf" />
 
     <!-- Start hardware_interface node -->
-    <node name="ar3_hardware_interface" pkg="ar3_hardware_interface" type="ar3_hardware_interface_node" output="screen" launch-prefix="$(arg launch_prefix)"/>
+    <node name="ar_hardware_interface" pkg="ar_hardware_interface" type="ar_hardware_interface_node" output="screen" launch-prefix="$(arg launch_prefix)"/>
 
     <!-- Start controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/" 

@@ -1,4 +1,4 @@
-# ar3_hardware_interface
+# ar_hardware_interface
 This module contains the hardware interface for the AR3. 
 
 ## Position Controller

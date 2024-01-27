@@ -16,7 +16,7 @@ Work-in-progress refresh of [ar3_core](https://github.com/ongdexter/ar3_core) th
 + **ar_description**
     + Hardware description of arm, urdf etc.
     
-+ **ar3_hardware_interface**
++ **ar_hardware_interface**
     + ROS interface for the hardware driver, built on the ros_control framework
     + Manages joint offsets, limits and conversion between joint and actuator messages
     
@@ -118,7 +118,7 @@ Work-in-progress refresh of [ar3_core](https://github.com/ongdexter/ar3_core) th
 
 ## Setup
 * **Hardware interface**  
-  - Set the serial port and baudrate in `ar3_hardware_interface/config/hardware_driver.yaml`
+  - Set the serial port and baudrate in `ar_hardware_interface/config/hardware_driver.yaml`
   
 * **Teensy Sketch**  
   - Both teensy sketches provided are compatible with the default hardware. Refer to the module for more information.
@@ -127,7 +127,7 @@ Work-in-progress refresh of [ar3_core](https://github.com/ongdexter/ar3_core) th
 There are two modules that you will always need to run:
 
 1. **Arm module** - this can be for either a real-world or simulated arm
-     + For controlling the real-world arm, you will need to run the `ar3_hardware_interface` module 
+     + For controlling the real-world arm, you will need to run the `ar_hardware_interface` module 
      + For the simulated arm, you will need to run the `ar3_gazebo` module
      + Either of the modules will load the necessary hardware descriptions for MoveIt
 
@@ -148,12 +148,12 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 
 ### Control real-world arm with MoveIt in RViz
 
-* Start the `ar3_hardware_interface` module, which will load configs and the robot description
+* Start the `ar_hardware_interface` module, which will load configs and the robot description
   ```
-  roslaunch ar3_hardware_interface ar3_hardware_bringup.launch
+  roslaunch ar_hardware_interface ar3_hardware_bringup.launch
   ```
   The hardware interface will also start the hardware driver and initialise communication with the Teensy. You can skip the joint encoder calibration sequence with the `use_existing_calibrations` argument when starting the node  
-  ie. `roslaunch ar3_hardware_interface ar3_hardware_bringup.launch use_existing_calibrations:=true`.
+  ie. `roslaunch ar_hardware_interface ar3_hardware_bringup.launch use_existing_calibrations:=true`.
   
   
 * Start MoveIt and RViz
@@ -184,7 +184,7 @@ You can now plan in RViz and control the simulated arm.
 This is a demo modified from the official MoveIt tutorials. As opposed to manually setting goals through RViz, the move group interface allows us to programmatically plan and execute movements, and provides more functionality such as specifying path constraints and planning Cartesian movements. This also enables much more complex tasks, planning around obstacles etc.
 
 * Start the `ar3_gazebo` module, which will start the Gazebo simulator and load the robot description  
-*For controlling the real-world arm, you will just need to run `ar3_hardware_interface` instead of `ar3_gazebo` as described above.*
+*For controlling the real-world arm, you will just need to run `ar_hardware_interface` instead of `ar3_gazebo` as described above.*
   ```
   roslaunch ar3_gazebo ar3_gazebo_bringup.launch
   ```
