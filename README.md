@@ -1,7 +1,6 @@
-# AR3 Core Software
-This repository provides the software for control of the AR3 arm with ros_control and MoveIt. I hope to provide fellow robotic arm enthusiasts with a starting point to explore using ROS for controlling the arm. The baseline implementation is designed to accomodate the original hardware and firmware, including the message structures for communication. Moving forward, I will do my best to continue to keep it accessible. I plan to explore some interesting concepts that I have in mind for on-arm vision, grippers and human-robot interaction and I will share my projects here if possible.
+# AR ROS Driver
 
-You may also wish to check out some hardware modifications that I've made for joint encoders at [ar3_hardware_mods](https://github.com/ongdexter/ar3_hardware_mods).
+Work-in-progress refresh of [ar3_core](https://github.com/ongdexter/ar3_core) that supports AR4 and runs on ROS 2. 
 
 * [Overview](#Overview)
 * [Installation](#Installation)
