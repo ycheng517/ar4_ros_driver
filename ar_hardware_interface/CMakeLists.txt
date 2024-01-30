@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(ar_hardware_interface)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
@@ -20,14 +20,14 @@ endforeach()
 
 add_library(ar_hardware_interface SHARED src/ar_hardware_interface.cpp)
 target_compile_features(ar_hardware_interface PUBLIC cxx_std_17)
-target_include_directories(ar_hardware_interface PUBLIC include)
+target_include_directories(ar_hardware_interface PRIVATE include)
 
 ament_target_dependencies(ar_hardware_interface PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
 # Export hardware plugins
-pluginlib_export_plugin_description_file(hardware_interface ros2_control_demo_example_1.xml)
+pluginlib_export_plugin_description_file(hardware_interface hardware_interface_plugin.xml)
 
 # Install header files
 install(DIRECTORY include/

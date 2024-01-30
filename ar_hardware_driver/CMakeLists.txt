@@ -11,24 +11,26 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 
-include_directories(
-  include
-  ${Boost_INCLUDE_DIRS}
-)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+include_directories(include)
 
 # Declare a library
-add_library(${PROJECT_NAME}
+add_library(ar_hardware_driver
   src/TeensyDriver.cpp
 )
 
-ament_target_dependencies(${PROJECT_NAME}
+ament_target_dependencies(ar_hardware_driver
   rclcpp
   Boost
 )
 
 # Install targets
-install(TARGETS ${PROJECT_NAME}
-  DESTINATION lib/${PROJECT_NAME}
+install(TARGETS ar_hardware_driver
+  EXPORT ar_hardware_driver
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
 # Install header files
@@ -39,6 +41,6 @@ install(DIRECTORY include/
 # Export dependencies
 ament_export_dependencies(rclcpp Boost)
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
+ament_export_libraries(ar_hardware_driver)
 
 ament_package()

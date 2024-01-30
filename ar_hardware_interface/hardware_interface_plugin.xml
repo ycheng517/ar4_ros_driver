@@ -1,0 +1,9 @@
+<library path="ar_robot_driver_plugin">
+  <class name="ar_robot_driver/ARHardwareInterface"
+         type="ar_robot_driver::ARHardwareInterface"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+		ROS2 Control System Driver for Annin Robotics.
+    </description>
+  </class>
+</library>

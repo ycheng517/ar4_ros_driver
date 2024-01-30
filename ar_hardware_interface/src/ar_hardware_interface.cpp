@@ -39,6 +39,28 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
+void ARHardwareInterface::init_variables() {
+  // TODO: get joint names properly
+  joint_names_ = {"joint_1", "joint_2", "joint_3",
+                  "joint_4", "joint_5", "joint_6"};
+  num_joints_ = static_cast<int>(joint_names_.size());
+
+  // resize vectors
+  actuator_commands_.resize(num_joints_);
+  actuator_positions_.resize(num_joints_);
+  joint_positions_.resize(num_joints_);
+  joint_velocities_.resize(num_joints_);
+  joint_efforts_.resize(num_joints_);
+  joint_position_commands_.resize(num_joints_);
+  joint_velocity_commands_.resize(num_joints_);
+  joint_effort_commands_.resize(num_joints_);
+  joint_offsets_.resize(num_joints_);
+  joint_lower_limits_.resize(num_joints_);
+  joint_upper_limits_.resize(num_joints_);
+  velocity_limits_.resize(num_joints_);
+  acceleration_limits_.resize(num_joints_);
+}
+
 hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
     const rclcpp_lifecycle::State& /*previous_state*/) {
   RCLCPP_INFO(logger_, "Activating hardware interface...");
@@ -47,7 +69,7 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
   bool use_existing_calibrations = false;
   if (!use_existing_calibrations) {
     // run calibration
-    ROS_INFO("Running joint calibration...");
+    RCLCPP_INFO(logger_, "Running joint calibration...");
     driver_.calibrateJoints();
   }
 
@@ -71,128 +93,59 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_deactivate(
 std::vector<hardware_interface::StateInterface>
 ARHardwareInterface::export_state_interfaces() {
   std::vector<hardware_interface::StateInterface> state_interfaces;
-  // for (uint i = 0; i < info_.joints.size(); i++) {
-  //   state_interfaces.emplace_back(hardware_interface::StateInterface(
-  //       info_.joints[i].name, hardware_interface::HW_IF_POSITION,
-  //       &hw_states_[i]));
-  // }
+
+  int ind = 0;
+  for (const auto& joint_name : joint_names_) {
+    state_interfaces.emplace_back(joint_name, "position",
+                                  &joint_positions_[ind++]);
+  }
   return state_interfaces;
 }
 
 std::vector<hardware_interface::CommandInterface>
 ARHardwareInterface::export_command_interfaces() {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
-  // for (uint i = 0; i < info_.joints.size(); i++) {
-  //   command_interfaces.emplace_back(hardware_interface::CommandInterface(
-  //       info_.joints[i].name, hardware_interface::HW_IF_POSITION,
-  //       &hw_commands_[i]));
-  // }
+  int ind = 0;
+  for (const auto& joint_name : joint_names_) {
+    command_interfaces.emplace_back(joint_name, "position",
+                                    &joint_positions_[ind++]);
+  }
   return command_interfaces;
 }
 
 hardware_interface::return_type ARHardwareInterface::read(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
-  // BEGIN: This part here is for exemplary purposes - Please do not copy to
-  // your production code
-  RCLCPP_INFO(logger_, "Reading...");
-
-  for (uint i = 0; i < hw_states_.size(); i++) {
-    // Simulate RRBot's movement
-    hw_states_[i] =
-        hw_states_[i] + (hw_commands_[i] - hw_states_[i]) / hw_slowdown_;
-    RCLCPP_INFO(logger_, "Got state %.5f for joint %d!", hw_states_[i], i);
-  }
-  RCLCPP_INFO(logger_, "Joints successfully read!");
-  // END: This part here is for exemplary purposes - Please do not copy to your
-  // production code
-
-  return hardware_interface::return_type::OK;
-}
-
-hardware_interface::return_type ARHardwareInterface::write(
-    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
-  // BEGIN: This part here is for exemplary purposes - Please do not copy to
-  // your production code
-  RCLCPP_INFO(logger_, "Writing...");
-
-  for (uint i = 0; i < hw_commands_.size(); i++) {
-    // Simulate sending commands to the hardware
-    RCLCPP_INFO(logger_, "Got command %.5f for joint %d!", hw_commands_[i], i);
-  }
-  RCLCPP_INFO(logger_, "Joints successfully written!");
-  // END: This part here is for exemplary purposes - Please do not copy to your
-  // production code
-
-  return hardware_interface::return_type::OK;
-}
-
-void ARHardwareInterface::init_variables() {
-  // TODO: get joint names properly
-  joint_names_ = {"joint_1", "joint_2", "joint_3",
-                  "joint_4", "joint_5", "joint_6"};
-  num_joints_ = static_cast<int>(joint_names_.size());
-
-  // resize vectors
-  actuator_commands_.resize(num_joints_);
-  actuator_positions_.resize(num_joints_);
-  joint_positions_.resize(num_joints_);
-  joint_velocities_.resize(num_joints_);
-  joint_efforts_.resize(num_joints_);
-  joint_position_commands_.resize(num_joints_);
-  joint_velocity_commands_.resize(num_joints_);
-  joint_effort_commands_.resize(num_joints_);
-  joint_offsets_.resize(num_joints_);
-  joint_lower_limits_.resize(num_joints_);
-  joint_upper_limits_.resize(num_joints_);
-  velocity_limits_.resize(num_joints_);
-  acceleration_limits_.resize(num_joints_);
-}
-
-void ARHardwareInterface::update(const ros::TimerEvent& e) {
-  std::string logInfo = "\n";
-  logInfo += "Joint Position Command:\n";
-  for (int i = 0; i < num_joints_; i++) {
-    std::ostringstream jointPositionStr;
-    jointPositionStr << radToDeg(joint_position_commands_[i]);
-    logInfo += "  " + joint_names_[i] + ": " + jointPositionStr.str() + "\n";
-  }
-
-  elapsed_time_ = ros::Duration(e.current_real - e.last_real);
-
-  write(elapsed_time_);
-  read();
-
-  logInfo += "Joint Position State:\n";
-  for (int i = 0; i < num_joints_; i++) {
-    std::ostringstream jointPositionStr;
-    jointPositionStr << radToDeg(joint_positions_[i]);
-    logInfo += "  " + joint_names_[i] + ": " + jointPositionStr.str() + "\n";
-  }
-
-  controller_manager_->update(ros::Time::now(), elapsed_time_);
-
-  ROS_INFO_STREAM(logInfo);
-}
-
-void ARHardwareInterface::read() {
   driver_.update(actuator_commands_, actuator_positions_);
   for (int i = 0; i < num_joints_; ++i) {
     // apply offsets, convert from deg to rad for moveit
     joint_positions_[i] = degToRad(actuator_positions_[i] + joint_offsets_[i]);
   }
+  std::string logInfo = "Joint Position: \n";
+  for (int i = 0; i < num_joints_; i++) {
+    std::stringstream jointPositionStm;
+    jointPositionStm << std::fixed << std::setprecision(3)
+                     << radToDeg(joint_positions_[i]);
+    logInfo += joint_names_[i] + ": " + jointPositionStm.str() + " | ";
+  }
+  return hardware_interface::return_type::OK;
 }
 
-void ARHardwareInterface::write(ros::Duration elapsed_time) {
+hardware_interface::return_type ARHardwareInterface::write(
+    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   for (int i = 0; i < num_joints_; ++i) {
     // convert from rad to deg, apply offsets
     actuator_commands_[i] =
         radToDeg(joint_position_commands_[i]) - joint_offsets_[i];
   }
+  std::string logInfo = "Joint Position Command: \n";
+  for (int i = 0; i < num_joints_; i++) {
+    std::stringstream jointPositionStm;
+    jointPositionStm << std::fixed << std::setprecision(3)
+                     << radToDeg(joint_position_commands_[i]);
+    logInfo += joint_names_[i] + ": " + jointPositionStm.str() + " | ";
+  }
+  return hardware_interface::return_type::OK;
 }
-
-double ARHardwareInterface::degToRad(double deg) { return deg / 180.0 * M_PI; }
-
-double ARHardwareInterface::radToDeg(double rad) { return rad / M_PI * 180.0; }
 
 }  // namespace ar_hardware_interface
 

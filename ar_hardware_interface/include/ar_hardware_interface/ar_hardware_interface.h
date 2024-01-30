@@ -1,7 +1,5 @@
 #pragma once
 
-#include <controller_manager/controller_manager.h>
-
 #include <boost/scoped_ptr.hpp>
 #include <chrono>
 #include <hardware_interface/system_interface.hpp>
@@ -16,6 +14,7 @@ namespace ar_hardware_interface {
 class ARHardwareInterface : public hardware_interface::SystemInterface {
  public:
   RCLCPP_SHARED_PTR_DEFINITIONS(ARHardwareInterface);
+  virtual ~ARHardwareInterface();
 
   hardware_interface::CallbackReturn on_init(
       const hardware_interface::HardwareInfo& info) override;
@@ -39,8 +38,6 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
 
  private:
   rclcpp::Logger logger_ = rclcpp::get_logger("ar_hardware_interface");
-  rclcpp::Duration control_period_;
-  rclcpp::Duration elapsed_time_;
   double p_error_, v_error_, e_error_;
 
   // Motor driver
@@ -64,7 +61,7 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
   std::vector<double> acceleration_limits_;
 
   // Misc
-  double degToRad(double deg);
-  double radToDeg(double rad);
+  double degToRad(double deg) { return deg / 180.0 * M_PI; };
+  double radToDeg(double rad) { return rad / M_PI * 180.0; };
 };
 }  // namespace ar_hardware_interface
