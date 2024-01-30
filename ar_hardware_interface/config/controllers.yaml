@@ -1,34 +1,30 @@
-ar3:
-  controllers:
-    state:
-      type: joint_state_controller/JointStateController
-      publish_rate: 50
-    position:
-      type: position_controllers/JointTrajectoryController
-      joints:
-        - joint_1
-        - joint_2
-        - joint_3
-        - joint_4
-        - joint_5
-        - joint_6
-      constraints:
-        goal_time: 0.5
-        joint_1:
-          trajectory: 0.5
-          goal: 0.02
-        joint_2:
-          trajectory: 0.5
-          goal: 0.02
-        joint_3:
-          trajectory: 0.5
-          goal: 0.02
-        joint_4:
-          trajectory: 0.5
-          goal: 0.02
-        joint_5:
-          trajectory: 0.5
-          goal: 0.02
-        joint_6:
-          trajectory: 0.5
-          goal: 0.02
+controller_manager:
+  ros__parameters:
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - joint_1
+      - joint_2
+      - joint_3
+      - joint_4
+      - joint_5
+      - joint_6
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+    state_publish_rate: 50.0
+    action_monitor_rate: 10.0
+    allow_partial_joints_goal: false
+    constraints:
+      stopped_velocity_tolerance: 0.2
+      goal_time: 0.0
+      shoulder_pan_joint: { trajectory: 0.2, goal: 0.1 }
+      shoulder_lift_joint: { trajectory: 0.2, goal: 0.1 }
+      elbow_joint: { trajectory: 0.2, goal: 0.1 }
+      wrist_1_joint: { trajectory: 0.2, goal: 0.1 }
+      wrist_2_joint: { trajectory: 0.2, goal: 0.1 }
+      wrist_3_joint: { trajectory: 0.2, goal: 0.1 }

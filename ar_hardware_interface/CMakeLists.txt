@@ -7,6 +7,7 @@ endif()
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   ar_hardware_driver
+  controller_manager
   hardware_interface
   pluginlib
   rclcpp
@@ -26,6 +27,14 @@ ament_target_dependencies(ar_hardware_interface PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
+add_executable(ar_ros2_control_node
+  src/ar_ros2_control_node.cpp
+)
+ament_target_dependencies(ar_ros2_control_node
+  controller_manager
+  rclcpp
+)
+
 # Export hardware plugins
 pluginlib_export_plugin_description_file(hardware_interface hardware_interface_plugin.xml)
 
@@ -36,12 +45,20 @@ install(DIRECTORY include/
 
 # Install targets
 install(TARGETS ar_hardware_interface
-  EXPORT ar_hardware_interface
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+  DESTINATION lib
 )
 
-ament_export_targets(ar_hardware_interface HAS_LIBRARY_TARGET)
+install(
+  TARGETS ar_ros2_control_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY config launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+ament_export_include_directories(include)
+# ament_export_targets(ar_hardware_interface HAS_LIBRARY_TARGET)
+ament_export_libraries(ar_hardware_interface)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()

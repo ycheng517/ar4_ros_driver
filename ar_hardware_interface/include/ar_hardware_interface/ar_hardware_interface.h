@@ -55,8 +55,6 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
   std::vector<double> joint_position_commands_;
   std::vector<double> joint_velocity_commands_;
   std::vector<double> joint_effort_commands_;
-  std::vector<double> joint_lower_limits_;
-  std::vector<double> joint_upper_limits_;
   std::vector<double> velocity_limits_;
   std::vector<double> acceleration_limits_;
 

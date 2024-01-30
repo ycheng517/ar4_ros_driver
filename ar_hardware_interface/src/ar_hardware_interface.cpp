@@ -54,9 +54,7 @@ void ARHardwareInterface::init_variables() {
   joint_position_commands_.resize(num_joints_);
   joint_velocity_commands_.resize(num_joints_);
   joint_effort_commands_.resize(num_joints_);
-  joint_offsets_.resize(num_joints_);
-  joint_lower_limits_.resize(num_joints_);
-  joint_upper_limits_.resize(num_joints_);
+  joint_offsets_ = {170.0, -39.6, 0.0, -164.5, -104.5, -148.1};
   velocity_limits_.resize(num_joints_);
   acceleration_limits_.resize(num_joints_);
 }
