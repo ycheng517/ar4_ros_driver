@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+  <xacro:arg name="name" default="ar"/>
+  <xacro:arg name="ar_type" default="ar3"/>
+  <xacro:include filename="$(find ar_description)/urdf/$(arg ar_type).urdf.xacro"/>
+  <xacro:include filename="$(find ar_hardware_interface)/urdf/ar.ros2_control.xacro"/>
+
+  <!-- initial position for simulations (Mock Hardware, Gazebo, Ignition) -->
+  <xacro:arg name="initial_positions_file" default="$(find ar_description)/config/initial_positions.yaml"/>
+
+  <!-- convert to property to use substitution in function -->
+  <xacro:property name="initial_positions_file" default="$(arg initial_positions_file)"/>
+  
+  <xacro:ar_ros2_control name="$(arg name)"/>
+</robot>
