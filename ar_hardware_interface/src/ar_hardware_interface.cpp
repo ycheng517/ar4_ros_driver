@@ -1,5 +1,4 @@
-#include <ar_hardware_interface/ar_hardware_interface.h>
-
+#include <ar_hardware_interface/ar_hardware_interface.hpp>
 #include <sstream>
 
 namespace ar_hardware_interface {

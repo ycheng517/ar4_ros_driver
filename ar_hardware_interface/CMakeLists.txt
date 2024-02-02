@@ -32,14 +32,6 @@ ament_target_dependencies(ar_hardware_interface
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
-add_executable(ar_ros2_control_node
-  src/ar_ros2_control_node.cpp
-)
-ament_target_dependencies(ar_ros2_control_node
-  controller_manager
-  rclcpp
-)
-
 # Export hardware plugins
 pluginlib_export_plugin_description_file(hardware_interface hardware_interface_plugin.xml)
 
@@ -53,11 +45,6 @@ install(TARGETS ar_hardware_interface
 
 install(DIRECTORY include/
   DESTINATION include/${PROJECT_NAME}
-)
-
-install(
-  TARGETS ar_ros2_control_node
-  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(DIRECTORY config launch urdf
