@@ -43,6 +43,7 @@ def generate_launch_description():
         executable="ros2_control_node",
         parameters=[
             update_rate_config_file,
+            robot_description,
             ParameterFile(joint_controllers_cfg, allow_substs=True),
         ],
         output="screen",
