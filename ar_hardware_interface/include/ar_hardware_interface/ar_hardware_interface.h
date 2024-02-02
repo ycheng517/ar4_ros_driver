@@ -14,7 +14,6 @@ namespace ar_hardware_interface {
 class ARHardwareInterface : public hardware_interface::SystemInterface {
  public:
   RCLCPP_SHARED_PTR_DEFINITIONS(ARHardwareInterface);
-  virtual ~ARHardwareInterface();
 
   hardware_interface::CallbackReturn on_init(
       const hardware_interface::HardwareInfo& info) override;

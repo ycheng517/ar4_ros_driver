@@ -20,10 +20,15 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
 endforeach()
 
 add_library(ar_hardware_interface SHARED src/ar_hardware_interface.cpp)
-target_compile_features(ar_hardware_interface PUBLIC cxx_std_17)
-target_include_directories(ar_hardware_interface PRIVATE include)
 
-ament_target_dependencies(ar_hardware_interface PUBLIC
+target_compile_features(ar_hardware_interface PUBLIC cxx_std_17)
+target_include_directories(ar_hardware_interface PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+ament_target_dependencies(ar_hardware_interface
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
@@ -38,14 +43,16 @@ ament_target_dependencies(ar_ros2_control_node
 # Export hardware plugins
 pluginlib_export_plugin_description_file(hardware_interface hardware_interface_plugin.xml)
 
-# Install header files
-install(DIRECTORY include/
-  DESTINATION include
+
+install(TARGETS ar_hardware_interface
+  EXPORT export_ar_hardware_interface
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
-# Install targets
-install(TARGETS ar_hardware_interface
-  DESTINATION lib
+install(DIRECTORY include/
+  DESTINATION include/${PROJECT_NAME}
 )
 
 install(
@@ -57,8 +64,9 @@ install(DIRECTORY config launch urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
-ament_export_include_directories(include)
-# ament_export_targets(ar_hardware_interface HAS_LIBRARY_TARGET)
-ament_export_libraries(ar_hardware_interface)
+# ament_export_include_directories(include)
+ament_export_targets(export_ar_hardware_interface HAS_LIBRARY_TARGET)
+# ament_export_libraries(ar_hardware_interface)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
+
 ament_package()

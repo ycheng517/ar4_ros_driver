@@ -64,7 +64,7 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
   RCLCPP_INFO(logger_, "Activating hardware interface...");
 
   // calibrate joints if needed
-  bool use_existing_calibrations = false;
+  bool use_existing_calibrations = true;
   if (!use_existing_calibrations) {
     // run calibration
     RCLCPP_INFO(logger_, "Running joint calibration...");

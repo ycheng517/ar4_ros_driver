@@ -38,9 +38,9 @@ def generate_launch_description():
     #     output="screen",
     # )
 
-    ur_control_node = Node(
-        package="ar_hardware_interface",
-        executable="ar_ros2_control_node",
+    controller_manager_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
         parameters=[
             robot_description,
             update_rate_config_file,
@@ -82,7 +82,7 @@ def generate_launch_description():
 
     ld = LaunchDescription()
     # ld.add_action(ar_hardware_interface_node)
-    ld.add_action(ur_control_node)
+    ld.add_action(controller_manager_node)
     ld.add_action(spawn_joint_controller)
     ld.add_action(robot_state_publisher_node)
     ld.add_action(joint_state_broadcaster)

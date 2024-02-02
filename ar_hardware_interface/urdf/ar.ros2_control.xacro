@@ -13,10 +13,6 @@
           <param name="min">{-170*pi/180}</param>
           <param name="max">{170*pi/180}</param>
         </command_interface>
-        <command_interface name="velocity">
-          <param name="min">-0.3</param>
-          <param name="max">0.3</param>
-        </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
         </state_interface>
@@ -26,10 +22,6 @@
         <command_interface name="position">
           <param name="min">{-42*pi/180}</param>
           <param name="max">{90*pi/180}</param>
-        </command_interface>
-        <command_interface name="velocity">
-          <param name="min">-0.3</param>
-          <param name="max">0.3</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
@@ -41,10 +33,6 @@
           <param name="min">{-89*pi/180}</param>
           <param name="max">{52*pi/180}</param>
         </command_interface>
-        <command_interface name="velocity">
-          <param name="min">-0.3</param>
-          <param name="max">0.3</param>
-        </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
         </state_interface>
@@ -54,10 +42,6 @@
         <command_interface name="position">
           <param name="min">{-165*pi/180}</param>
           <param name="max">{165*pi/180}</param>
-        </command_interface>
-        <command_interface name="velocity">
-          <param name="min">-0.3</param>
-          <param name="max">0.3</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
@@ -69,10 +53,6 @@
           <param name="min">{-105*pi/180}</param>
           <param name="max">{105*pi/180}</param>
         </command_interface>
-        <command_interface name="velocity">
-          <param name="min">-0.3</param>
-          <param name="max">0.3</param>
-        </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
         </state_interface>
@@ -82,10 +62,6 @@
         <command_interface name="position">
           <param name="min">{-155*pi/180}</param>
           <param name="max">{155*pi/180}</param>
-        </command_interface>
-        <command_interface name="velocity">
-          <param name="min">-0.5</param>
-          <param name="max">0.5</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
