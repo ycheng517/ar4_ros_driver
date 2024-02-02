@@ -11,5 +11,10 @@
   <!-- convert to property to use substitution in function -->
   <xacro:property name="initial_positions_file" default="$(arg initial_positions_file)"/>
   
+  <link name="world" />
+  <xacro:ar3_robot parent="world">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:ar3_robot>
+
   <xacro:ar_ros2_control name="$(arg name)"/>
 </robot>

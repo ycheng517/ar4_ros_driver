@@ -42,7 +42,6 @@ def generate_launch_description():
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
-            robot_description,
             update_rate_config_file,
             ParameterFile(joint_controllers_cfg, allow_substs=True),
         ],
@@ -57,7 +56,7 @@ def generate_launch_description():
             "-c",
             "/controller_manager",
             "--controller-manager-timeout",
-            "10",
+            "60",
         ],
     )
 
@@ -73,10 +72,10 @@ def generate_launch_description():
         executable="spawner",
         arguments=[
             "joint_state_broadcaster",
-            "--controller-manager",
+            "-c",
             "/controller_manager",
             "--controller-manager-timeout",
-            "10",
+            "60",
         ],
     )
 
