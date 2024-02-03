@@ -1,8 +1,10 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(ar3_moveit_config)
-find_package(catkin REQUIRED)
-catkin_package()
+cmake_minimum_required(VERSION 3.5)
+project(ar_moveit_config)
 
-install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  PATTERN "setup_assistant.launch" EXCLUDE)
-install(DIRECTORY config DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+
+install(DIRECTORY config launch rviz srdf
+  DESTINATION share/${PROJECT_NAME}
+)
+ament_package()

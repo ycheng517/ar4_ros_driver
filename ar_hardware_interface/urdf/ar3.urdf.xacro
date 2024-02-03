@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+  <!-- TODO: merge name and ar_type -->
   <xacro:arg name="name" default="ar"/>
   <xacro:arg name="ar_type" default="ar3"/>
-  <xacro:include filename="$(find ar_description)/urdf/$(arg ar_type).urdf.xacro"/>
+  <xacro:include filename="$(find ar_description)/urdf/$(arg ar_type)_macro.xacro"/>
   <xacro:include filename="$(find ar_hardware_interface)/urdf/ar.ros2_control.xacro"/>
 
   <!-- initial position for simulations (Mock Hardware, Gazebo, Ignition) -->

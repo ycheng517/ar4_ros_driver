@@ -1,85 +1,22 @@
-# ar3:
-  joint_limits: # radians
-    joint_1:
-      has_position_limits: true
-      min_position: -2.96706 # -170.0
-      max_position: 2.96706 # 170.0
-      has_velocity_limits: true
-      max_velocity: 0.34906585 # 20.0
-      has_acceleration_limits: true
-      max_acceleration: 0.1
-      has_jerk_limits: false
-      max_jerk: 0.0
-      has_effort_limits: false
-      max_effort: 0.0
-      min_effort: 0.0
-
-    joint_2:
-      has_position_limits: true
-      min_position: -0.6911504 # -39.6
-      max_position: 1.57079632679 # 90.0
-      has_velocity_limits: true
-      max_velocity: 0.34906585 # 20.0
-      has_acceleration_limits: true
-      max_acceleration: 0.1
-      has_jerk_limits: false
-      max_jerk: 0.0
-      has_effort_limits: false
-      max_effort: 0.0
-      min_effort: 0.0
-
-    joint_3:
-      has_position_limits: true
-      min_position: 0.0 # 0.0
-      max_position: 2.5080381 # default 143.7
-      has_velocity_limits: true
-      max_velocity: 0.34906585 # 20.0
-      has_acceleration_limits: true
-      max_acceleration: 0.1
-      has_jerk_limits: false
-      max_jerk: 0.0
-      has_effort_limits: false
-      max_effort: 0.0
-      min_effort: 0.0
-
-    joint_4:
-      has_position_limits: true
-      min_position: -2.8710666 # -164.5
-      max_position: 2.8710666 # 164.5
-      has_velocity_limits: true
-      max_velocity: 0.34906585 # 20.0
-      has_acceleration_limits: true
-      max_acceleration: 0.1
-      has_jerk_limits: false
-      max_jerk: 0.0
-      has_effort_limits: false
-      max_effort: 0.0
-      min_effort: 0.0
-
-    joint_5:
-      has_position_limits: true
-      min_position: -1.81776042 # -104.15
-      max_position: 1.81776042 # 104.15
-      has_velocity_limits: true
-      max_velocity: 0.34906585 # 20.0
-      has_acceleration_limits: true
-      max_acceleration: 0.1
-      has_jerk_limits: false
-      max_jerk: 0.0
-      has_effort_limits: false
-      max_effort: 0.0
-      min_effort: 0.0
-
-    joint_6:
-      has_position_limits: true
-      min_position: -2.5848326 # -148.1
-      max_position: 2.5848326 # 148.1
-      has_velocity_limits: true
-      max_velocity: 0.34906585 # 20.0
-      has_acceleration_limits: true
-      max_acceleration: 0.1
-      has_jerk_limits: false
-      max_jerk: 0.0
-      has_effort_limits: false
-      max_effort: 0.0
-      min_effort: 0.0
+# TODO: currently this is unused
+# These limits are used by MoveIt and augment/override the definitions in
+# ur_description.
+joint_limits:
+  shoulder_pan_joint:
+    has_acceleration_limits: true
+    max_acceleration: 1.0
+  shoulder_lift_joint:
+    has_acceleration_limits: true
+    max_acceleration: 1.0
+  elbow_joint:
+    has_acceleration_limits: true
+    max_acceleration: 1.0
+  wrist_1_joint:
+    has_acceleration_limits: true
+    max_acceleration: 1.0
+  wrist_2_joint:
+    has_acceleration_limits: true
+    max_acceleration: 1.0
+  wrist_3_joint:
+    has_acceleration_limits: true
+    max_acceleration: 1.0

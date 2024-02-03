@@ -1,28 +1,28 @@
-<package>
-  <name>ar3_moveit_config</name>
-  <version>2.2.0</version>
+<package format="3">
+  <name>ar_moveit_config</name>
+  <version>0.1.0</version>
   <description>
-     An automatically generated package with all the configuration and launch files for using the ar3 with the MoveIt! Motion Planning Framework
+    Configuration and launch files for using AR robots with MoveIt 2
   </description>
   <author>Edouard Renard</author>
-  <maintainer email="e.rey-coquais@niryo.com">Etienne Rey-Coquais</maintainer>
+  <author>Yifei Cheng</author>
+  <maintainer email="ycheng517@users.noreply.github.com">Yifei Cheng</maintainer>
 
-  <license>GPLv3</license>
+  <license>MIT</license>
 
-  <url type="website">http://moveit.ros.org/</url>
-  <url type="bugtracker">https://github.com/ros-planning/moveit/issues</url>
-  <url type="repository">https://github.com/ros-planning/moveit</url>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
-
-  <run_depend>moveit_ros_move_group</run_depend>
-  <run_depend>moveit_kinematics</run_depend>
-  <run_depend>moveit_planners_ompl</run_depend>
-  <run_depend>moveit_ros_visualization</run_depend>
-  <run_depend>joint_state_publisher</run_depend>
-  <run_depend>robot_state_publisher</run_depend>
-  <run_depend>xacro</run_depend>
-  <build_depend>ar_description</build_depend>
-  <run_depend>ar_description</run_depend>
+  <exec_depend>ar_description</exec_depend>
+  <exec_depend>moveit_kinematics</exec_depend>
+  <exec_depend>moveit_planners_ompl</exec_depend>
+  <exec_depend>moveit_ros_move_group</exec_depend>
+  <exec_depend>moveit_ros_visualization</exec_depend>
+  <exec_depend>moveit_simple_controller_manager</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>urdf</exec_depend>
 
 </package>
