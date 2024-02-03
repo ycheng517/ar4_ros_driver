@@ -38,7 +38,6 @@ from launch_ros.substitutions import FindPackageShare
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
-from launch.conditions import IfCondition
 from launch.substitutions import (
     Command,
     FindExecutable,
@@ -50,17 +49,14 @@ from launch.substitutions import (
 def load_yaml(package_name, file_name):
     package_path = get_package_share_directory(package_name)
     absolute_file_path = os.path.join(package_path, file_name)
-    with open(absolute_file_path, "r", encoding="utf-8") as file:
+    with open(absolute_file_path, "r") as file:
         return yaml.safe_load(file)
 
 
 def launch_setup(context, *args, **kwargs):
     # Initialize Arguments
-    use_mock_hardware = LaunchConfiguration("use_mock_hardware")
-    # General arguments
     moveit_joint_limits_file = LaunchConfiguration("moveit_joint_limits_file")
     moveit_config_file = LaunchConfiguration("moveit_config_file")
-    use_sim_time = LaunchConfiguration("use_sim_time")
 
     robot_description_content = Command(
         [
@@ -69,6 +65,8 @@ def launch_setup(context, *args, **kwargs):
             PathJoinSubstitution(
                 [FindPackageShare("ar_description"), "urdf", "ar3.urdf.xacro"]
             ),
+            " ",
+            "name:=ar3",
         ]
     )
     robot_description = {"robot_description": robot_description_content}
@@ -81,6 +79,8 @@ def launch_setup(context, *args, **kwargs):
             PathJoinSubstitution(
                 [FindPackageShare("ar_moveit_config"), "srdf", moveit_config_file]
             ),
+            " ",
+            "name:=ar3",
         ]
     )
     robot_description_semantic = {
@@ -101,25 +101,16 @@ def launch_setup(context, *args, **kwargs):
     # Planning Configuration
     ompl_planning_pipeline_config = {
         "move_group": {
-            "planning_plugins": ["ompl_interface/OMPLPlanner"],
-            "request_adapters": [
-                "default_planning_request_adapters/ResolveConstraintFrames",
-                "default_planning_request_adapters/ValidateWorkspaceBounds",
-                "default_planning_request_adapters/CheckStartStateBounds",
-                "default_planning_request_adapters/CheckStartStateCollision",
-            ],
-            "response_adapters": [
-                "default_planning_response_adapters/AddTimeOptimalParameterization",
-                "default_planning_response_adapters/ValidateSolution",
-                "default_planning_response_adapters/DisplayMotionPath",
-            ],
+            "planning_plugin": "ompl_interface/OMPLPlanner",
+            "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
+            "start_state_max_bounds_error": 0.1,
         }
     }
-    ompl_planning_yaml = load_yaml("ur_moveit_config", "config/ompl_planning.yaml")
+    ompl_planning_yaml = load_yaml("ar_moveit_config", "config/ompl_planning.yaml")
     ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
 
     # Trajectory Execution Configuration
-    controllers_yaml = load_yaml("ur_moveit_config", "config/controllers.yaml")
+    controllers_yaml = load_yaml("ar_moveit_config", "config/controllers.yaml")
 
     moveit_controllers = {
         "moveit_simple_controller_manager": controllers_yaml,
@@ -154,7 +145,6 @@ def launch_setup(context, *args, **kwargs):
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
-            {"use_sim_time": use_sim_time},
         ],
     )
 
@@ -199,7 +189,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "moveit_config_file",
-            default_value="ar.srdf",
+            default_value="ar.srdf.xacro",
             description="MoveIt SRDF/XACRO description file with the robot.",
         )
     )

@@ -2,7 +2,7 @@
   <name>ar_description</name>
   <version>1.0.0</version>
   <description>
-    <p>URDF Description package for Annin Robotics robotic arms</p>
+    URDF Description package for Annin Robotics robotic arms
   </description>
   <author>Dexter Ong</author>
   <author>Yifei Cheng</author>
