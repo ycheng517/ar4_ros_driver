@@ -4,7 +4,7 @@
   <version>0.1.0</version>
   <description>
     The ar_hardware_interface package provides the hardware interface for
-    running an AR robot using the ros2_control software framework.
+    running an AR4 robot using the ros2_control software framework.
   </description>
   <license>MIT</license>
 

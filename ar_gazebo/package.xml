@@ -2,7 +2,7 @@
 <package format="3">
   <name>ar_gazebo</name>
   <version>0.1.0</version>
-  <description>Gazebo simulation the AR robot</description>
+  <description>Gazebo simulation the AR4 robot</description>
   <author>Yifei Cheng</author>
   <maintainer email="ycheng517@gmail.com">Yifei Cheng</maintainer>
   <license>MIT</license>

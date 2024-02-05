@@ -2,7 +2,7 @@
   <name>ar_moveit_config</name>
   <version>0.1.0</version>
   <description>
-    Configuration and launch files for using AR robots with MoveIt 2
+    Configuration and launch files for using the AR4 robot with MoveIt 2
   </description>
   <license>MIT</license>
 

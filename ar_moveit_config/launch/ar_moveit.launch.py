@@ -57,10 +57,10 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("ar_description"), "urdf", "ar3.urdf.xacro"]
+                [FindPackageShare("ar_description"), "urdf", "ar.urdf.xacro"]
             ),
             " ",
-            "name:=ar3",
+            "name:=ar",
         ]
     )
     robot_description = {"robot_description": robot_description_content}
@@ -74,7 +74,7 @@ def generate_launch_description():
                 [FindPackageShare("ar_moveit_config"), "srdf", "ar.srdf.xacro"]
             ),
             " ",
-            "name:=ar3",
+            "name:=ar",
         ]
     )
     robot_description_semantic = {

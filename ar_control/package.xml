@@ -2,7 +2,7 @@
 <package format="3">
   <name>ar_control</name>
   <version>0.1.0</version>
-  <description>AR control demo with the Move Group interface</description>
+  <description>AR4 control demo with the Move Group interface</description>
   <license>MIT</license>
 
   <author>Dexter Ong</author>

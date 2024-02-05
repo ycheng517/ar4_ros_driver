@@ -17,10 +17,10 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("ar_hardware_interface"), "urdf", "ar3.urdf.xacro"]
+                [FindPackageShare("ar_hardware_interface"), "urdf", "ar.urdf.xacro"]
             ),
             " ",
-            "name:=ar3",
+            "name:=ar",
             " ",
             "serial_port:=",
             serial_port,

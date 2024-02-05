@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
-  <xacro:arg name="ar_type" default="ar3"/>
-  <xacro:include filename="$(find ar_description)/urdf/$(arg ar_type)_macro.xacro"/>
+  <xacro:include filename="$(find ar_description)/urdf/ar_macro.xacro"/>
 
   <link name="world" />
-  <xacro:ar3_robot parent="world">
+  <xacro:ar_robot parent="world">
     <origin xyz="0 0 0" rpy="0 0 0" />
-  </xacro:ar3_robot>
+  </xacro:ar_robot>
 </robot>

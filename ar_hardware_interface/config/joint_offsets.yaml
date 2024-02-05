@@ -1,9 +1,0 @@
-ar3:
-  hardware_interface:
-    joint_offsets: # degrees
-      joint_1: 170.0 # default -170.0
-      joint_2: -42.0 # default -39.6
-      joint_3: -89.0 # default 0.0
-      joint_4: -165.0 # default -164.5
-      joint_5: -105.0 # default -104.15
-      joint_6: -155.0 # default -148.1

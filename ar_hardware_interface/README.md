@@ -1,6 +1,6 @@
 # ar_hardware_interface
 
-This module contains the hardware interface for the AR3.
+This module contains the hardware interface for the AR4 robot.
 
 ## Position Controller
 

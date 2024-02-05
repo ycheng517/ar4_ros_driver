@@ -1,4 +1,4 @@
-# AR ROS Driver
+# AR4 ROS Driver
 
 ROS 2 driver of the AR4 robot arm from Annin Robotics. Tested with ROS 2 Iron on Ubuntu 22.04. This is a refresh of [ar3_core](https://github.com/ongdexter/ar3_core).
 

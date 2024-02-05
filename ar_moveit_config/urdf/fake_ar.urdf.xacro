@@ -1,14 +1,12 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
-  <!-- TODO: merge name and ar_type -->
-  <xacro:arg name="ar_type" default="ar3"/>
-  <xacro:include filename="$(find ar_description)/urdf/$(arg ar_type)_macro.xacro"/>
+  <xacro:include filename="$(find ar_description)/urdf/ar_macro.xacro"/>
   <xacro:include filename="$(find ar_hardware_interface)/urdf/ar.ros2_control.xacro"/>
   
   <link name="world" />
-  <xacro:ar3_robot parent="world">
+  <xacro:ar_robot parent="world">
     <origin xyz="0 0 0" rpy="0 0 0" />
-  </xacro:ar3_robot>
+  </xacro:ar_robot>
 
   <xacro:ar_ros2_control
     name="ARFakeSystem"
