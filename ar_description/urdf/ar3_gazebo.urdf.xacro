@@ -267,7 +267,7 @@
       </actuator>
   </transmission>  
   <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
     </plugin>
   </gazebo>
   <gazebo reference="base_link">

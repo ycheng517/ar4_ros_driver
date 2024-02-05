@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<package>
+<package format="3">
   <name>ar_control</name>
   <version>0.1.0</version>
-  <description>AR3 control demo with the Move Group interface</description>
-  <license>BSD</license>
+  <description>AR control demo with the Move Group interface</description>
+  <license>MIT</license>
 
-  <author email="dexterong94@gmail.com">Dexter Ong</author>
+  <author>Dexter Ong</author>
+  <author>Yifei Cheng</author>
+  <maintainer email="ycheng517@gmail.com">Yifei Cheng</maintainer>
 
-  <maintainer email="dexterong94@gmail.com">Dexter Ong</maintainer>
-
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>pluginlib</build_depend>
   <build_depend>eigen</build_depend>
@@ -20,30 +20,24 @@
   <build_depend>interactive_markers</build_depend>
   <build_depend>geometric_shapes</build_depend>
   <build_depend>moveit_visual_tools</build_depend>
-  <build_depend>pcl_ros</build_depend>
-  <build_depend>pcl_conversions</build_depend>
-  <build_depend>rosbag</build_depend>
+  <build_depend>rosbag2</build_depend>
   <build_depend>tf2_ros</build_depend>
   <build_depend>tf2_eigen</build_depend>
   <build_depend>tf2_geometry_msgs</build_depend>
 
-  <run_depend>panda_moveit_config</run_depend>
-  <run_depend>pluginlib</run_depend>
-  <run_depend>moveit_core</run_depend>
-  <run_depend>moveit_commander</run_depend>
-  <run_depend>moveit_fake_controller_manager</run_depend>
-  <run_depend>moveit_ros_planning_interface</run_depend>
-  <run_depend>moveit_ros_perception</run_depend>
-  <run_depend>interactive_markers</run_depend>
-  <run_depend>moveit_visual_tools</run_depend>
-  <run_depend>joy</run_depend>
-  <run_depend>pcl_ros</run_depend>
-  <run_depend>pcl_conversions</run_depend>
-  <run_depend>rosbag</run_depend>
-  <run_depend>tf2_ros</run_depend>
-  <run_depend>tf2_eigen</run_depend>
-  <run_depend>tf2_geometry_msgs</run_depend>
+  <exec_depend>pluginlib</exec_depend>
+  <exec_depend>moveit_core</exec_depend>
+  <exec_depend>moveit_ros_planning_interface</exec_depend>
+  <exec_depend>moveit_ros_perception</exec_depend>
+  <exec_depend>interactive_markers</exec_depend>
+  <exec_depend>moveit_visual_tools</exec_depend>
+  <exec_depend>joy</exec_depend>
+  <exec_depend>rosbag2</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_eigen</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
 
-  <test_depend>moveit_resources_panda_moveit_config</test_depend>
-
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

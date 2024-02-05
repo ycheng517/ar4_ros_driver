@@ -32,31 +32,32 @@ ROS 2 driver of the AR4 robot arm from Annin Robotics. Tested with ROS 2 Iron on
 
 - Install [ROS 2 Iron](https://docs.ros.org/en/iron/Installation.html) and [MoveIt 2](https://moveit.ros.org/install-moveit2/binary/) for Ubuntu 22.04
 - Clone this repository:
-  ```
+  ```bash
   git clone https://github.com/ycheng517/ar_ros_driver
   ```
 - Install workspace dependencies:
-  ```
-  rosdep install --from-paths src --ignore-src -r -y
+  ```bash
+  rosdep install --from-paths . --ignore-src -r -y
   ```
 - Build the workspace:
-  ```
+  ```bash
   colcon build
   ```
 - Source the workspace:
-  ```
+  ```bash
   source install/setup.bash
   ```
 - Enable serial port access if you haven't already done so:
-  ```
+  ```bash
   sudo addgroup $USER dialout
   ```
   You will need to log out and back in for changes to take effect.
 
-## Setup
+### Firmware Flashing
 
-- **Teensy Sketch**
-  - Both teensy sketches provided are compatible with the default hardware. Refer to the module for more information.
+The Teensy Arduino sketch provided in [ar_microcontrollers](./ar_microcontrollers/)
+is compatible with the default hardware. To flash it, follow the same
+procedure as specified in [AR4 Robot Setup](https://www.youtube.com/watch?v=OL6lXu8VU4s).
 
 ## Usage
 
@@ -105,7 +106,7 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 
 ---
 
-### Work in Progress: Control simulated arm in Gazebo with MoveIt in RViz
+### 🚧 Work in Progress: Control simulated arm in Gazebo with MoveIt in RViz
 
 - Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description
   ```
@@ -119,7 +120,7 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 
 ---
 
-### Work in Progress: Control arm with Move Group Interface
+### 🚧 Work in Progress: Control arm with Move Group Interface
 
 **It is recommended to run this demo with the simulated arm first to make sure that the programmed goals are safe for your environment (and your arm). Needless to say, the same applies when programming your own tasks.**
 
@@ -128,15 +129,15 @@ This is a demo modified from the official MoveIt tutorials. As opposed to manual
 - Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description  
   _For controlling the real-world arm, you will just need to run `ar_hardware_interface` instead of `ar_gazebo` as described above._
   ```
-  roslaunch ar_gazebo ar_gazebo_bringup.launch
+  ros2 launch ar_gazebo ar_gazebo_bringup.launch
   ```
 - Start Moveit and RViz
   ```
-  roslaunch ar_moveit_config ar_moveit_bringup.launch
+  ros2 launch ar_moveit_config ar_moveit_bringup.launch
   ```
 - Start the move group demo
   ```
-  roslaunch ar_control move_group_demo.launch
+  ros2 launch ar_control move_group_demo.launch
   ```
   Follow the command-line instructions to step through the demo. See `ar_control` for more details.
 

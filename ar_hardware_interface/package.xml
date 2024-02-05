@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>ar_hardware_interface</name>
-  <version>0.0.1</version>
+  <version>0.1.0</version>
   <description>
     The ar_hardware_interface package provides the hardware interface for
-    running an AR3 or AR4 robot using the ros_control software framework.
+    running an AR robot using the ros2_control software framework.
   </description>
-  <author email="dexterong94@gmail.com">Dexter Ong</author>
-  <author>Yifei Cheng</author>
-  <maintainer email="ycheng517@users.noreply.github.com">Yifei Cheng</maintainer>
   <license>MIT</license>
+
+  <author>Dexter Ong</author>
+  <author>Yifei Cheng</author>
+  <maintainer email="ycheng517@gmail.com">Yifei Cheng</maintainer>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   
@@ -19,10 +20,7 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
 
-  <!-- <depend>ros2_control</depend> -->
   <depend>ar_description</depend>
-  <!-- <depend>transmission_interface</depend>
-  <depend>joint_limits_interface</depend> -->
   <depend>ar_hardware_driver</depend>
 
   <exec_depend>forward_command_controller</exec_depend>
@@ -31,8 +29,6 @@
   <exec_depend>joint_state_publisher_gui</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>ros2_control_demo_description</exec_depend>
-  <exec_depend>ros2_controllers_test_nodes</exec_depend>
   <exec_depend>ros2controlcli</exec_depend>
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>rviz2</exec_depend>

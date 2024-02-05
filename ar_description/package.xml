@@ -4,10 +4,11 @@
   <description>
     URDF Description package for Annin Robotics robotic arms
   </description>
+  <license>MIT</license>
+
   <author>Dexter Ong</author>
   <author>Yifei Cheng</author>
-  <maintainer email="ycheng517@users.noreply.github.com">Yifei Cheng</maintainer>
-  <license>MIT</license>
+  <maintainer email="ycheng517@gmail.com">Yifei Cheng</maintainer>
   
   <buildtool_depend>ament_cmake</buildtool_depend>
 
