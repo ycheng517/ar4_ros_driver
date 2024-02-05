@@ -80,7 +80,7 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 
 - The robot description, moveit interface and RViz will all be loaded in the single demo launch file
   ```
-  roslaunch ar_moveit_config demo.launch
+  ros2 launch ar_moveit_config demo.launch.py
   ```
 
 ---
@@ -90,7 +90,7 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 - Start the `ar_hardware_interface` module, which will load configs and the robot description
 
   ```bash
-  roslaunch ar_hardware_interface ar3_hardware_bringup.launch \
+  ros2 launch ar_hardware_interface ar_hardware_bringup.py \
     serial_port:=/dev/ttyACM0 \
     calibrate:=True
   ```
@@ -98,7 +98,7 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 - Start MoveIt and RViz
 
   ```bash
-  roslaunch ar_moveit_config ar3_moveit_bringup.launch
+  ros2 launch ar_moveit_config ar_moveit_bringup.py
   ```
 
   You can now plan in RViz and control the real-world arm. Joint commands and joint states will be updated through the hardware interface.
@@ -109,11 +109,11 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 
 - Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description
   ```
-  roslaunch ar_gazebo ar_gazebo_bringup.launch
+  ros2 launch ar_gazebo ar_gazebo_bringup.launch
   ```
 - Start Moveit and RViz
   ```
-  roslaunch ar_moveit_config ar3_moveit_bringup.launch
+  ros2 launch ar_moveit_config ar_moveit_bringup.launch
   ```
   You can now plan in RViz and control the simulated arm.
 
@@ -132,7 +132,7 @@ This is a demo modified from the official MoveIt tutorials. As opposed to manual
   ```
 - Start Moveit and RViz
   ```
-  roslaunch ar_moveit_config ar3_moveit_bringup.launch
+  roslaunch ar_moveit_config ar_moveit_bringup.launch
   ```
 - Start the move group demo
   ```

@@ -5,7 +5,7 @@ unset( CATKIN_INSTALL_INTO_PREFIX_ROOT )
 
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY config launch rviz srdf
+install(DIRECTORY config launch rviz srdf urdf
   DESTINATION share/${PROJECT_NAME}
 )
 

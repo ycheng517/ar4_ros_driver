@@ -21,6 +21,7 @@
 
   <xacro:ar_ros2_control
     name="$(arg name)"
+    plugin_name="ar_hardware_interface/ARHardwareInterface"
     serial_port="$(arg serial_port)"
     calibrate="$(arg calibrate)"
   />

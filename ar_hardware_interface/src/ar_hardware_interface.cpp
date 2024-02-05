@@ -42,8 +42,6 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
   RCLCPP_INFO(logger_, "Activating hardware interface...");
 
   // calibrate joints if needed
-  RCLCPP_INFO(logger_, "Calibrating? %s",
-              info_.hardware_parameters.at("calibrate").c_str());
   bool calibrate = info_.hardware_parameters.at("calibrate") == "True";
   if (calibrate) {
     // run calibration
