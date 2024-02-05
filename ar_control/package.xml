@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>ar3_control</name>
+  <name>ar_control</name>
   <version>0.1.0</version>
   <description>AR3 control demo with the Move Group interface</description>
   <license>BSD</license>

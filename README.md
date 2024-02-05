@@ -1,6 +1,6 @@
 # AR ROS Driver
 
-Work-in-progress refresh of [ar3_core](https://github.com/ongdexter/ar3_core) that supports AR4 and runs on ROS 2.
+ROS 2 driver of the AR4 robot arm from Annin Robotics. Tested with ROS 2 Iron on Ubuntu 22.04. This is a refresh of [ar3_core](https://github.com/ongdexter/ar3_core).
 
 - [Overview](#Overview)
 - [Installation](#Installation)
@@ -10,108 +10,42 @@ Work-in-progress refresh of [ar3_core](https://github.com/ongdexter/ar3_core) th
 
 ## Overview
 
-- **ar3_control**
-  - Controlling the arm through the MoveIt user interfaces
-  - Provides demo for the move group interface
 - **ar_description**
   - Hardware description of arm, urdf etc.
 - **ar_hardware_interface**
-  - ROS interface for the hardware driver, built on the ros_control framework
+  - ROS interface for the hardware driver, built on the ros2_control framework
   - Manages joint offsets, limits and conversion between joint and actuator messages
 - **ar_hardware_driver**
-
   - Handles communication with the motor controllers
-
-- **ar3_microcontrollers**
-
+- **ar_microcontrollers**
   - Firmware for the motor controller ie. Teensy
-
 - **ar_moveit_config**
-
   - MoveIt module for motion planning
   - Controlling the arm through Rviz
-
-- **ar3_gazebo**
+- **ar_control** (Work in progress)
+  - Controlling the arm through the MoveIt user interfaces
+  - Provides demo for the move group interface
+- **ar3_gazebo** (Work in progress)
   - Simulation on Gazebo
 
 ## Installation
 
-_Actively developed and tested on ROS Melodic on Windows 10 with limited testing on Ubuntu 18.04._
-
-- [Windows 10](#Windows)
-- [Ubuntu 18.04](#Ubuntu)
-
-### Windows
-
-- Install [ROS Melodic and MoveIt](https://moveit.ros.org/install/) for Windows 10
-- Create the ROS workspace `ie. ar3_ws`
-
+- Install [ROS 2 Iron](https://docs.ros.org/en/iron/Installation.html) and [MoveIt 2](https://moveit.ros.org/install-moveit2/binary/) for Ubuntu 22.04
+- Clone this repository:
   ```
-  md C:\ar3_ws\src && C:\ar3_ws\src
-  ```
-
-- Clone this repository into the workspace `src`:
-  ```
-  git clone https://github.com/ongdexter/ar3_core.git .
-  ```
-  The workspace directory should be as such:
-  ```
-  ar_ws
-  +-- src
-  |   +-- ar3_control
-  |   +-- ar_description
-  |   +-- ...
-  ```
-- Build the workspace:
-  ```
-  cd ~/ar3_ws
-  catkin_make
-  ```
-- Source the workspace
-
-  ```
-  call C:\ar3_ws\setup.bat
-  ```
-
-  You can add this to the ROS Command Window shortcut that you created during the ROS installation, by appending `&& c:\ar3_ws\devel\setup.bat` to the shortcut target, so that it is automatically run each time a new terminal is opened.
-
----
-
-### Ubuntu
-
-- Install [ROS Melodic and MoveIt](https://moveit.ros.org/install/) for Ubuntu 18.04
-- Create the ROS workspace `ie. ar3_ws`
-  ```
-  mkdir -p ~/ar3_ws/src && cd "$_"
-  ```
-- Clone this repository into the workspace `src`:
-  ```
-  git clone https://github.com/ongdexter/ar3_core.git .
-  ```
-  The workspace directory should be as such:
-  ```
-  ar_ws
-  +-- src
-  |   +-- ar3_control
-  |   +-- ar_description
-  |   +-- ...
+  git clone https://github.com/ycheng517/ar_ros_driver .
   ```
 - Install workspace dependencies:
   ```
-  cd ~/ar3_ws
   rosdep install --from-paths src --ignore-src -r -y
   ```
 - Build the workspace:
   ```
-  catkin_make
+  colcon build
   ```
 - Source the workspace:
   ```
-  source ~/ar3_ws/devel/setup.bash
-  ```
-  You can add this to your .bashrc so that it is automatically run each time a new terminal is opened:
-  ```
-  echo "source ~/ar3_ws/devel/setup.bash" >> ~/.bashrc
+  source install/setup.bash
   ```
 - Enable serial port access if you haven't already done so:
   ```
@@ -136,7 +70,7 @@ There are two modules that you will always need to run:
    - For the simulated arm, you will need to run the `ar3_gazebo` module
    - Either of the modules will load the necessary hardware descriptions for MoveIt
 
-2. **MoveIt module** - the `ar_moveit_config` module provides the MoveIt interface and RViz GUI, and the `ar3_control` module provides the MoveIt user interface for programmatically setting goals
+2. **MoveIt module** - the `ar_moveit_config` module provides the MoveIt interface and RViz GUI, and the `ar_control` module provides the MoveIt user interface for programmatically setting goals
 
 The various use cases of the modules and instructions to run them are described below:
 
@@ -200,8 +134,8 @@ This is a demo modified from the official MoveIt tutorials. As opposed to manual
   ```
 - Start the move group demo
   ```
-  roslaunch ar3_control move_group_demo.launch
+  roslaunch ar_control move_group_demo.launch
   ```
-  Follow the command-line instructions to step through the demo. See `ar3_control` for more details.
+  Follow the command-line instructions to step through the demo. See `ar_control` for more details.
 
 ---

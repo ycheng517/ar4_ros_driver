@@ -16,6 +16,10 @@ def generate_launch_description():
             ),
             " ",
             "name:=ar3",
+            " ",
+            "serial_port:=/dev/ttyACM0",
+            " ",
+            "baud_rate:=9600",
         ]
     )
     robot_description = {"robot_description": robot_description_content}

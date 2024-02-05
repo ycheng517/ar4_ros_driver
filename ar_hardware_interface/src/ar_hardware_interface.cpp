@@ -12,45 +12,32 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
+  info_ = info;
   init_variables();
-  // TODO: make these params in ar_ros2_control xacro:
-  // loop_hz, joints, joint_limits, joint_offsets, encoder_steps_per_deg
 
+  // init motor driver
+  std::string serial_port = info_.hardware_parameters.at("serial_port");
+  int baud_rate = std::stoi(info_.hardware_parameters.at("baud_rate"));
   std::vector<double> enc_steps_per_deg = {-44.44444444, 55.55555556,
                                            55.55555556,  42.72664356,
                                            21.86024888,  22.22222222};
-
-  // init motor driver
-  std::string serial_port = "/dev/ttyACM0";
-  int baudrate = 9600;
-  driver_.init(serial_port, baudrate, num_joints_, enc_steps_per_deg);
-
-  // set velocity limits
-  velocity_limits_ = {30.0, 30.0, 30.0, 30.0, 30.0, 30.0};
-  acceleration_limits_ = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0};
-  driver_.setStepperSpeed(velocity_limits_, acceleration_limits_);
+  driver_.init(serial_port, baud_rate, info_.joints.size(), enc_steps_per_deg);
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 void ARHardwareInterface::init_variables() {
-  // TODO: get joint names properly
-  joint_names_ = {"joint_1", "joint_2", "joint_3",
-                  "joint_4", "joint_5", "joint_6"};
-  num_joints_ = static_cast<int>(joint_names_.size());
-
   // resize vectors
-  actuator_commands_.resize(num_joints_);
-  actuator_positions_.resize(num_joints_);
-  joint_positions_.resize(num_joints_);
-  joint_velocities_.resize(num_joints_);
-  joint_efforts_.resize(num_joints_);
-  joint_position_commands_.resize(num_joints_);
-  joint_velocity_commands_.resize(num_joints_);
-  joint_effort_commands_.resize(num_joints_);
-  joint_offsets_ = {170.0, -42, -89, -165, -105, -155};
-  velocity_limits_.resize(num_joints_);
-  acceleration_limits_.resize(num_joints_);
+  int num_joints = info_.joints.size();
+  actuator_commands_.resize(num_joints);
+  actuator_positions_.resize(num_joints);
+  joint_positions_.resize(num_joints);
+  joint_velocities_.resize(num_joints);
+  joint_efforts_.resize(num_joints);
+  joint_position_commands_.resize(num_joints);
+  joint_velocity_commands_.resize(num_joints);
+  joint_effort_commands_.resize(num_joints);
+  joint_offsets_ = {170.0, -42.0, -89.0, -165.0, -105.0, -155.0};
 }
 
 hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
@@ -67,7 +54,7 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
 
   // init position commands at current positions
   driver_.getJointPositions(actuator_positions_);
-  for (int i = 0; i < num_joints_; ++i) {
+  for (size_t i = 0; i < info_.joints.size(); ++i) {
     // apply offsets, convert from deg to rad for moveit
     joint_positions_[i] = degToRad(actuator_positions_[i] + joint_offsets_[i]);
     joint_position_commands_[i] = joint_positions_[i];
@@ -86,10 +73,9 @@ std::vector<hardware_interface::StateInterface>
 ARHardwareInterface::export_state_interfaces() {
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
-  int ind = 0;
-  for (const auto& joint_name : joint_names_) {
-    state_interfaces.emplace_back(joint_name, "position",
-                                  &joint_positions_[ind++]);
+  for (size_t i = 0; i < info_.joints.size(); ++i) {
+    state_interfaces.emplace_back(info_.joints[i].name, "position",
+                                  &joint_positions_[i]);
   }
   return state_interfaces;
 }
@@ -97,10 +83,9 @@ ARHardwareInterface::export_state_interfaces() {
 std::vector<hardware_interface::CommandInterface>
 ARHardwareInterface::export_command_interfaces() {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
-  int ind = 0;
-  for (const auto& joint_name : joint_names_) {
-    command_interfaces.emplace_back(joint_name, "position",
-                                    &joint_position_commands_[ind++]);
+  for (size_t i = 0; i < info_.joints.size(); ++i) {
+    command_interfaces.emplace_back(info_.joints[i].name, "position",
+                                    &joint_position_commands_[i]);
   }
   return command_interfaces;
 }
@@ -108,16 +93,16 @@ ARHardwareInterface::export_command_interfaces() {
 hardware_interface::return_type ARHardwareInterface::read(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   driver_.update(actuator_commands_, actuator_positions_);
-  for (int i = 0; i < num_joints_; ++i) {
+  for (size_t i = 0; i < info_.joints.size(); ++i) {
     // apply offsets, convert from deg to rad for moveit
     joint_positions_[i] = degToRad(actuator_positions_[i] + joint_offsets_[i]);
   }
   std::string logInfo = "Joint Pos: ";
-  for (int i = 0; i < num_joints_; i++) {
+  for (size_t i = 0; i < info_.joints.size(); i++) {
     std::stringstream jointPositionStm;
     jointPositionStm << std::fixed << std::setprecision(2)
                      << radToDeg(joint_positions_[i]);
-    logInfo += joint_names_[i] + ": " + jointPositionStm.str() + " | ";
+    logInfo += info_.joints[i].name + ": " + jointPositionStm.str() + " | ";
   }
   RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   return hardware_interface::return_type::OK;
@@ -125,17 +110,17 @@ hardware_interface::return_type ARHardwareInterface::read(
 
 hardware_interface::return_type ARHardwareInterface::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
-  for (int i = 0; i < num_joints_; ++i) {
+  for (size_t i = 0; i < info_.joints.size(); ++i) {
     // convert from rad to deg, apply offsets
     actuator_commands_[i] =
         radToDeg(joint_position_commands_[i]) - joint_offsets_[i];
   }
   std::string logInfo = "Joint Cmd: ";
-  for (int i = 0; i < num_joints_; i++) {
+  for (size_t i = 0; i < info_.joints.size(); i++) {
     std::stringstream jointPositionStm;
     jointPositionStm << std::fixed << std::setprecision(2)
                      << radToDeg(joint_position_commands_[i]);
-    logInfo += joint_names_[i] + ": " + jointPositionStm.str() + " | ";
+    logInfo += info_.joints[i].name + ": " + jointPositionStm.str() + " | ";
   }
   RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   return hardware_interface::return_type::OK;

@@ -30,11 +30,6 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
   hardware_interface::return_type write(
       const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
-  void init_variables();
-  // void update(const ros::TimerEvent& e);
-  // void read();
-  // void write(ros::Duration elapsed_time);
-
  private:
   rclcpp::Logger logger_ = rclcpp::get_logger("ar_hardware_interface");
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
@@ -46,8 +41,6 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
   std::vector<double> actuator_positions_;
 
   // Shared memory
-  int num_joints_;
-  std::vector<std::string> joint_names_;
   std::vector<double> joint_offsets_;
   std::vector<double> joint_positions_;
   std::vector<double> joint_velocities_;
@@ -55,10 +48,9 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
   std::vector<double> joint_position_commands_;
   std::vector<double> joint_velocity_commands_;
   std::vector<double> joint_effort_commands_;
-  std::vector<double> velocity_limits_;
-  std::vector<double> acceleration_limits_;
 
   // Misc
+  void init_variables();
   double degToRad(double deg) { return deg / 180.0 * M_PI; };
   double radToDeg(double rad) { return rad / M_PI * 180.0; };
 };

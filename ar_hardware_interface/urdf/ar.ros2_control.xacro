@@ -1,11 +1,17 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:macro name="ar_ros2_control" params="name">
+  <xacro:macro name="ar_ros2_control" params="
+    name
+    serial_port:=/dev/ttyACM0
+    baud_rate:=9600
+  ">
     <ros2_control name="${name}" type="system">
 
       <hardware>
         <plugin>ar_hardware_interface/ARHardwareInterface</plugin>
+        <param name="serial_port">${serial_port}</param>
+        <param name="baud_rate">${baud_rate}</param>
       </hardware>
 
       <joint name="joint_1">

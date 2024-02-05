@@ -1,3 +1,3 @@
 <launch>
-  <node name="move_group_demo_node" pkg="ar3_control" type="move_group_demo" respawn="false" output="screen"></node>
+  <node name="move_group_demo_node" pkg="ar_control" type="move_group_demo" respawn="false" output="screen"></node>
 </launch>

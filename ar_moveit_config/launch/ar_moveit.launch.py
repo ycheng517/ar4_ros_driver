@@ -49,7 +49,7 @@ from launch.substitutions import (
 def load_yaml(package_name, file_name):
     package_path = get_package_share_directory(package_name)
     absolute_file_path = os.path.join(package_path, file_name)
-    with open(absolute_file_path, "r") as file:
+    with open(absolute_file_path, "r", encoding="utf-8") as file:
         return yaml.safe_load(file)
 
 
@@ -168,7 +168,6 @@ def launch_setup(context, *args, **kwargs):
     )
 
     nodes_to_start = [move_group_node, rviz_node]
-
     return nodes_to_start
 
 
