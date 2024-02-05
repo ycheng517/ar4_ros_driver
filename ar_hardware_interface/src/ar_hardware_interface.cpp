@@ -115,12 +115,10 @@ hardware_interface::return_type ARHardwareInterface::read(
   std::string logInfo = "Joint Pos: ";
   for (int i = 0; i < num_joints_; i++) {
     std::stringstream jointPositionStm;
-    jointPositionStm << std::fixed << std::setprecision(3)
+    jointPositionStm << std::fixed << std::setprecision(2)
                      << radToDeg(joint_positions_[i]);
     logInfo += joint_names_[i] + ": " + jointPositionStm.str() + " | ";
   }
-  // RCLCPP_INFO(logger_, "period is: %f, time is: %f", period.seconds(),
-  //             t.seconds());
   RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   return hardware_interface::return_type::OK;
 }
@@ -135,7 +133,7 @@ hardware_interface::return_type ARHardwareInterface::write(
   std::string logInfo = "Joint Cmd: ";
   for (int i = 0; i < num_joints_; i++) {
     std::stringstream jointPositionStm;
-    jointPositionStm << std::fixed << std::setprecision(3)
+    jointPositionStm << std::fixed << std::setprecision(2)
                      << radToDeg(joint_position_commands_[i]);
     logInfo += joint_names_[i] + ": " + jointPositionStm.str() + " | ";
   }
