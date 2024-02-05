@@ -7,8 +7,7 @@
 
 namespace ar_hardware_driver {
 
-void TeensyDriver::init(std::string port, int baudrate, int num_joints,
-                        std::vector<double>& enc_steps_per_deg) {
+void TeensyDriver::init(std::string port, int baudrate, int num_joints) {
   // @TODO read version from config
   version_ = FW_VERSION;
 
@@ -42,20 +41,8 @@ void TeensyDriver::init(std::string port, int baudrate, int num_joints,
 
   // initialise joint and encoder calibration
   num_joints_ = num_joints;
-  enc_commands_.resize(num_joints_);
-  enc_steps_.resize(num_joints_);
-  enc_steps_per_deg_.resize(num_joints_);
+  joint_positions_deg_.resize(num_joints_);
   enc_calibrations_.resize(num_joints_);
-  for (int i = 0; i < num_joints_; ++i) {
-    enc_steps_per_deg_[i] = enc_steps_per_deg[i];
-  }
-
-  // get current joint positions
-  msg = "JP\n";
-  exchange(msg);
-  for (int i = 0; i < num_joints_; ++i) {
-    enc_commands_[i] = enc_steps_[i];
-  }
 }
 
 TeensyDriver::TeensyDriver() : serial_port_(io_service_) {}
@@ -76,22 +63,18 @@ void TeensyDriver::setStepperSpeed(std::vector<double>& max_speed,
 // Update between hardware interface and hardware driver
 void TeensyDriver::update(std::vector<double>& pos_commands,
                           std::vector<double>& joint_positions) {
-  // get updated position commands
-  jointPosToEncSteps(pos_commands, enc_commands_);
-
   // construct update message
   std::string outMsg = "MT";
   for (int i = 0; i < num_joints_; ++i) {
     outMsg += 'A' + i;
-    outMsg += std::to_string(enc_commands_[i]);
+    outMsg += std::to_string(pos_commands[i]);
   }
   outMsg += "\n";
 
   // run the communication with board
   exchange(outMsg);
 
-  // return updated joint_positions
-  encStepsToJointPos(enc_steps_, joint_positions);
+  joint_positions = joint_positions_deg_;
 }
 
 void TeensyDriver::calibrateJoints() {
@@ -103,7 +86,7 @@ void TeensyDriver::getJointPositions(std::vector<double>& joint_positions) {
   // get current joint positions
   std::string msg = "JP\n";
   exchange(msg);
-  encStepsToJointPos(enc_steps_, joint_positions);
+  joint_positions = joint_positions_deg_;
 }
 
 // Send specific commands
@@ -115,7 +98,7 @@ void TeensyDriver::exchange(std::string outMsg) {
   std::string errTransmit = "";
   std::string errReceive = "";
 
-  // RCLCPP_INFO_THROTTLE(logger_, clock_, 1000, outMsg.c_str());
+  // RCLCPP_INFO(logger_, outMsg.c_str());
   if (!transmit(outMsg, errTransmit)) {
     // print err
   }
@@ -125,7 +108,7 @@ void TeensyDriver::exchange(std::string outMsg) {
     if (!receive(inMsg, errReceive)) {
       // print err
     }
-    // RCLCPP_INFO_THROTTLE(logger_, clock_, 1000, inMsg.c_str());
+    // RCLCPP_INFO(logger_, inMsg.c_str());
     // parse msg
     std::string header = inMsg.substr(0, 2);
     if (header == "ST") {
@@ -138,7 +121,7 @@ void TeensyDriver::exchange(std::string outMsg) {
       done = true;
     } else if (header == "JP") {
       // encoder steps
-      updateEncoderSteps(inMsg);
+      updateJointPositions(inMsg);
       done = true;
     } else if (header == "DB") {
     } else {
@@ -212,36 +195,19 @@ void TeensyDriver::updateEncoderCalibrations(std::string msg) {
   RCLCPP_INFO(logger_, "Successfully updated encoder calibrations");
 }
 
-void TeensyDriver::updateEncoderSteps(std::string msg) {
+void TeensyDriver::updateJointPositions(std::string msg) {
   size_t idx1 = msg.find("A", 2) + 1;
   size_t idx2 = msg.find("B", 2) + 1;
   size_t idx3 = msg.find("C", 2) + 1;
   size_t idx4 = msg.find("D", 2) + 1;
   size_t idx5 = msg.find("E", 2) + 1;
   size_t idx6 = msg.find("F", 2) + 1;
-  enc_steps_[0] = std::stoi(msg.substr(idx1, idx2 - idx1));
-  enc_steps_[1] = std::stoi(msg.substr(idx2, idx3 - idx2));
-  enc_steps_[2] = std::stoi(msg.substr(idx3, idx4 - idx3));
-  enc_steps_[3] = std::stoi(msg.substr(idx4, idx5 - idx4));
-  enc_steps_[4] = std::stoi(msg.substr(idx5, idx6 - idx5));
-  enc_steps_[5] = std::stoi(msg.substr(idx6));
-}
-
-void TeensyDriver::encStepsToJointPos(std::vector<int>& enc_steps,
-                                      std::vector<double>& joint_positions) {
-  for (int i = 0; i < enc_steps.size(); ++i) {
-    // convert enc steps to joint deg
-    joint_positions[i] =
-        static_cast<double>(enc_steps[i]) / enc_steps_per_deg_[i];
-  }
-}
-
-void TeensyDriver::jointPosToEncSteps(std::vector<double>& joint_positions,
-                                      std::vector<int>& enc_steps) {
-  for (int i = 0; i < joint_positions.size(); ++i) {
-    // convert joint deg to enc steps
-    enc_steps[i] = static_cast<int>(joint_positions[i] * enc_steps_per_deg_[i]);
-  }
+  joint_positions_deg_[0] = std::stod(msg.substr(idx1, idx2 - idx1));
+  joint_positions_deg_[1] = std::stod(msg.substr(idx2, idx3 - idx2));
+  joint_positions_deg_[2] = std::stod(msg.substr(idx3, idx4 - idx3));
+  joint_positions_deg_[3] = std::stod(msg.substr(idx4, idx5 - idx4));
+  joint_positions_deg_[4] = std::stod(msg.substr(idx5, idx6 - idx5));
+  joint_positions_deg_[5] = std::stod(msg.substr(idx6));
 }
 
 }  // namespace ar_hardware_driver

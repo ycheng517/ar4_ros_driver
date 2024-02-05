@@ -18,10 +18,7 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
   // init motor driver
   std::string serial_port = info_.hardware_parameters.at("serial_port");
   int baud_rate = std::stoi(info_.hardware_parameters.at("baud_rate"));
-  std::vector<double> enc_steps_per_deg = {-44.44444444, 55.55555556,
-                                           55.55555556,  42.72664356,
-                                           21.86024888,  22.22222222};
-  driver_.init(serial_port, baud_rate, info_.joints.size(), enc_steps_per_deg);
+  driver_.init(serial_port, baud_rate, info_.joints.size());
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }

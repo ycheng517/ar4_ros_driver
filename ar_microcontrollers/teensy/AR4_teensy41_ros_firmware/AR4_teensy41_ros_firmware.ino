@@ -56,6 +56,7 @@ const int CAL_SPEED_MULT[] = {
 // speed and acceleration settings
 float JOINT_MAX_SPEED[] = {30.0, 30.0, 30.0, 30.0, 30.0, 30.0};  // deg/s
 float JOINT_MAX_ACCEL[] = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0};  // deg/s^2
+char JOINT_NAMES[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 
 // num of encoder steps in range of motion of joint
 int ENC_RANGE_STEPS[NUM_JOINTS];
@@ -92,6 +93,27 @@ void readMotorSteps(int* motorSteps) {
   for (int i = 0; i < NUM_JOINTS; ++i) {
     motorSteps[i] = encPos[i].read() / ENC_MULT[i];
   }
+}
+
+void encStepsToJointPos(int* encSteps, double* jointPos) {
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    jointPos[i] = encSteps[i] / MOTOR_STEPS_PER_DEG[i] * ENC_DIR[i];
+  }
+}
+
+void jointPosToEncSteps(double* jointPos, int* encSteps) {
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    encSteps[i] = jointPos[i] * MOTOR_STEPS_PER_DEG[i] * ENC_DIR[i];
+  }
+}
+
+String JointPosToString(double* jointPos) {
+  String out;
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    out += JOINT_NAMES[i];
+    out += String(jointPos[i], 6);
+  }
+  return out;
 }
 
 void updateStepperSpeed(String inData) {
@@ -191,9 +213,11 @@ void stateTRAJ() {
   String inData = "";
 
   // initialise joint steps
+  double curJointPos[NUM_JOINTS];
   int curMotorSteps[NUM_JOINTS];
   readMotorSteps(curMotorSteps);
 
+  double cmdJointPos[NUM_JOINTS];
   int cmdEncSteps[NUM_JOINTS];
   for (int i = 0; i < NUM_JOINTS; ++i) {
     cmdEncSteps[i] = curMotorSteps[i];
@@ -224,14 +248,11 @@ void stateTRAJ() {
       String function = inData.substring(0, 2);
       // update trajectory information
       if (function == "MT") {
-        // read current joint positions
         readMotorSteps(curMotorSteps);
 
         // update host with joint positions
-        String msg = String("JP") + "A" + curMotorSteps[0] + "B" +
-                     curMotorSteps[1] + "C" + curMotorSteps[2] + "D" +
-                     curMotorSteps[3] + "E" + curMotorSteps[4] + "F" +
-                     curMotorSteps[5];
+        encStepsToJointPos(curMotorSteps, curJointPos);
+        String msg = String("JP") + JointPosToString(curJointPos);
         Serial.println(msg);
 
         // get new position commands
@@ -241,12 +262,13 @@ void stateTRAJ() {
         int msgIdxJ4 = inData.indexOf('D');
         int msgIdxJ5 = inData.indexOf('E');
         int msgIdxJ6 = inData.indexOf('F');
-        cmdEncSteps[0] = inData.substring(msgIdxJ1 + 1, msgIdxJ2).toInt();
-        cmdEncSteps[1] = inData.substring(msgIdxJ2 + 1, msgIdxJ3).toInt();
-        cmdEncSteps[2] = inData.substring(msgIdxJ3 + 1, msgIdxJ4).toInt();
-        cmdEncSteps[3] = inData.substring(msgIdxJ4 + 1, msgIdxJ5).toInt();
-        cmdEncSteps[4] = inData.substring(msgIdxJ5 + 1, msgIdxJ6).toInt();
-        cmdEncSteps[5] = inData.substring(msgIdxJ6 + 1).toInt();
+        cmdJointPos[0] = inData.substring(msgIdxJ1 + 1, msgIdxJ2).toFloat();
+        cmdJointPos[1] = inData.substring(msgIdxJ2 + 1, msgIdxJ3).toFloat();
+        cmdJointPos[2] = inData.substring(msgIdxJ3 + 1, msgIdxJ4).toFloat();
+        cmdJointPos[3] = inData.substring(msgIdxJ4 + 1, msgIdxJ5).toFloat();
+        cmdJointPos[4] = inData.substring(msgIdxJ5 + 1, msgIdxJ6).toFloat();
+        cmdJointPos[5] = inData.substring(msgIdxJ6 + 1).toFloat();
+        jointPosToEncSteps(cmdJointPos, cmdEncSteps);
 
         // update target joint positions
         readMotorSteps(curMotorSteps);
@@ -300,7 +322,7 @@ void stateTRAJ() {
 
           for (int i = 0; i < NUM_JOINTS; ++i) {
             if (abs(REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) >
-                5) {
+                10) {
               restPosReached = false;
               float target_pos =
                   (REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) *
@@ -317,14 +339,9 @@ void stateTRAJ() {
                      "F" + calSteps[5];
         Serial.println(msg);
       } else if (function == "JP") {
-        // read current joint positions
         readMotorSteps(curMotorSteps);
-
-        // update host with joint positions
-        String msg = String("JP") + "A" + curMotorSteps[0] + "B" +
-                     curMotorSteps[1] + "C" + curMotorSteps[2] + "D" +
-                     curMotorSteps[3] + "E" + curMotorSteps[4] + "F" +
-                     curMotorSteps[5];
+        encStepsToJointPos(curMotorSteps, curJointPos);
+        String msg = String("JP") + JointPosToString(curJointPos);
         Serial.println(msg);
       } else if (function == "SS") {
         updateStepperSpeed(inData);
@@ -337,12 +354,10 @@ void stateTRAJ() {
         }
         // read current joint positions
         readMotorSteps(curMotorSteps);
+        encStepsToJointPos(curMotorSteps, curJointPos);
 
         // update host with joint positions
-        String msg = String("JP") + "A" + curMotorSteps[0] + "B" +
-                     curMotorSteps[1] + "C" + curMotorSteps[2] + "D" +
-                     curMotorSteps[3] + "E" + curMotorSteps[4] + "F" +
-                     curMotorSteps[5];
+        String msg = String("JP") + JointPosToString(curJointPos);
         Serial.println(msg);
       } else if (function == "ST") {
         if (!initStateTraj(inData)) {

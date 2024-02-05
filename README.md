@@ -55,8 +55,6 @@ ROS 2 driver of the AR4 robot arm from Annin Robotics. Tested with ROS 2 Iron on
 
 ## Setup
 
-- **Hardware interface**
-  - Set the serial port and baudrate in `ar_hardware_interface/config/hardware_driver.yaml`
 - **Teensy Sketch**
   - Both teensy sketches provided are compatible with the default hardware. Refer to the module for more information.
 

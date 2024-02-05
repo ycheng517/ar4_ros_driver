@@ -1,9 +1,0 @@
-ar3:
-  hardware_driver:
-    encoder_steps_per_deg: # encoder steps per joint angle degree
-      joint_1: -44.44444444
-      joint_2: 55.55555556
-      joint_3: 55.55555556
-      joint_4: 42.72664356
-      joint_5: 21.86024888
-      joint_6: 22.22222222
