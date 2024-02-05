@@ -3,10 +3,15 @@ from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
 
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 
 
 def generate_launch_description():
+    serial_port = LaunchConfiguration("serial_port")
+    calibrate = LaunchConfiguration("calibrate")
+
     robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -17,9 +22,11 @@ def generate_launch_description():
             " ",
             "name:=ar3",
             " ",
-            "serial_port:=/dev/ttyACM0",
+            "serial_port:=",
+            serial_port,
             " ",
-            "baud_rate:=9600",
+            "calibrate:=",
+            calibrate,
         ]
     )
     robot_description = {"robot_description": robot_description_content}
@@ -35,12 +42,6 @@ def generate_launch_description():
             "controller_update_rate.yaml",
         ]
     )
-
-    # ar_hardware_interface_node = Node(
-    #     package="ar_hardware_interface",
-    #     executable="ar_hardware_interface_node",
-    #     output="screen",
-    # )
 
     controller_manager_node = Node(
         package="controller_manager",
@@ -85,7 +86,21 @@ def generate_launch_description():
     )
 
     ld = LaunchDescription()
-    # ld.add_action(ar_hardware_interface_node)
+    ld.add_action(
+        DeclareLaunchArgument(
+            "serial_port",
+            default_value="/dev/ttyACM0",
+            description="Serial port to connect to the robot",
+        )
+    )
+    ld.add_action(
+        DeclareLaunchArgument(
+            "calibrate",
+            default_value="True",
+            description="Calibrate the robot on startup",
+            choices=["True", "False"],
+        )
+    )
     ld.add_action(controller_manager_node)
     ld.add_action(spawn_joint_controller)
     ld.add_action(robot_state_publisher_node)

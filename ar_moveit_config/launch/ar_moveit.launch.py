@@ -37,11 +37,9 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import (
     Command,
     FindExecutable,
-    LaunchConfiguration,
     PathJoinSubstitution,
 )
 
@@ -53,11 +51,7 @@ def load_yaml(package_name, file_name):
         return yaml.safe_load(file)
 
 
-def launch_setup(context, *args, **kwargs):
-    # Initialize Arguments
-    moveit_joint_limits_file = LaunchConfiguration("moveit_joint_limits_file")
-    moveit_config_file = LaunchConfiguration("moveit_config_file")
-
+def generate_launch_description():
     robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -77,7 +71,7 @@ def launch_setup(context, *args, **kwargs):
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("ar_moveit_config"), "srdf", moveit_config_file]
+                [FindPackageShare("ar_moveit_config"), "srdf", "ar.srdf.xacro"]
             ),
             " ",
             "name:=ar3",
@@ -94,7 +88,7 @@ def launch_setup(context, *args, **kwargs):
     robot_description_planning = {
         "robot_description_planning": load_yaml(
             "ar_moveit_config",
-            os.path.join("config", str(moveit_joint_limits_file.perform(context))),
+            os.path.join("config", "joint_limits.yaml"),
         )
     }
 
@@ -168,37 +162,4 @@ def launch_setup(context, *args, **kwargs):
     )
 
     nodes_to_start = [move_group_node, rviz_node]
-    return nodes_to_start
-
-
-def generate_launch_description():
-    declared_arguments = []
-    # UR specific arguments
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "ar_type",
-            description="Type/series of used AR robot.",
-            default_value="ar4",
-            choices=[
-                "ar4",
-            ],
-        )
-    )
-    # General arguments
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "moveit_config_file",
-            default_value="ar.srdf.xacro",
-            description="MoveIt SRDF/XACRO description file with the robot.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "moveit_joint_limits_file",
-            default_value="joint_limits.yaml",
-            description="MoveIt joint limits that augment or override the values from the URDF robot_description.",
-        )
-    )
-    return LaunchDescription(
-        declared_arguments + [OpaqueFunction(function=launch_setup)]
-    )
+    return LaunchDescription(nodes_to_start)

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ar3_gazebo</name>
+  <name>ar_gazebo</name>
   <version>2.2.0</version>
   <description>Gazebo simulation for Niryo One</description>
   <author>Edouard Renard</author>

@@ -25,7 +25,7 @@ ROS 2 driver of the AR4 robot arm from Annin Robotics. Tested with ROS 2 Iron on
 - **ar_control** (Work in progress)
   - Controlling the arm through the MoveIt user interfaces
   - Provides demo for the move group interface
-- **ar3_gazebo** (Work in progress)
+- **ar_gazebo** (Work in progress)
   - Simulation on Gazebo
 
 ## Installation
@@ -33,7 +33,7 @@ ROS 2 driver of the AR4 robot arm from Annin Robotics. Tested with ROS 2 Iron on
 - Install [ROS 2 Iron](https://docs.ros.org/en/iron/Installation.html) and [MoveIt 2](https://moveit.ros.org/install-moveit2/binary/) for Ubuntu 22.04
 - Clone this repository:
   ```
-  git clone https://github.com/ycheng517/ar_ros_driver .
+  git clone https://github.com/ycheng517/ar_ros_driver
   ```
 - Install workspace dependencies:
   ```
@@ -65,7 +65,7 @@ There are two modules that you will always need to run:
 1. **Arm module** - this can be for either a real-world or simulated arm
 
    - For controlling the real-world arm, you will need to run the `ar_hardware_interface` module
-   - For the simulated arm, you will need to run the `ar3_gazebo` module
+   - For the simulated arm, you will need to run the `ar_gazebo` module
    - Either of the modules will load the necessary hardware descriptions for MoveIt
 
 2. **MoveIt module** - the `ar_moveit_config` module provides the MoveIt interface and RViz GUI, and the `ar_control` module provides the MoveIt user interface for programmatically setting goals
@@ -88,24 +88,28 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 ### Control real-world arm with MoveIt in RViz
 
 - Start the `ar_hardware_interface` module, which will load configs and the robot description
+
+  ```bash
+  roslaunch ar_hardware_interface ar3_hardware_bringup.launch \
+    serial_port:=/dev/ttyACM0 \
+    calibrate:=True
   ```
-  roslaunch ar_hardware_interface ar3_hardware_bringup.launch
-  ```
-  The hardware interface will also start the hardware driver and initialise communication with the Teensy. You can skip the joint encoder calibration sequence with the `use_existing_calibrations` argument when starting the node  
-  ie. `roslaunch ar_hardware_interface ar3_hardware_bringup.launch use_existing_calibrations:=true`.
+
 - Start MoveIt and RViz
-  ```
+
+  ```bash
   roslaunch ar_moveit_config ar3_moveit_bringup.launch
   ```
+
   You can now plan in RViz and control the real-world arm. Joint commands and joint states will be updated through the hardware interface.
 
 ---
 
-### Control simulated arm in Gazebo with MoveIt in RViz
+### Work in Progress: Control simulated arm in Gazebo with MoveIt in RViz
 
-- Start the `ar3_gazebo` module, which will start the Gazebo simulator and load the robot description
+- Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description
   ```
-  roslaunch ar3_gazebo ar3_gazebo_bringup.launch
+  roslaunch ar_gazebo ar_gazebo_bringup.launch
   ```
 - Start Moveit and RViz
   ```
@@ -115,16 +119,16 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 
 ---
 
-### Control arm with Move Group Interface
+### Work in Progress: Control arm with Move Group Interface
 
 **It is recommended to run this demo with the simulated arm first to make sure that the programmed goals are safe for your environment (and your arm). Needless to say, the same applies when programming your own tasks.**
 
 This is a demo modified from the official MoveIt tutorials. As opposed to manually setting goals through RViz, the move group interface allows us to programmatically plan and execute movements, and provides more functionality such as specifying path constraints and planning Cartesian movements. This also enables much more complex tasks, planning around obstacles etc.
 
-- Start the `ar3_gazebo` module, which will start the Gazebo simulator and load the robot description  
-  _For controlling the real-world arm, you will just need to run `ar_hardware_interface` instead of `ar3_gazebo` as described above._
+- Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description  
+  _For controlling the real-world arm, you will just need to run `ar_hardware_interface` instead of `ar_gazebo` as described above._
   ```
-  roslaunch ar3_gazebo ar3_gazebo_bringup.launch
+  roslaunch ar_gazebo ar_gazebo_bringup.launch
   ```
 - Start Moveit and RViz
   ```

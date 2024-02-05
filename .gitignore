@@ -1,3 +1,8 @@
+# ROS folders
+build/
+install/
+log/
+
 # Prerequisites
 *.d
 

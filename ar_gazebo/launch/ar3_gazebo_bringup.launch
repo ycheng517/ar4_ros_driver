@@ -2,10 +2,10 @@
 <launch>
 
     <!-- URDF -->
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ar_description)/urdf/ar3_gazebo.urdf.xacro" />
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ar_description)/urdf/ar_gazebo.urdf.xacro" />
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
-    <rosparam file="$(find ar3_gazebo)/config/ar3_gazebo_controllers.yaml" command="load"/>
+    <rosparam file="$(find ar_gazebo)/config/ar_gazebo_controllers.yaml" command="load"/>
 
     <!-- Load controllers-->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
@@ -18,5 +18,5 @@
     </node>
 
     <!-- Start gazebo model and world -->
-    <include file="$(find ar3_gazebo)/launch/ar3_world.launch" />
+    <include file="$(find ar_gazebo)/launch/ar3_world.launch" />
 </launch>

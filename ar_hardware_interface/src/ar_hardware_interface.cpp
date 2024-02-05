@@ -17,7 +17,7 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
 
   // init motor driver
   std::string serial_port = info_.hardware_parameters.at("serial_port");
-  int baud_rate = std::stoi(info_.hardware_parameters.at("baud_rate"));
+  int baud_rate = 9600;
   driver_.init(serial_port, baud_rate, info_.joints.size());
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -42,8 +42,10 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
   RCLCPP_INFO(logger_, "Activating hardware interface...");
 
   // calibrate joints if needed
-  bool use_existing_calibrations = false;
-  if (!use_existing_calibrations) {
+  RCLCPP_INFO(logger_, "Calibrating? %s",
+              info_.hardware_parameters.at("calibrate").c_str());
+  bool calibrate = info_.hardware_parameters.at("calibrate") == "True";
+  if (calibrate) {
     // run calibration
     RCLCPP_INFO(logger_, "Running joint calibration...");
     driver_.calibrateJoints();
@@ -89,7 +91,7 @@ ARHardwareInterface::export_command_interfaces() {
 
 hardware_interface::return_type ARHardwareInterface::read(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
-  driver_.update(actuator_commands_, actuator_positions_);
+  driver_.getJointPositions(actuator_positions_);
   for (size_t i = 0; i < info_.joints.size(); ++i) {
     // apply offsets, convert from deg to rad for moveit
     joint_positions_[i] = degToRad(actuator_positions_[i] + joint_offsets_[i]);
@@ -120,6 +122,7 @@ hardware_interface::return_type ARHardwareInterface::write(
     logInfo += info_.joints[i].name + ": " + jointPositionStm.str() + " | ";
   }
   RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
+  driver_.update(actuator_commands_, actuator_positions_);
   return hardware_interface::return_type::OK;
 }
 

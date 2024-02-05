@@ -1,2 +1,3 @@
-# ar3_gazebo
+# ar_gazebo
+
 Gazebo simulator package for the AR3.
