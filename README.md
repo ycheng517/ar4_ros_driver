@@ -91,7 +91,7 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 - Start the `ar_hardware_interface` module, which will load configs and the robot description
 
   ```bash
-  ros2 launch ar_hardware_interface ar_hardware_bringup.py \
+  ros2 launch ar_hardware_interface ar_hardware.launch.py \
     serial_port:=/dev/ttyACM0 \
     calibrate:=True
   ```
@@ -99,7 +99,7 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 - Start MoveIt and RViz
 
   ```bash
-  ros2 launch ar_moveit_config ar_moveit_bringup.py
+  ros2 launch ar_moveit_config ar_moveit.launch.py
   ```
 
   You can now plan in RViz and control the real-world arm. Joint commands and joint states will be updated through the hardware interface.
