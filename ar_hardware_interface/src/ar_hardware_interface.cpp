@@ -26,13 +26,8 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
   driver_.init(serial_port, baudrate, num_joints_, enc_steps_per_deg);
 
   // set velocity limits
-  velocity_limits_ = {0.34906585, 0.34906585, 0.34906585,
-                      0.34906585, 0.34906585, 0.34906585};
-  acceleration_limits_ = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-  for (int i = 0; i < num_joints_; ++i) {
-    velocity_limits_[i] = radToDeg(velocity_limits_[i]);
-    acceleration_limits_[i] = radToDeg(acceleration_limits_[i]);
-  }
+  velocity_limits_ = {30.0, 30.0, 30.0, 30.0, 30.0, 30.0};
+  acceleration_limits_ = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0};
   driver_.setStepperSpeed(velocity_limits_, acceleration_limits_);
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -53,7 +48,7 @@ void ARHardwareInterface::init_variables() {
   joint_position_commands_.resize(num_joints_);
   joint_velocity_commands_.resize(num_joints_);
   joint_effort_commands_.resize(num_joints_);
-  joint_offsets_ = {170.0, -39.6, 0.0, -164.5, -104.5, -148.1};
+  joint_offsets_ = {170.0, -42, -89, -165, -105, -155};
   velocity_limits_.resize(num_joints_);
   acceleration_limits_.resize(num_joints_);
 }
@@ -105,7 +100,7 @@ ARHardwareInterface::export_command_interfaces() {
   int ind = 0;
   for (const auto& joint_name : joint_names_) {
     command_interfaces.emplace_back(joint_name, "position",
-                                    &joint_positions_[ind++]);
+                                    &joint_position_commands_[ind++]);
   }
   return command_interfaces;
 }
@@ -117,13 +112,16 @@ hardware_interface::return_type ARHardwareInterface::read(
     // apply offsets, convert from deg to rad for moveit
     joint_positions_[i] = degToRad(actuator_positions_[i] + joint_offsets_[i]);
   }
-  std::string logInfo = "Joint Position: \n";
+  std::string logInfo = "Joint Pos: ";
   for (int i = 0; i < num_joints_; i++) {
     std::stringstream jointPositionStm;
     jointPositionStm << std::fixed << std::setprecision(3)
                      << radToDeg(joint_positions_[i]);
     logInfo += joint_names_[i] + ": " + jointPositionStm.str() + " | ";
   }
+  // RCLCPP_INFO(logger_, "period is: %f, time is: %f", period.seconds(),
+  //             t.seconds());
+  RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   return hardware_interface::return_type::OK;
 }
 
@@ -134,13 +132,14 @@ hardware_interface::return_type ARHardwareInterface::write(
     actuator_commands_[i] =
         radToDeg(joint_position_commands_[i]) - joint_offsets_[i];
   }
-  std::string logInfo = "Joint Position Command: \n";
+  std::string logInfo = "Joint Cmd: ";
   for (int i = 0; i < num_joints_; i++) {
     std::stringstream jointPositionStm;
     jointPositionStm << std::fixed << std::setprecision(3)
                      << radToDeg(joint_position_commands_[i]);
     logInfo += joint_names_[i] + ": " + jointPositionStm.str() + " | ";
   }
+  RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   return hardware_interface::return_type::OK;
 }
 

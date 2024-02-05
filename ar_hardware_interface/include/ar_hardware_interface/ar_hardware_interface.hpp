@@ -37,6 +37,7 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
 
  private:
   rclcpp::Logger logger_ = rclcpp::get_logger("ar_hardware_interface");
+  rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
   double p_error_, v_error_, e_error_;
 
   // Motor driver

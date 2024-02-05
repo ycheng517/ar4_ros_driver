@@ -56,11 +56,8 @@ const int CAL_SPEED = 500; // motor steps per second
 const int CAL_SPEED_MULT[] = { 1, 1, 1, 2, 1, 1 }; // multiplier to account for motor steps/rev
 
 // speed and acceleration settings
-float JOINT_MAX_SPEED[] = { 20.0, 20.0, 20.0, 20.0, 20.0, 20.0 }; // deg/s
-float JOINT_MAX_ACCEL[] = { 5.0, 5.0, 5.0, 5.0, 5.0, 5.0 }; // deg/s^2
-int MOTOR_MAX_SPEED[] = { 1500, 1500, 1500, 2000, 1500, 1500 }; // motor steps per sec
-int MOTOR_MAX_ACCEL[] = { 250, 250, 250, 250, 250, 250 }; // motor steps per sec^2
-float MOTOR_ACCEL_MULT[] = { 1.0, 1.0, 2.0, 1.0, 1.0, 1.0 }; // for tuning position control
+float JOINT_MAX_SPEED[] = { 30.0, 30.0, 30.0, 30.0, 30.0, 30.0 }; // deg/s
+float JOINT_MAX_ACCEL[] = { 10.0, 10.0, 10.0, 10.0, 10.0, 10.0 }; // deg/s^2
 
 // num of encoder steps in range of motion of joint
 int ENC_RANGE_STEPS[NUM_JOINTS];
@@ -232,8 +229,8 @@ void stateTRAJ()
   {
     stepperJoints[i] = AccelStepper(1, STEP_PINS[i], DIR_PINS[i]);
     stepperJoints[i].setPinsInverted(true, false, false); // DM542T CW
-    stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
-    stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
+    stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] * MOTOR_STEPS_PER_DEG[i]);
+    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] * MOTOR_STEPS_PER_DEG[i]);
     stepperJoints[i].setMinPulseWidth(10);
   }
   stepperJoints[3].setPinsInverted(false, false, false); // J4 DM320T CCW
@@ -322,8 +319,8 @@ void stateTRAJ()
         // return to original position
         for (int i = 0; i < NUM_JOINTS; ++i)
         {
-          stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i]);
-          stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
+          stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] * MOTOR_STEPS_PER_DEG[i]);
+          stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] * MOTOR_STEPS_PER_DEG[i]);
         }
 
         bool restPosReached = false;
@@ -365,10 +362,8 @@ void stateTRAJ()
         // set motor speed and acceleration
         for (int i = 0; i < NUM_JOINTS; ++i)
         {
-          MOTOR_MAX_SPEED[i] = JOINT_MAX_SPEED[i] * MOTOR_STEPS_PER_DEG[i];
-          MOTOR_MAX_ACCEL[i] = JOINT_MAX_ACCEL[i] * MOTOR_STEPS_PER_DEG[i];
-          stepperJoints[i].setAcceleration(MOTOR_MAX_ACCEL[i] * MOTOR_ACCEL_MULT[i]);
-          stepperJoints[i].setMaxSpeed(MOTOR_MAX_SPEED[i]);
+          stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] * MOTOR_STEPS_PER_DEG[i]);
+          stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] * MOTOR_STEPS_PER_DEG[i]);
         }
         // read current joint positions
         readMotorSteps(curMotorSteps);
@@ -386,9 +381,12 @@ void stateTRAJ()
           return;
         }
       }
-      
       // clear message
       inData = "";
+    }
+    for (int i = 0; i < NUM_JOINTS; ++i)
+    {
+      stepperJoints[i].run();
     }
   }
 }
