@@ -59,6 +59,15 @@ The Teensy Arduino sketch provided in [ar_microcontrollers](./ar_microcontroller
 is compatible with the default hardware. To flash it, follow the same
 procedure as specified in [AR4 Robot Setup](https://www.youtube.com/watch?v=OL6lXu8VU4s).
 
+### Running in Docker Container
+
+You can optionally run everything in a docker container with the following commands:
+
+```bash
+docker build -t ar4_ros_driver .
+./run_in_docker.sh
+```
+
 ## Usage
 
 There are two modules that you will always need to run:
