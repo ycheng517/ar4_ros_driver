@@ -33,7 +33,7 @@ ROS 2 driver of the AR4 robot arm from Annin Robotics. Tested with ROS 2 Iron on
 - Install [ROS 2 Iron](https://docs.ros.org/en/iron/Installation.html) and [MoveIt 2](https://moveit.ros.org/install-moveit2/binary/) for Ubuntu 22.04
 - Clone this repository:
   ```bash
-  git clone https://github.com/ycheng517/ar_ros_driver
+  git clone https://github.com/ycheng517/ar4_ros_driver
   ```
 - Install workspace dependencies:
   ```bash
