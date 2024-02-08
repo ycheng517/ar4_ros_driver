@@ -276,8 +276,7 @@ void stateTRAJ() {
           int diffEncSteps = cmdEncSteps[i] - curMotorSteps[i];
           if (abs(diffEncSteps) > 2) {
             int diffMotSteps = diffEncSteps * ENC_DIR[i];
-            // if (diffMotSteps < MOTOR_STEPS_PER_REV[i])
-            // {
+            // if (diffMotSteps < MOTOR_STEPS_PER_REV[i]) {
             //   // for the last rev of motor, introduce artificial
             //   decceleration
             //   // to help prevent overshoot

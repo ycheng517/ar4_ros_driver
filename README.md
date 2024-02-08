@@ -1,12 +1,14 @@
 # AR4 ROS Driver
 
-ROS 2 driver of the AR4 robot arm from Annin Robotics. Tested with ROS 2 Iron on Ubuntu 22.04. This is a refresh of [ar3_core](https://github.com/ongdexter/ar3_core).
+ROS 2 driver of the AR4 robot arm from [Annin Robotics](https://www.anninrobotics.com).
+Tested with ROS 2 Iron on Ubuntu 22.04. This is a refresh of
+[ar3_core](https://github.com/ongdexter/ar3_core).
 
 - [Overview](#Overview)
 - [Installation](#Installation)
 - [Usage](#Usage)
 
-[![](http://img.youtube.com/vi/6D4vdhJlLsQ/0.jpg)](http://www.youtube.com/watch?v=6D4vdhJlLsQ "AR3 with ROS and MoveIt")
+[![AR4 ROS 2 Driver Demo](http://img.youtube.com/vi/XJCrfrW7jXE/0.jpg)](https://www.youtube.com/watch?v=XJCrfrW7jXE "AR4 ROS 2 Driver Demo")
 
 ## Overview
 
@@ -30,7 +32,7 @@ ROS 2 driver of the AR4 robot arm from Annin Robotics. Tested with ROS 2 Iron on
 
 ## Installation
 
-- Install [ROS 2 Iron](https://docs.ros.org/en/iron/Installation.html) and [MoveIt 2](https://moveit.ros.org/install-moveit2/binary/) for Ubuntu 22.04
+- Install [ROS 2 Iron](https://docs.ros.org/en/iron/Installation.html) for Ubuntu 22.04
 - Clone this repository:
   ```bash
   git clone https://github.com/ycheng517/ar4_ros_driver
@@ -61,7 +63,10 @@ procedure as specified in [AR4 Robot Setup](https://www.youtube.com/watch?v=OL6l
 
 ### Running in Docker Container
 
-You can optionally run everything in a docker container with the following commands:
+A docker container and run script has been provided that can be used to run the
+robot and any GUI programs. It requires an NVIDIA GPU, and the
+[NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html)
+to be installed. Then you can start the docker container with:
 
 ```bash
 docker build -t ar4_ros_driver .
@@ -97,21 +102,28 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 
 ### Control real-world arm with MoveIt in RViz
 
-- Start the `ar_hardware_interface` module, which will load configs and the robot description
+Start the `ar_hardware_interface` module, which will load configs and the robot description:
 
-  ```bash
-  ros2 launch ar_hardware_interface ar_hardware.launch.py \
-    serial_port:=/dev/ttyACM0 \
-    calibrate:=True
-  ```
+```bash
+ros2 launch ar_hardware_interface ar_hardware.launch.py \
+  calibrate:=True
+```
 
-- Start MoveIt and RViz
+Notes:
 
-  ```bash
-  ros2 launch ar_moveit_config ar_moveit.launch.py
-  ```
+- Calibration is required after flashing firmware to the Teensy board, and
+  power cycling the robot and/or the Teensy board. It can be skipped in subsequent
+  runs with `calibrate:=False`.
+- Serial port of the Teensy board can be specified with the following launch
+  argument: `serial_port:=/dev/ttyACM0`.
 
-  You can now plan in RViz and control the real-world arm. Joint commands and joint states will be updated through the hardware interface.
+Start MoveIt and RViz:
+
+```bash
+ros2 launch ar_moveit_config ar_moveit.launch.py
+```
+
+You can now plan in RViz and control the real-world arm. Joint commands and joint states will be updated through the hardware interface.
 
 ---
 
