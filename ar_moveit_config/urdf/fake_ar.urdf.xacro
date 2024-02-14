@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
   <xacro:include filename="$(find ar_description)/urdf/ar_macro.xacro"/>
-  <xacro:include filename="$(find ar_hardware_interface)/urdf/ar.ros2_control.xacro"/>
+  <xacro:include filename="$(find ar_description)/urdf/ar.ros2_control.xacro"/>
   
   <link name="world" />
   <xacro:ar_robot parent="world">

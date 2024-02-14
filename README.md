@@ -8,6 +8,8 @@ Tested with ROS 2 Iron on Ubuntu 22.04. This is a refresh of
 - [Installation](#Installation)
 - [Usage](#Usage)
 
+Video Demo:
+
 [![AR4 ROS 2 Driver Demo](http://img.youtube.com/vi/XJCrfrW7jXE/0.jpg)](https://www.youtube.com/watch?v=XJCrfrW7jXE "AR4 ROS 2 Driver Demo")
 
 ## Overview
@@ -24,11 +26,11 @@ Tested with ROS 2 Iron on Ubuntu 22.04. This is a refresh of
 - **ar_moveit_config**
   - MoveIt module for motion planning
   - Controlling the arm through Rviz
+- **ar_gazebo**
+  - Simulation on Gazebo
 - **ar_control** (Work in progress)
   - Controlling the arm through the MoveIt user interfaces
   - Provides demo for the move group interface
-- **ar_gazebo** (Work in progress)
-  - Simulation on Gazebo
 
 ## Installation
 
@@ -127,15 +129,15 @@ You can now plan in RViz and control the real-world arm. Joint commands and join
 
 ---
 
-### 🚧 Work in Progress: Control simulated arm in Gazebo with MoveIt in RViz
+### Control simulated arm in Gazebo with MoveIt in RViz
 
 - Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description
   ```
-  ros2 launch ar_gazebo ar_gazebo_bringup.launch
+  ros2 launch ar_gazebo ar_gazebo.launch.py
   ```
 - Start Moveit and RViz
   ```
-  ros2 launch ar_moveit_config ar_moveit_bringup.launch
+  ros2 launch ar_moveit_config ar_moveit.launch.py use_sim_time:=true
   ```
   You can now plan in RViz and control the simulated arm.
 

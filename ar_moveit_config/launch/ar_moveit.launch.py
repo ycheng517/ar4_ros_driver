@@ -37,9 +37,11 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
 from launch.substitutions import (
     Command,
     FindExecutable,
+    LaunchConfiguration,
     PathJoinSubstitution,
 )
 
@@ -52,6 +54,16 @@ def load_yaml(package_name, file_name):
 
 
 def generate_launch_description():
+    use_sim_time = LaunchConfiguration("use_sim_time")
+    declared_arguments = []
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "use_sim_time",
+            default_value="false",
+            description="Make MoveIt to use simulation time. This is needed for the trajectory planing in simulation.",
+        )
+    )
+
     robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -139,6 +151,7 @@ def generate_launch_description():
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
+            {"use_sim_time": use_sim_time},
         ],
     )
 
@@ -162,4 +175,4 @@ def generate_launch_description():
     )
 
     nodes_to_start = [move_group_node, rviz_node]
-    return LaunchDescription(nodes_to_start)
+    return LaunchDescription(declared_arguments + nodes_to_start)

@@ -21,8 +21,6 @@ joint_trajectory_controller:
       - position
     state_interfaces:
       - position
-    state_publish_rate: 50.0
-    action_monitor_rate: 20.0
     allow_partial_joints_goal: false
     constraints:
       stopped_velocity_tolerance: 0.02

@@ -3,7 +3,7 @@
   <xacro:arg name="serial_port" default="/dev/ttyACM0"/>
   <xacro:arg name="calibrate" default="True"/>
   <xacro:include filename="$(find ar_description)/urdf/ar_macro.xacro"/>
-  <xacro:include filename="$(find ar_hardware_interface)/urdf/ar.ros2_control.xacro"/>
+  <xacro:include filename="$(find ar_description)/urdf/ar.ros2_control.xacro"/>
 
   <!-- initial position for simulations (Mock Hardware, Gazebo, Ignition) -->
   <xacro:arg name="initial_positions_file" default="$(find ar_description)/config/initial_positions.yaml"/>

@@ -92,5 +92,10 @@
         "/opt/ros/iron/lib/python3.10/site-packages"
     ],
     "editor.formatOnSave": true,
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "files.exclude": {
+      "build": true,
+      "install": true,
+      "log": true
+    }
 }
