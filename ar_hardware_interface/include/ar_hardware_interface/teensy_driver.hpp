@@ -10,7 +10,7 @@
 #include "math.h"
 #include "time.h"
 
-namespace ar_hardware_driver {
+namespace ar_hardware_interface {
 
 class TeensyDriver {
  public:
@@ -32,13 +32,13 @@ class TeensyDriver {
   int num_joints_;
   std::vector<double> joint_positions_deg_;
   std::vector<int> enc_calibrations_;
-  rclcpp::Logger logger_ = rclcpp::get_logger("ar_hardware_driver");
+  rclcpp::Logger logger_ = rclcpp::get_logger("teensy_driver");
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
 
   // Comms with teensy
   void exchange(std::string outMsg);  // exchange joint commands/state
   bool transmit(std::string outMsg, std::string& err);
-  bool receive(std::string& inMsg, std::string& err);
+  void receive(std::string& inMsg);
   void sendCommand(std::string outMsg);  // send arbitrary commands
 
   void checkInit(std::string msg);
@@ -46,6 +46,6 @@ class TeensyDriver {
   void updateJointPositions(std::string msg);
 };
 
-}  // namespace ar_hardware_driver
+}  // namespace ar_hardware_interface
 
 #endif  // TEENSY_DRIVER

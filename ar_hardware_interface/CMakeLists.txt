@@ -6,7 +6,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
 endif()
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
-  ar_hardware_driver
   controller_manager
   hardware_interface
   pluginlib
@@ -15,11 +14,15 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
 )
 
 find_package(ament_cmake REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system)
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
-add_library(ar_hardware_interface SHARED src/ar_hardware_interface.cpp)
+add_library(ar_hardware_interface SHARED 
+  src/ar_hardware_interface.cpp
+  src/teensy_driver.cpp
+)
 
 target_compile_features(ar_hardware_interface PUBLIC cxx_std_17)
 target_include_directories(ar_hardware_interface PUBLIC
@@ -30,6 +33,7 @@ target_include_directories(ar_hardware_interface PUBLIC
 ament_target_dependencies(ar_hardware_interface
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
+  Boost
 )
 
 # Export hardware plugins
@@ -52,8 +56,8 @@ install(DIRECTORY config launch urdf
 )
 
 # ament_export_include_directories(include)
-ament_export_targets(export_ar_hardware_interface HAS_LIBRARY_TARGET)
 # ament_export_libraries(ar_hardware_interface)
-ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
+ament_export_targets(export_ar_hardware_interface HAS_LIBRARY_TARGET)
+ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS} Boost)
 
 ament_package()

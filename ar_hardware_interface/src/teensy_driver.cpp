@@ -1,11 +1,11 @@
-#include "ar_hardware_driver/TeensyDriver.h"
+#include "ar_hardware_interface/teensy_driver.hpp"
 
 #include <chrono>
 #include <thread>
 
 #define FW_VERSION "0.0.1"
 
-namespace ar_hardware_driver {
+namespace ar_hardware_interface {
 
 void TeensyDriver::init(std::string port, int baudrate, int num_joints) {
   // @TODO read version from config
@@ -96,19 +96,14 @@ void TeensyDriver::sendCommand(std::string outMsg) { exchange(outMsg); }
 void TeensyDriver::exchange(std::string outMsg) {
   std::string inMsg;
   std::string errTransmit = "";
-  std::string errReceive = "";
 
-  // RCLCPP_INFO(logger_, outMsg.c_str());
   if (!transmit(outMsg, errTransmit)) {
-    // print err
+    RCLCPP_ERROR(logger_, "Error in transmit: %s", errTransmit.c_str());
   }
 
   bool done = false;
   while (!done) {
-    if (!receive(inMsg, errReceive)) {
-      // print err
-    }
-    // RCLCPP_INFO(logger_, inMsg.c_str());
+    receive(inMsg);
     // parse msg
     std::string header = inMsg.substr(0, 2);
     if (header == "ST") {
@@ -146,7 +141,7 @@ bool TeensyDriver::transmit(std::string msg, std::string& err) {
   }
 }
 
-bool TeensyDriver::receive(std::string& inMsg, std::string& err) {
+void TeensyDriver::receive(std::string& inMsg) {
   char c;
   std::string msg = "";
   bool eol = false;
@@ -157,12 +152,12 @@ bool TeensyDriver::receive(std::string& inMsg, std::string& err) {
         break;
       case '\n':
         eol = true;
+        break;
       default:
         msg += c;
     }
   }
   inMsg = msg;
-  return true;
 }
 
 void TeensyDriver::checkInit(std::string msg) {
@@ -210,4 +205,4 @@ void TeensyDriver::updateJointPositions(std::string msg) {
   joint_positions_deg_[5] = std::stod(msg.substr(idx6));
 }
 
-}  // namespace ar_hardware_driver
+}  // namespace ar_hardware_interface

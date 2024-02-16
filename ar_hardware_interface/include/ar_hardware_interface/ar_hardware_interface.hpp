@@ -6,7 +6,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <thread>
 
-#include "ar_hardware_driver/TeensyDriver.h"
+#include "ar_hardware_interface/teensy_driver.hpp"
 
 using namespace hardware_interface;
 
@@ -36,7 +36,7 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
   double p_error_, v_error_, e_error_;
 
   // Motor driver
-  ar_hardware_driver::TeensyDriver driver_;
+  TeensyDriver driver_;
   std::vector<double> actuator_commands_;
   std::vector<double> actuator_positions_;
 

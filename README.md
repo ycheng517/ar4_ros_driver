@@ -19,7 +19,6 @@ Video Demo:
 - **ar_hardware_interface**
   - ROS interface for the hardware driver, built on the ros2_control framework
   - Manages joint offsets, limits and conversion between joint and actuator messages
-- **ar_hardware_driver**
   - Handles communication with the motor controllers
 - **ar_microcontrollers**
   - Firmware for the motor controller ie. Teensy
