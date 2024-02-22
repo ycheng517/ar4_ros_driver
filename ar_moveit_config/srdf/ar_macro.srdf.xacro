@@ -21,10 +21,10 @@
       <joint name="joint_5" value="0" />
       <joint name="joint_6" value="0" />
     </group_state>
-    <group_state name="stow" group="ar_manipulator">
+    <group_state name="upright" group="ar_manipulator">
       <joint name="joint_1" value="0" />
-      <joint name="joint_2" value="-9" />
-      <joint name="joint_3" value="-69" />
+      <joint name="joint_2" value="-0.157" />
+      <joint name="joint_3" value="-1.2" />
       <joint name="joint_4" value="0" />
       <joint name="joint_5" value="0" />
       <joint name="joint_6" value="0" />
