@@ -27,9 +27,6 @@ Video Demo:
   - Controlling the arm through Rviz
 - **ar_gazebo**
   - Simulation on Gazebo
-- **ar_control** (Work in progress)
-  - Controlling the arm through the MoveIt user interfaces
-  - Provides demo for the move group interface
 
 ## Installation
 
@@ -84,7 +81,7 @@ There are two modules that you will always need to run:
    - For the simulated arm, you will need to run the `ar_gazebo` module
    - Either of the modules will load the necessary hardware descriptions for MoveIt
 
-2. **MoveIt module** - the `ar_moveit_config` module provides the MoveIt interface and RViz GUI, and the `ar_control` module provides the MoveIt user interface for programmatically setting goals
+2. **MoveIt module** - the `ar_moveit_config` module provides the MoveIt interface and RViz GUI.
 
 The various use cases of the modules and instructions to run them are described below:
 
@@ -139,28 +136,3 @@ You can now plan in RViz and control the real-world arm. Joint commands and join
   ros2 launch ar_moveit_config ar_moveit.launch.py use_sim_time:=true
   ```
   You can now plan in RViz and control the simulated arm.
-
----
-
-### 🚧 Work in Progress: Control arm with Move Group Interface
-
-**It is recommended to run this demo with the simulated arm first to make sure that the programmed goals are safe for your environment (and your arm). Needless to say, the same applies when programming your own tasks.**
-
-This is a demo modified from the official MoveIt tutorials. As opposed to manually setting goals through RViz, the move group interface allows us to programmatically plan and execute movements, and provides more functionality such as specifying path constraints and planning Cartesian movements. This also enables much more complex tasks, planning around obstacles etc.
-
-- Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description  
-  _For controlling the real-world arm, you will just need to run `ar_hardware_interface` instead of `ar_gazebo` as described above._
-  ```
-  ros2 launch ar_gazebo ar_gazebo_bringup.launch
-  ```
-- Start Moveit and RViz
-  ```
-  ros2 launch ar_moveit_config ar_moveit_bringup.launch
-  ```
-- Start the move group demo
-  ```
-  ros2 launch ar_control move_group_demo.launch
-  ```
-  Follow the command-line instructions to step through the demo. See `ar_control` for more details.
-
----
