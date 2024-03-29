@@ -31,3 +31,8 @@ joint_limits:
     max_acceleration: 0.174533 # 10 deg/s^2
     has_velocity_limits: true
     max_velocity: 0.5236 # 30 deg/s
+  gripper_jaw1_joint:
+    has_acceleration_limits: true
+    max_acceleration: 0.01 # m/s^2
+    has_velocity_limits: true
+    max_velocity: 0.02 # m/s
