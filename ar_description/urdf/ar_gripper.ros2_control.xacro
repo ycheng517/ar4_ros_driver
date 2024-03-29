@@ -22,6 +22,17 @@
           <param name="initial_value">0.0</param>
         </state_interface>
       </joint>
+      <joint name="gripper_jaw2_joint">
+        <param name="mimic">gripper_jaw1_joint</param>
+        <param name="multiplier">1</param>
+        <command_interface name="position">
+          <param name="min">-0.014</param>
+          <param name="max">0.0</param>
+        </command_interface>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+      </joint>
 
     </ros2_control>
   </xacro:macro>

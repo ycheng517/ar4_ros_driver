@@ -26,45 +26,40 @@ def load_yaml(package_name, file_name):
 def generate_launch_description():
 
     # Command-line arguments
-    db_arg = DeclareLaunchArgument(
-        "db", default_value="False", description="Database flag"
-    )
+    db_arg = DeclareLaunchArgument("db",
+                                   default_value="False",
+                                   description="Database flag")
 
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("ar_moveit_config"), "urdf", "fake_ar.urdf.xacro"]
-            ),
-            " ",
-            "name:=ar",
-        ]
-    )
+    robot_description_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([
+            FindPackageShare("ar_moveit_config"), "urdf", "fake_ar.urdf.xacro"
+        ]),
+        " ",
+        "name:=ar",
+    ])
     robot_description = {"robot_description": robot_description_content}
 
     # MoveIt Configuration
-    robot_description_semantic_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("ar_moveit_config"), "srdf", "ar.srdf.xacro"]
-            ),
-            " ",
-            "name:=ar",
-        ]
-    )
+    robot_description_semantic_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution(
+            [FindPackageShare("ar_moveit_config"), "srdf", "ar.srdf.xacro"]),
+        " ",
+        "name:=ar",
+    ])
     robot_description_semantic = {
         "robot_description_semantic": robot_description_semantic_content
     }
 
     robot_description_kinematics = PathJoinSubstitution(
-        [FindPackageShare("ar_moveit_config"), "config", "kinematics.yaml"]
-    )
+        [FindPackageShare("ar_moveit_config"), "config", "kinematics.yaml"])
 
     robot_description_planning = {
-        "robot_description_planning": load_yaml(
+        "robot_description_planning":
+        load_yaml(
             "ar_moveit_config",
             os.path.join("config", "joint_limits.yaml"),
         )
@@ -74,19 +69,23 @@ def generate_launch_description():
     ompl_planning_pipeline_config = {
         "move_group": {
             "planning_plugin": "ompl_interface/OMPLPlanner",
-            "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
+            "request_adapters":
+            """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
             "start_state_max_bounds_error": 0.1,
         }
     }
-    ompl_planning_yaml = load_yaml("ar_moveit_config", "config/ompl_planning.yaml")
+    ompl_planning_yaml = load_yaml("ar_moveit_config",
+                                   "config/ompl_planning.yaml")
     ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
 
     # Trajectory Execution Configuration
     controllers_yaml = load_yaml("ar_moveit_config", "config/controllers.yaml")
 
     moveit_controllers = {
-        "moveit_simple_controller_manager": controllers_yaml,
-        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
+        "moveit_simple_controller_manager":
+        controllers_yaml,
+        "moveit_controller_manager":
+        "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
 
     trajectory_execution = {
@@ -121,7 +120,8 @@ def generate_launch_description():
     )
 
     # RViz
-    rviz_base = os.path.join(get_package_share_directory("ar_moveit_config"), "rviz")
+    rviz_base = os.path.join(get_package_share_directory("ar_moveit_config"),
+                             "rviz")
     rviz_full_config = os.path.join(rviz_base, "moveit.rviz")
 
     rviz_node = Node(
@@ -196,30 +196,46 @@ def generate_launch_description():
         ],
     )
 
+    gripper_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "gripper_controller",
+            "--controller-manager",
+            "/controller_manager",
+        ],
+    )
+
     # Warehouse mongodb server
     db_config = LaunchConfiguration("db")
     mongodb_server_node = Node(
         package="warehouse_ros_mongo",
         executable="mongo_wrapper_ros.py",
         parameters=[
-            {"warehouse_port": 33829},
-            {"warehouse_host": "localhost"},
-            {"warehouse_plugin": "warehouse_ros_mongo::MongoDatabaseConnection"},
+            {
+                "warehouse_port": 33829
+            },
+            {
+                "warehouse_host": "localhost"
+            },
+            {
+                "warehouse_plugin":
+                "warehouse_ros_mongo::MongoDatabaseConnection"
+            },
         ],
         output="screen",
         condition=IfCondition(db_config),
     )
 
-    return LaunchDescription(
-        [
-            db_arg,
-            rviz_node,
-            # static_tf,
-            robot_state_publisher,
-            run_move_group_node,
-            ros2_control_node,
-            mongodb_server_node,
-            joint_state_broadcaster_spawner,
-            joint_controller_spawner,
-        ]
-    )
+    return LaunchDescription([
+        db_arg,
+        rviz_node,
+        # static_tf,
+        robot_state_publisher,
+        run_move_group_node,
+        ros2_control_node,
+        mongodb_server_node,
+        joint_state_broadcaster_spawner,
+        joint_controller_spawner,
+        gripper_controller_spawner,
+    ])
