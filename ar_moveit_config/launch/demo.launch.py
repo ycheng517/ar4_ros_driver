@@ -181,7 +181,7 @@ def generate_launch_description():
         executable="spawner",
         arguments=[
             "joint_state_broadcaster",
-            "--controller-manager",
+            "-c",
             "/controller_manager",
         ],
     )
@@ -191,7 +191,7 @@ def generate_launch_description():
         executable="spawner",
         arguments=[
             "joint_trajectory_controller",
-            "--controller-manager",
+            "-c",
             "/controller_manager",
         ],
     )
@@ -201,7 +201,7 @@ def generate_launch_description():
         executable="spawner",
         arguments=[
             "gripper_controller",
-            "--controller-manager",
+            "-c",
             "/controller_manager",
         ],
     )
