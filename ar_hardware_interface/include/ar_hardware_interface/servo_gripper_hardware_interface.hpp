@@ -6,6 +6,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <thread>
 
+#include "ar_hardware_interface/arduino_nano_driver.hpp"
+
 using namespace hardware_interface;
 
 namespace ar_gripper_hardware_interface {
@@ -29,26 +31,11 @@ class ARGripperHardwareInterface : public hardware_interface::SystemInterface {
       const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
  private:
-  rclcpp::Logger logger_ = rclcpp::get_logger("ar_gripper_hardware_interface");
+  rclcpp::Logger logger_ = rclcpp::get_logger("ar_servo_gripper_hw_interface");
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
-  double p_error_, v_error_, e_error_;
 
-  // Motor driver
-  std::vector<double> actuator_commands_;
-  std::vector<double> actuator_positions_;
-
-  // Shared memory
-  std::vector<double> joint_offsets_;
-  std::vector<double> joint_positions_;
-  std::vector<double> joint_velocities_;
-  std::vector<double> joint_efforts_;
-  std::vector<double> joint_position_commands_;
-  std::vector<double> joint_velocity_commands_;
-  std::vector<double> joint_effort_commands_;
-
-  // Misc
-  void init_variables();
-  double degToRad(double deg) { return deg / 180.0 * M_PI; };
-  double radToDeg(double rad) { return rad / M_PI * 180.0; };
+  ArduinoNanoDriver driver_;
+  double position_ = 0.0;
+  double position_command_ = 0.0;
 };
 }  // namespace ar_gripper_hardware_interface

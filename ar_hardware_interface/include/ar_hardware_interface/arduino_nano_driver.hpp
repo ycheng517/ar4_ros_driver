@@ -16,13 +16,14 @@ class ArduinoNanoDriver {
   bool init(std::string port, int baudrate);
   void update(std::vector<double>& pos_commands,
               std::vector<double>& joint_states);
-  void getJointPositions(std::vector<double>& joint_positions);
+  // TODO: support error handling and propagate it to the HW interface
+  int getPosition();
+  void writePosition(double position);
   std::string sendCommand(std::string outMsg);
 
   ArduinoNanoDriver();
 
  private:
-  bool initialised_;
   std::string version_;
   boost::asio::io_service io_service_;
   boost::asio::serial_port serial_port_;

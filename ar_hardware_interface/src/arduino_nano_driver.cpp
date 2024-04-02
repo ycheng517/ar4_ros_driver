@@ -95,4 +95,13 @@ bool ArduinoNanoDriver::checkInit(std::string msg) {
   }
 }
 
+int ArduinoNanoDriver::getPosition() {
+  std::string reply = sendCommand("SP0\n");
+  return std::stoi(reply);
+}
+
+void ArduinoNanoDriver::writePosition(double position) {
+  std::string msg = "SV0P" + std::to_string(static_cast<int>(position)) + "\n";
+  sendCommand(msg);
+
 }  // namespace ar_gripper_hardware_interface
