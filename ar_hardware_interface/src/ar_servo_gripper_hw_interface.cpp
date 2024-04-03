@@ -1,9 +1,9 @@
-#include <ar_hardware_interface/servo_gripper_hardware_interface.hpp>
+#include <ar_hardware_interface/ar_servo_gripper_hw_interface.hpp>
 #include <sstream>
 
-namespace ar_gripper_hardware_interface {
+namespace ar_hardware_interface {
 
-hardware_interface::CallbackReturn ARGripperHardwareInterface::on_init(
+hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
     const hardware_interface::HardwareInfo& info) {
   RCLCPP_INFO(logger_, "Initializing hardware interface...");
 
@@ -24,7 +24,7 @@ hardware_interface::CallbackReturn ARGripperHardwareInterface::on_init(
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn ARGripperHardwareInterface::on_activate(
+hardware_interface::CallbackReturn ARServoGripperHWInterface::on_activate(
     const rclcpp_lifecycle::State& /*previous_state*/) {
   RCLCPP_INFO(logger_, "Activating hardware interface...");
 
@@ -33,14 +33,14 @@ hardware_interface::CallbackReturn ARGripperHardwareInterface::on_activate(
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn ARGripperHardwareInterface::on_deactivate(
+hardware_interface::CallbackReturn ARServoGripperHWInterface::on_deactivate(
     const rclcpp_lifecycle::State& /*previous_state*/) {
   RCLCPP_INFO(logger_, "Deactivating hardware interface...");
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 std::vector<hardware_interface::StateInterface>
-ARGripperHardwareInterface::export_state_interfaces() {
+ARServoGripperHWInterface::export_state_interfaces() {
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
   RCLCPP_INFO(logger_, "Debug: Exporting state interfaces for joint %s",
@@ -50,14 +50,14 @@ ARGripperHardwareInterface::export_state_interfaces() {
 }
 
 std::vector<hardware_interface::CommandInterface>
-ARGripperHardwareInterface::export_command_interfaces() {
+ARServoGripperHWInterface::export_command_interfaces() {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
   command_interfaces.emplace_back(info_.joints[0].name, "position",
                                   &position_command_);
   return command_interfaces;
 }
 
-hardware_interface::return_type ARGripperHardwareInterface::read(
+hardware_interface::return_type ARServoGripperHWInterface::read(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   position_ = driver_.getPosition();
   std::string logInfo = "Gripper Pos: " + std::to_string(position_);
@@ -65,7 +65,7 @@ hardware_interface::return_type ARGripperHardwareInterface::read(
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type ARGripperHardwareInterface::write(
+hardware_interface::return_type ARServoGripperHWInterface::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   std::string logInfo = "Gripper Cmd: " + std::to_string(position_command_);
   RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
@@ -73,10 +73,9 @@ hardware_interface::return_type ARGripperHardwareInterface::write(
   return hardware_interface::return_type::OK;
 }
 
-}  // namespace ar_gripper_hardware_interface
+}  // namespace ar_hardware_interface
 
 #include "pluginlib/class_list_macros.hpp"
 
-PLUGINLIB_EXPORT_CLASS(
-    ar_gripper_hardware_interface::ARGripperHardwareInterface,
-    hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(ar_hardware_interface::ARServoGripperHWInterface,
+                       hardware_interface::SystemInterface)

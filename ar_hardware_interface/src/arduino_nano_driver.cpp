@@ -2,7 +2,7 @@
 
 #define FW_VERSION "0.0.1"
 
-namespace ar_gripper_hardware_interface {
+namespace ar_hardware_interface {
 
 bool ArduinoNanoDriver::init(std::string port, int baudrate) {
   // @TODO read version from config
@@ -103,5 +103,6 @@ int ArduinoNanoDriver::getPosition() {
 void ArduinoNanoDriver::writePosition(double position) {
   std::string msg = "SV0P" + std::to_string(static_cast<int>(position)) + "\n";
   sendCommand(msg);
+}
 
-}  // namespace ar_gripper_hardware_interface
+}  // namespace ar_hardware_interface

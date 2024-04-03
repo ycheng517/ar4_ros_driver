@@ -10,10 +10,10 @@
 
 using namespace hardware_interface;
 
-namespace ar_gripper_hardware_interface {
-class ARGripperHardwareInterface : public hardware_interface::SystemInterface {
+namespace ar_hardware_interface {
+class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
  public:
-  RCLCPP_SHARED_PTR_DEFINITIONS(ARGripperHardwareInterface);
+  RCLCPP_SHARED_PTR_DEFINITIONS(ARServoGripperHWInterface);
 
   hardware_interface::CallbackReturn on_init(
       const hardware_interface::HardwareInfo& info) override;
@@ -38,4 +38,4 @@ class ARGripperHardwareInterface : public hardware_interface::SystemInterface {
   double position_ = 0.0;
   double position_command_ = 0.0;
 };
-}  // namespace ar_gripper_hardware_interface
+}  // namespace ar_hardware_interface

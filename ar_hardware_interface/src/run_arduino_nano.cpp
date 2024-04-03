@@ -4,7 +4,7 @@
 #include <ar_hardware_interface/arduino_nano_driver.hpp>
 
 int main() {
-  ar_gripper_hardware_interface::ArduinoNanoDriver driver;
+  ar_hardware_interface::ArduinoNanoDriver driver;
   bool success = driver.init("/dev/ttyUSB0", 115200);
   if (!success) {
     return -1;
