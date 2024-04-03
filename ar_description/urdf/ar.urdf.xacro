@@ -4,6 +4,8 @@
   <xacro:include filename="$(find ar_description)/urdf/ar_gripper_macro.xacro"/>
 
   <link name="world" />
-  <xacro:ar_robot parent="world" />
+  <xacro:ar_robot parent="world">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:ar_robot>
   <xacro:ar_gripper parent="link_6" />
 </robot>

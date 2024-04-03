@@ -64,7 +64,9 @@ ARServoGripperHWInterface::export_command_interfaces() {
 
 hardware_interface::return_type ARServoGripperHWInterface::read(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
-  position_ = driver_.getPosition();
+  int pos_deg = driver_.getPosition();
+  // TODO: do this conversion using trigonometry
+  position_ = pos_deg / -2857.0;
   std::string logInfo = "Gripper Pos: " + std::to_string(position_);
   RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   return hardware_interface::return_type::OK;
@@ -74,7 +76,8 @@ hardware_interface::return_type ARServoGripperHWInterface::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   std::string logInfo = "Gripper Cmd: " + std::to_string(position_command_);
   RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
-  driver_.writePosition(position_command_);
+  int pos_deg = static_cast<int>(-2857.0 * position_command_);
+  driver_.writePosition(pos_deg);
   return hardware_interface::return_type::OK;
 }
 
