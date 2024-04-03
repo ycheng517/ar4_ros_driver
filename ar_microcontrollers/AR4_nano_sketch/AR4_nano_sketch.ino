@@ -149,7 +149,7 @@ void loop() {
         if (servoNum == 7) {
           servo7.write(servoPOS);
         }
-        Serial.println("Servo Done");
+        Serial.println("Done");
       }
 
       //-----COMMAND TO READ SERVO POSITION-----

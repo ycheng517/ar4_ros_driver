@@ -16,9 +16,8 @@ class ArduinoNanoDriver {
   bool init(std::string port, int baudrate);
   void update(std::vector<double>& pos_commands,
               std::vector<double>& joint_states);
-  // TODO: support error handling and propagate it to the HW interface
-  int getPosition();
-  void writePosition(double position);
+  bool getPosition(int& position);
+  bool writePosition(double position);
   std::string sendCommand(std::string outMsg);
 
   ArduinoNanoDriver();

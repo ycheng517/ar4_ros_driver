@@ -95,14 +95,24 @@ bool ArduinoNanoDriver::checkInit(std::string msg) {
   }
 }
 
-int ArduinoNanoDriver::getPosition() {
+bool ArduinoNanoDriver::getPosition(int& position) {
   std::string reply = sendCommand("SP0\n");
-  return std::stoi(reply);
+  if (reply == "") {
+    RCLCPP_ERROR(logger_, "Failed to get position");
+    return false;
+  }
+  position = std::stoi(reply);
+  return true;
 }
 
-void ArduinoNanoDriver::writePosition(double position) {
+bool ArduinoNanoDriver::writePosition(double position) {
   std::string msg = "SV0P" + std::to_string(static_cast<int>(position)) + "\n";
-  sendCommand(msg);
+  std::string reply = sendCommand(msg);
+  if (reply != "Done") {
+    RCLCPP_ERROR(logger_, "Failed to write position %f", position);
+    return false;
+  }
+  return true;
 }
 
 }  // namespace ar_hardware_interface
