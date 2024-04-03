@@ -21,6 +21,7 @@ endforeach()
 
 add_library(ar_hardware_interface SHARED 
   src/ar_hardware_interface.cpp
+  src/ar_servo_gripper_hw_interface.cpp
   src/teensy_driver.cpp
   src/arduino_nano_driver.cpp
 )

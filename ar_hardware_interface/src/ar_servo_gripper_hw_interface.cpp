@@ -45,15 +45,20 @@ ARServoGripperHWInterface::export_state_interfaces() {
 
   RCLCPP_INFO(logger_, "Debug: Exporting state interfaces for joint %s",
               info_.joints[0].name.c_str());
-  state_interfaces.emplace_back(info_.joints[0].name, "position", &position_);
+  for (size_t i = 0; i < info_.joints.size(); ++i) {
+    state_interfaces.emplace_back(info_.joints[i].name, "position", &position_);
+    state_interfaces.emplace_back(info_.joints[i].name, "velocity", &velocity_);
+  }
   return state_interfaces;
 }
 
 std::vector<hardware_interface::CommandInterface>
 ARServoGripperHWInterface::export_command_interfaces() {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
-  command_interfaces.emplace_back(info_.joints[0].name, "position",
-                                  &position_command_);
+  for (size_t i = 0; i < info_.joints.size(); ++i) {
+    command_interfaces.emplace_back(info_.joints[i].name, "position",
+                                    &position_command_);
+  }
   return command_interfaces;
 }
 

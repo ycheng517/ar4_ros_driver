@@ -36,6 +36,7 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
 
   ArduinoNanoDriver driver_;
   double position_ = 0.0;
+  double velocity_ = 0.0;
   double position_command_ = 0.0;
 };
 }  // namespace ar_hardware_interface
