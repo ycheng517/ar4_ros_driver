@@ -104,6 +104,10 @@ void setup() {
   servo5.attach(A5);
   servo6.attach(A6);
   servo7.attach(A7);
+
+  // Make servo0 (the servo gripper) go to an arbitrary initial position
+  servo0.write(30);
+  
 }
 
 void loop() {

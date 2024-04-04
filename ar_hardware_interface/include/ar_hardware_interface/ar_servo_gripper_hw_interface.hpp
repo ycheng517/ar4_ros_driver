@@ -35,7 +35,7 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
  private:
   rclcpp::Logger logger_ = rclcpp::get_logger("ar_servo_gripper_hw_interface");
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
-  double servo_arm_length_ = 0.024;  // meters
+  double servo_arm_length_ = 0.023;  // meters
   // offset in degrees for the zero position, in case the servo can't reach
   // 0 degrees due to mechanical tolerance issues.
   double zero_deg_offset_ = 2;

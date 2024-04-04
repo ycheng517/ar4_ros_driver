@@ -11,37 +11,37 @@ from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 def generate_launch_description():
     serial_port = LaunchConfiguration("serial_port")
     calibrate = LaunchConfiguration("calibrate")
+    include_gripper = LaunchConfiguration("include_gripper")
 
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("ar_hardware_interface"), "urdf", "ar.urdf.xacro"]
-            ),
-            " ",
-            "name:=ar",
-            " ",
-            "serial_port:=",
-            serial_port,
-            " ",
-            "calibrate:=",
-            calibrate,
-        ]
-    )
+    robot_description_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([
+            FindPackageShare("ar_hardware_interface"), "urdf", "ar.urdf.xacro"
+        ]),
+        " ",
+        "name:=ar",
+        " ",
+        "serial_port:=",
+        serial_port,
+        " ",
+        "calibrate:=",
+        calibrate,
+        " ",
+        "include_gripper:=",
+        include_gripper,
+    ])
     robot_description = {"robot_description": robot_description_content}
 
-    joint_controllers_cfg = PathJoinSubstitution(
-        [FindPackageShare("ar_hardware_interface"), "config", "controllers.yaml"]
-    )
+    joint_controllers_cfg = PathJoinSubstitution([
+        FindPackageShare("ar_hardware_interface"), "config", "controllers.yaml"
+    ])
 
-    update_rate_config_file = PathJoinSubstitution(
-        [
-            FindPackageShare("ar_hardware_interface"),
-            "config",
-            "controller_update_rate.yaml",
-        ]
-    )
+    update_rate_config_file = PathJoinSubstitution([
+        FindPackageShare("ar_hardware_interface"),
+        "config",
+        "controller_update_rate.yaml",
+    ])
 
     controller_manager_node = Node(
         package="controller_manager",
@@ -101,16 +101,21 @@ def generate_launch_description():
             "serial_port",
             default_value="/dev/ttyACM0",
             description="Serial port to connect to the robot",
-        )
-    )
+        ))
     ld.add_action(
         DeclareLaunchArgument(
             "calibrate",
             default_value="True",
             description="Calibrate the robot on startup",
             choices=["True", "False"],
-        )
-    )
+        ))
+    ld.add_action(
+        DeclareLaunchArgument(
+            "include_gripper",
+            default_value="True",
+            description="Run the servo gripper",
+            choices=["True", "False"],
+        ))
     ld.add_action(controller_manager_node)
     ld.add_action(spawn_joint_controller)
     ld.add_action(gripper_controller_spawner)

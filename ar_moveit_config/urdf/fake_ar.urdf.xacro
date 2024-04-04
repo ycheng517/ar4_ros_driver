@@ -4,7 +4,7 @@
   <xacro:include filename="$(find ar_description)/urdf/ar_gripper_macro.xacro"/>
   <xacro:include filename="$(find ar_description)/urdf/ar.ros2_control.xacro"/>
   <xacro:include filename="$(find ar_description)/urdf/ar_gripper.ros2_control.xacro"/>
-  
+
   <link name="world" />
   <xacro:ar_robot parent="world">
     <origin xyz="0 0 0" rpy="0 0 0" />

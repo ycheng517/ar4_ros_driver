@@ -1,11 +1,16 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+  <xacro:arg name="include_gripper" default="true"/>
+
   <xacro:include filename="$(find ar_description)/urdf/ar_macro.xacro"/>
-  <xacro:include filename="$(find ar_description)/urdf/ar_gripper_macro.xacro"/>
 
   <link name="world" />
   <xacro:ar_robot parent="world">
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:ar_robot>
-  <xacro:ar_gripper parent="link_6" />
+
+  <xacro:if value="$(arg include_gripper)">
+    <xacro:include filename="$(find ar_description)/urdf/ar_gripper_macro.xacro"/>
+    <xacro:ar_gripper parent="link_6" />
+  </xacro:if>
 </robot>
