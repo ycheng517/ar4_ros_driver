@@ -71,7 +71,7 @@ const int Output13 = 13;
 
 void setup() {
   // run once:
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   pinMode(A0, OUTPUT);
   pinMode(A1, OUTPUT);
@@ -105,7 +105,8 @@ void setup() {
   servo6.attach(A6);
   servo7.attach(A7);
 
-  // Make servo0 (the servo gripper) go to an arbitrary initial position
+  // Make servo0 (the servo gripper) go to an arbitrary initial position,
+  // otherwise it goes to some unknow position beyond the acceptable range
   servo0.write(30);
   
 }
@@ -240,9 +241,7 @@ void loop() {
         Serial.println(echo);
       }
 
-      else {
-        inData = "";  // Clear received buffer
-      }
+      inData = "";  // Clear received buffer
     }
   }
 }

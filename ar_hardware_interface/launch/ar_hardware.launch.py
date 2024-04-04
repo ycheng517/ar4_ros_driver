@@ -73,6 +73,8 @@ def generate_launch_description():
             "gripper_controller",
             "-c",
             "/controller_manager",
+            "--controller-manager-timeout",
+            "60",
         ],
     )
 

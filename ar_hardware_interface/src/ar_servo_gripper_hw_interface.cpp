@@ -15,7 +15,7 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
   info_ = info;
 
   std::string serial_port = info_.hardware_parameters.at("serial_port");
-  int baud_rate = 115200;
+  int baud_rate = 9600;
   bool success = driver_.init(serial_port, baud_rate);
   if (!success) {
     return hardware_interface::CallbackReturn::ERROR;

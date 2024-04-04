@@ -26,7 +26,7 @@ bool ArduinoNanoDriver::init(std::string port, int baudrate) {
 
   RCLCPP_INFO(logger_, "Waiting for response from Arduino Nano on port %s",
               port.c_str());
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  std::this_thread::sleep_for(std::chrono::seconds(2));
   std::string msg = "ST\n";
   std::string reply = sendCommand(msg);
   if (!checkInit(reply)) {
