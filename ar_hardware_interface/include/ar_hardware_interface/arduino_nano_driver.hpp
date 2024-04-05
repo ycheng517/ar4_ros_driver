@@ -18,7 +18,6 @@ class ArduinoNanoDriver {
               std::vector<double>& joint_states);
   bool getPosition(int& position);
   bool writePosition(double position);
-  std::string sendCommand(std::string outMsg);
 
   ArduinoNanoDriver();
 
@@ -32,6 +31,7 @@ class ArduinoNanoDriver {
   double gripper_velocity_ = 0.0;
   double gripper_position_command_ = 0.0;
 
+  std::string sendCommand(std::string outMsg);
   bool transmit(std::string outMsg, std::string& err);
   void receive(std::string& inMsg);
 
