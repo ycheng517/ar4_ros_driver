@@ -5,6 +5,9 @@ controller_manager:
     joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
+    gripper_controller:
+      type: position_controllers/GripperActionController
+
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
@@ -31,3 +34,7 @@ joint_trajectory_controller:
       joint_4: { trajectory: 0.2, goal: 0.02 }
       joint_5: { trajectory: 0.2, goal: 0.02 }
       joint_6: { trajectory: 0.2, goal: 0.02 }
+
+gripper_controller:
+  ros__parameters:
+    joint: gripper_jaw1_joint

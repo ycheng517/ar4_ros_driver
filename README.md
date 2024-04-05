@@ -1,32 +1,35 @@
 # AR4 ROS Driver
 
 ROS 2 driver of the AR4 robot arm from [Annin Robotics](https://www.anninrobotics.com).
-Tested with ROS 2 Iron on Ubuntu 22.04. This is a refresh of
-[ar3_core](https://github.com/ongdexter/ar3_core).
+Tested with ROS 2 Iron on Ubuntu 22.04.
 
-- [Overview](#Overview)
-- [Installation](#Installation)
-- [Usage](#Usage)
+Supports:
 
-Video Demo:
+- AR4 (Original version)
+- AR4 MK2
+- AR4 servo gripper
+
+This is a refresh of [ar3_core](https://github.com/ongdexter/ar3_core).
+
+## Video Demo:
 
 [![AR4 ROS 2 Driver Demo](http://img.youtube.com/vi/XJCrfrW7jXE/0.jpg)](https://www.youtube.com/watch?v=XJCrfrW7jXE "AR4 ROS 2 Driver Demo")
 
 ## Overview
 
 - **ar_description**
-  - Hardware description of arm, urdf etc.
+  - Hardware description of arm & servo gripper urdf.
 - **ar_hardware_interface**
-  - ROS interface for the hardware driver, built on the ros2_control framework
-  - Manages joint offsets, limits and conversion between joint and actuator messages
-  - Handles communication with the motor controllers
+  - ROS interfaces for the arm and servo gripper drivers, built on the ros2_control framework.
+  - Manages joint offsets, limits and conversion between joint and actuator messages.
+  - Handles communication with the microcontrollers.
 - **ar_microcontrollers**
-  - Firmware for the motor controller ie. Teensy
+  - Firmware for the microcontrollers, ie. Teensy and Arduino Nano.
 - **ar_moveit_config**
-  - MoveIt module for motion planning
-  - Controlling the arm through Rviz
+  - MoveIt module for motion planning.
+  - Controlling the arm and servo gripper through Rviz.
 - **ar_gazebo**
-  - Simulation on Gazebo
+  - Simulation on Gazebo.
 
 ## Installation
 
@@ -91,10 +94,11 @@ The various use cases of the modules and instructions to run them are described 
 
 If you are unfamiliar with MoveIt, it is recommended to start with this to explore planning with MoveIt in RViz. This contains neither a real-world nor a simulated arm but just a model loaded within RViz for visualisation.
 
-- The robot description, moveit interface and RViz will all be loaded in the single demo launch file
-  ```
-  ros2 launch ar_moveit_config demo.launch.py
-  ```
+The robot description, moveit interface and RViz will all be loaded in the single demo launch file
+
+```bash
+ros2 launch ar_moveit_config demo.launch.py
+```
 
 ---
 
@@ -107,13 +111,17 @@ ros2 launch ar_hardware_interface ar_hardware.launch.py \
   calibrate:=True
 ```
 
-Notes:
+Available Launch Arguments:
 
-- Calibration is required after flashing firmware to the Teensy board, and
-  power cycling the robot and/or the Teensy board. It can be skipped in subsequent
-  runs with `calibrate:=False`.
-- Serial port of the Teensy board can be specified with the following launch
-  argument: `serial_port:=/dev/ttyACM0`.
+- `calibrate`: Whether to calibrate the robot arm (determine the absolute position
+  of each joint).
+- `include_gripper`: Whether to include the servo gripper. Defaults to: `include_gripper:=True`.
+- `serial_port`: Serial port of the Teensy board. Defaults to: `serial_port:=/dev/ttyACM0`.
+- `arduino_serial_port`: Serial port of the Arduino Nano board. Defaults to `arduino_serial_port:=/dev/ttyUSB0`.
+
+⚠️📏 Note: Calibration is required after flashing firmware to the Teensy board, and
+power cycling the robot and/or the Teensy board. It can be skipped in subsequent
+runs with `calibrate:=False`.
 
 Start MoveIt and RViz:
 
@@ -121,18 +129,29 @@ Start MoveIt and RViz:
 ros2 launch ar_moveit_config ar_moveit.launch.py
 ```
 
+Available Launch Arguments:
+
+- `include_gripper`: Whether to include the servo gripper. Defaults to:
+  `include_gripper:=True`.
+- `use_sim_time`: Make Moveit use simulation time. Should only be enabled when
+  running with Gazebo. Defaults to: `use_sim_time:=False`.
+
 You can now plan in RViz and control the real-world arm. Joint commands and joint states will be updated through the hardware interface.
 
 ---
 
 ### Control simulated arm in Gazebo with MoveIt in RViz
 
-- Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description
-  ```
-  ros2 launch ar_gazebo ar_gazebo.launch.py
-  ```
-- Start Moveit and RViz
-  ```
-  ros2 launch ar_moveit_config ar_moveit.launch.py use_sim_time:=true
-  ```
-  You can now plan in RViz and control the simulated arm.
+Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description:
+
+```bash
+ros2 launch ar_gazebo ar_gazebo.launch.py
+```
+
+Start Moveit and RViz:
+
+```bash
+ros2 launch ar_moveit_config ar_moveit.launch.py use_sim_time:=true include_gripper:=True
+```
+
+You can now plan in RViz and control the simulated arm.

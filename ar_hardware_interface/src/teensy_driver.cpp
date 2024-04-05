@@ -119,6 +119,9 @@ void TeensyDriver::exchange(std::string outMsg) {
       updateJointPositions(inMsg);
       done = true;
     } else if (header == "DB") {
+      // debug message
+      RCLCPP_DEBUG(logger_, "Debug message: %s", inMsg.c_str());
+      done = true;
     } else {
       // unknown header
       RCLCPP_WARN(logger_, "Unknown header %s", header.c_str());

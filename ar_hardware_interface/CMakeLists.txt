@@ -21,7 +21,9 @@ endforeach()
 
 add_library(ar_hardware_interface SHARED 
   src/ar_hardware_interface.cpp
+  src/ar_servo_gripper_hw_interface.cpp
   src/teensy_driver.cpp
+  src/arduino_nano_driver.cpp
 )
 
 target_compile_features(ar_hardware_interface PUBLIC cxx_std_17)
@@ -34,6 +36,18 @@ ament_target_dependencies(ar_hardware_interface
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
   Boost
+)
+
+add_executable(run_arduino_nano src/run_arduino_nano.cpp)
+
+target_link_libraries(
+  run_arduino_nano
+  ar_hardware_interface
+)
+
+install(TARGETS
+  run_arduino_nano
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 # Export hardware plugins
@@ -55,8 +69,6 @@ install(DIRECTORY config launch urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
-# ament_export_include_directories(include)
-# ament_export_libraries(ar_hardware_interface)
 ament_export_targets(export_ar_hardware_interface HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS} Boost)
 

@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:macro name="ar_gripper_srdf">
+    <group name="ar_gripper">
+      <link name="gripper_base_link" />
+      <link name="gripper_jaw1_link" />
+      <link name="gripper_jaw2_link" />
+      <joint name="gripper_jaw1_joint" />
+      <passive_joint name="gripper_jaw2_joint" />
+    </group>
+    <group_state name="open" group="ar_gripper">
+      <joint name="gripper_jaw1_joint" value="-0.014" />
+    </group_state>
+    <group_state name="closed" group="ar_gripper">
+      <joint name="gripper_jaw1_joint" value="0" />
+    </group_state>
+    <disable_collisions link1="gripper_base_link" link2="gripper_jaw1_link" reason="Adjacent" />
+    <disable_collisions link1="gripper_base_link" link2="gripper_jaw2_link" reason="Adjacent" />
+    <disable_collisions link1="gripper_jaw1_link" link2="gripper_jaw2_link" reason="Adjacent" />
+    <disable_collisions link1="link_6" link2="gripper_base_link" reason="Adjacent" />
+  </xacro:macro>
+</robot>

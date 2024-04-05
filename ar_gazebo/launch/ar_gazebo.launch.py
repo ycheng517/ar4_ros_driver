@@ -35,43 +35,41 @@ from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
-def generate_launch_description():
-    initial_joint_controllers = PathJoinSubstitution(
-        [FindPackageShare("ar_hardware_interface"), "config", "controllers.yaml"]
-    )
 
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("ar_description"), "urdf", "ar_gazebo.urdf.xacro"]
-            ),
-            " ",
-            "name:=ar",
-            " ",
-            "simulation_controllers:=",
-            initial_joint_controllers,
-        ]
-    )
+def generate_launch_description():
+    initial_joint_controllers = PathJoinSubstitution([
+        FindPackageShare("ar_hardware_interface"), "config", "controllers.yaml"
+    ])
+
+    robot_description_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([
+            FindPackageShare("ar_description"), "urdf", "ar_gazebo.urdf.xacro"
+        ]),
+        " ",
+        "name:=ar",
+        " ",
+        "simulation_controllers:=",
+        initial_joint_controllers,
+    ])
     robot_description = {"robot_description": robot_description_content}
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
-        parameters=[{"use_sim_time": True}, robot_description],
+        parameters=[{
+            "use_sim_time": True
+        }, robot_description],
     )
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "joint_state_broadcaster", 
-            "--controller-manager", 
-            "/controller_manager",
-            "--controller-manager-timeout",
-            "60"
+            "joint_state_broadcaster", "-c", "/controller_manager",
+            "--controller-manager-timeout", "60"
         ],
     )
 
@@ -80,27 +78,34 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "joint_trajectory_controller", 
-            "-c", 
-            "/controller_manager",
-            "--controller-manager-timeout",
-            "60"
+            "joint_trajectory_controller", "-c", "/controller_manager",
+            "--controller-manager-timeout", "60"
+        ],
+    )
+
+    gripper_joint_controller_spawner_started = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "gripper_controller", "-c", "/controller_manager",
+            "--controller-manager-timeout", "60"
         ],
     )
 
     # Gazebo nodes
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [FindPackageShare("gazebo_ros"), "/launch", "/gazebo.launch.py"]
-        ),
-    )
+            [FindPackageShare("gazebo_ros"), "/launch",
+             "/gazebo.launch.py"]), )
 
     # Spawn robot
     gazebo_spawn_robot = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
         name="spawn_ar",
-        arguments=["-entity", "ar", "-topic", "robot_description", "-timeout", "60"],
+        arguments=[
+            "-entity", "ar", "-topic", "robot_description", "-timeout", "60"
+        ],
         output="screen",
     )
 
@@ -108,6 +113,7 @@ def generate_launch_description():
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_started,
+        gripper_joint_controller_spawner_started,
         gazebo,
         gazebo_spawn_robot,
     ]

@@ -7,7 +7,7 @@
       },
       "includePath": [
         "/opt/ros/iron/include/**",
-        "/home/yifei/src/ar_ws/src/ar_hardware_interface/include/**",
+        "${workspaceFolder}/ar_hardware_interface/include/**",
         "/usr/include/**"
       ],
       "name": "ROS",

@@ -55,50 +55,59 @@ def load_yaml(package_name, file_name):
 
 def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
+    include_gripper = LaunchConfiguration("include_gripper")
+
     declared_arguments = []
     declared_arguments.append(
         DeclareLaunchArgument(
             "use_sim_time",
-            default_value="false",
-            description="Make MoveIt to use simulation time. This is needed for the trajectory planing in simulation.",
-        )
-    )
+            default_value="False",
+            description="Make MoveIt use simulation time. This is needed "+\
+                "for trajectory planing in simulation.",
+        ))
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "include_gripper",
+            default_value="True",
+            description="Run the servo gripper",
+            choices=["True", "False"],
+        ))
 
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("ar_description"), "urdf", "ar.urdf.xacro"]
-            ),
-            " ",
-            "name:=ar",
-        ]
-    )
+    robot_description_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution(
+            [FindPackageShare("ar_description"), "urdf", "ar.urdf.xacro"]),
+        " ",
+        "name:=ar",
+        " ",
+        "include_gripper:=",
+        include_gripper,
+    ])
     robot_description = {"robot_description": robot_description_content}
 
     # MoveIt Configuration
-    robot_description_semantic_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("ar_moveit_config"), "srdf", "ar.srdf.xacro"]
-            ),
-            " ",
-            "name:=ar",
-        ]
-    )
+    robot_description_semantic_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution(
+            [FindPackageShare("ar_moveit_config"), "srdf", "ar.srdf.xacro"]),
+        " ",
+        "name:=ar",
+        " ",
+        "include_gripper:=",
+        include_gripper,
+    ])
     robot_description_semantic = {
         "robot_description_semantic": robot_description_semantic_content
     }
 
     robot_description_kinematics = PathJoinSubstitution(
-        [FindPackageShare("ar_moveit_config"), "config", "kinematics.yaml"]
-    )
+        [FindPackageShare("ar_moveit_config"), "config", "kinematics.yaml"])
 
     robot_description_planning = {
-        "robot_description_planning": load_yaml(
+        "robot_description_planning":
+        load_yaml(
             "ar_moveit_config",
             os.path.join("config", "joint_limits.yaml"),
         )
@@ -108,19 +117,23 @@ def generate_launch_description():
     ompl_planning_pipeline_config = {
         "move_group": {
             "planning_plugin": "ompl_interface/OMPLPlanner",
-            "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
+            "request_adapters":
+            """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
             "start_state_max_bounds_error": 0.1,
         }
     }
-    ompl_planning_yaml = load_yaml("ar_moveit_config", "config/ompl_planning.yaml")
+    ompl_planning_yaml = load_yaml("ar_moveit_config",
+                                   "config/ompl_planning.yaml")
     ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
 
     # Trajectory Execution Configuration
     controllers_yaml = load_yaml("ar_moveit_config", "config/controllers.yaml")
 
     moveit_controllers = {
-        "moveit_simple_controller_manager": controllers_yaml,
-        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
+        "moveit_simple_controller_manager":
+        controllers_yaml,
+        "moveit_controller_manager":
+        "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
 
     trajectory_execution = {
@@ -151,14 +164,15 @@ def generate_launch_description():
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
-            {"use_sim_time": use_sim_time},
+            {
+                "use_sim_time": use_sim_time
+            },
         ],
     )
 
     # rviz with moveit configuration
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("ar_moveit_config"), "rviz", "moveit.rviz"]
-    )
+        [FindPackageShare("ar_moveit_config"), "rviz", "moveit.rviz"])
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
