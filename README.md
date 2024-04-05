@@ -58,11 +58,11 @@ This is a refresh of [ar3_core](https://github.com/ongdexter/ar3_core).
 
 ### Firmware Flashing
 
-The Teensy Arduino sketch provided in [ar_microcontrollers](./ar_microcontrollers/)
-is compatible with the default hardware. To flash it, follow the same
+The Teensy and Arduino Nano sketches provided in [ar_microcontrollers](./ar_microcontrollers/)
+are compatible with the default hardware. To flash it, follow the same
 procedure as specified in [AR4 Robot Setup](https://www.youtube.com/watch?v=OL6lXu8VU4s).
 
-### Running in Docker Container
+### [Optional] Running in Docker Container
 
 A docker container and run script has been provided that can be used to run the
 robot and any GUI programs. It requires an NVIDIA GPU, and the

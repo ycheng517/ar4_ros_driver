@@ -1,6 +1,5 @@
-/* NOTE: AR4 MK2 is untested. Compared to the firmware for AR4, The motor
- * direction is inverted for all axes except for J4. If you have the hardware,
- * please test and report back.
+/* Compared to the firmware for AR4, The motor direction is inverted for all
+ * axes except for J4.
  */
 #include <AccelStepper.h>
 #include <Encoder.h>
