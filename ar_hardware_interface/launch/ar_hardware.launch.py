@@ -12,6 +12,7 @@ def generate_launch_description():
     serial_port = LaunchConfiguration("serial_port")
     calibrate = LaunchConfiguration("calibrate")
     include_gripper = LaunchConfiguration("include_gripper")
+    arduino_serial_port = LaunchConfiguration("arduino_serial_port")
 
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -30,6 +31,9 @@ def generate_launch_description():
         " ",
         "include_gripper:=",
         include_gripper,
+        " ",
+        "arduino_serial_port:=",
+        arduino_serial_port,
     ])
     robot_description = {"robot_description": robot_description_content}
 
@@ -117,6 +121,12 @@ def generate_launch_description():
             default_value="True",
             description="Run the servo gripper",
             choices=["True", "False"],
+        ))
+    ld.add_action(
+        DeclareLaunchArgument(
+            "arduino_serial_port",
+            default_value="/dev/ttyUSB0",
+            description="Serial port of the Arduino nano for the servo gripper",
         ))
     ld.add_action(controller_manager_node)
     ld.add_action(spawn_joint_controller)
