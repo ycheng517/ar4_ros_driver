@@ -13,6 +13,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
   
   <exec_depend>ar_description</exec_depend>
+  <exec_depend>gripper_controllers</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>moveit_kinematics</exec_depend>
