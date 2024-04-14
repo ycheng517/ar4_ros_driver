@@ -101,7 +101,7 @@ hardware_interface::return_type ARHardwareInterface::read(
                      << radToDeg(joint_positions_[i]);
     logInfo += info_.joints[i].name + ": " + jointPositionStm.str() + " | ";
   }
-  RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
+  RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   return hardware_interface::return_type::OK;
 }
 
@@ -119,7 +119,7 @@ hardware_interface::return_type ARHardwareInterface::write(
                      << radToDeg(joint_position_commands_[i]);
     logInfo += info_.joints[i].name + ": " + jointPositionStm.str() + " | ";
   }
-  RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
+  RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   driver_.update(actuator_commands_, actuator_positions_);
   return hardware_interface::return_type::OK;
 }
