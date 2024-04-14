@@ -65,7 +65,7 @@ install(DIRECTORY include/
   DESTINATION include/${PROJECT_NAME}
 )
 
-install(DIRECTORY config launch urdf
+install(DIRECTORY config launch scripts urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
