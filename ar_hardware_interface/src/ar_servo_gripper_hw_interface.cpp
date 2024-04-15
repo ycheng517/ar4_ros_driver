@@ -76,7 +76,7 @@ hardware_interface::return_type ARServoGripperHWInterface::read(
   }
   position_ = angular_to_linear_pos(pos_deg);
   std::string logInfo = "Gripper Pos: " + std::to_string(position_);
-  RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
+  RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   return hardware_interface::return_type::OK;
 }
 
@@ -84,7 +84,7 @@ hardware_interface::return_type ARServoGripperHWInterface::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   int pos_deg = linear_to_angular_pos(position_command_);
   std::string logInfo = "Gripper Cmd: " + std::to_string(position_command_);
-  RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
+  RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   bool success = driver_.writePosition(pos_deg);
   if (!success) {
     return hardware_interface::return_type::ERROR;
