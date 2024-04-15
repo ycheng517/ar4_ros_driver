@@ -2,6 +2,7 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
 
+from launch.conditions import IfCondition
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
@@ -80,6 +81,7 @@ def generate_launch_description():
             "--controller-manager-timeout",
             "60",
         ],
+        condition=IfCondition(include_gripper),
     )
 
     robot_state_publisher_node = Node(
