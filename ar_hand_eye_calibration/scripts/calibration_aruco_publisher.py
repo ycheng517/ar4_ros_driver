@@ -8,8 +8,8 @@ from tf2_ros import TransformBroadcaster
 
 
 class CalibrationArucoPublisher(Node):
-    """ROS2 node that listens to the aruco markers topic and publishes the pose
-    of the calibration aruco marker.
+    """ROS2 node that listens to the aruco markers topic and publishes the 
+    transform of the specific aruco marker for calibration to tf2.
     """
 
     def __init__(self):
