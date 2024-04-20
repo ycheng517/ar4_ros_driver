@@ -1,3 +1,5 @@
+planning_plugins:
+  - ompl_interface/OMPLPlanner
 planner_configs:
   SBLkConfigDefault:
     type: geometric::SBL

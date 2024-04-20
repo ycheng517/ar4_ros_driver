@@ -9,7 +9,9 @@ install(DIRECTORY launch config
   DESTINATION share/${PROJECT_NAME}
 )
 
-install (PROGRAMS scripts/calibration_aruco_publisher.py
+install (PROGRAMS 
+  scripts/calibration_aruco_publisher.py
+  scripts/follow_aruco_marker.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
