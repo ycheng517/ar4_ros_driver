@@ -13,7 +13,6 @@ import tf2_ros
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import TransformStamped
-from geometry_msgs.msg import Transform
 from moveit.planning import MoveItPy
 from ros2_aruco_interfaces.msg import ArucoMarkers
 from tf2_geometry_msgs import do_transform_pose
@@ -72,9 +71,9 @@ class ArucoMarkerFollower(Node):
             f"Following marker at position: {transformed_pose.position}, " + \
             f"orientation: {transformed_pose.orientation}"
         )
+
         pose_goal = PoseStamped()
         pose_goal.header.frame_id = "base_link"
-        pose_goal.header.stamp = self.get_clock().now().to_msg()
         pose_goal.pose = transformed_pose
 
         # set plan start state to current state
@@ -101,6 +100,8 @@ class ArucoMarkerFollower(Node):
 
         # Transform the pose
         transformed_pose = do_transform_pose(pose, transform)
+
+        transformed_pose.position.z += 0.05
 
         return transformed_pose
 
