@@ -167,41 +167,54 @@ def generate_launch_description():
     params_dict.update(moveit_controllers)
     params_dict.update(trajectory_execution)
     params_dict.update(planning_scene_monitor_parameters)
-    pprint.pprint(params_dict)
 
     # Start the actual move_group node/action server
-    move_group_node = Node(
+    follow_aruco_node = Node(
         package="ar_hand_eye_calibration",
         executable="follow_aruco_marker.py",
         name="moveit_py",
         output="screen",
+        parameters=[params_dict],
+    )
+
+    # Start the actual move_group node/action server
+
+    move_group_ompl_planning_pipeline_config = {
+        "move_group": ompl_planning_pipeline_config["ompl"]
+    }
+    move_group_node = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        output="screen",
         parameters=[
-            params_dict
-            # robot_description_semantic,
-            # robot_description,
-            # robot_description_kinematics,
-            # robot_description_planning,
-            # ompl_planning_pipeline_config,
-            # trajectory_execution,
-            # moveit_controllers,
-            # planning_scene_monitor_parameters,
+            robot_description,
+            robot_description_semantic,
+            robot_description_kinematics,
+            robot_description_planning,
+            move_group_ompl_planning_pipeline_config,
+            trajectory_execution,
+            moveit_controllers,
+            planning_scene_monitor_parameters,
         ],
     )
 
-    # # rviz with moveit configuration
-    # rviz_config_file = PathJoinSubstitution(
-    #     [FindPackageShare("ar_moveit_config"), "rviz", "moveit.rviz"])
-    # rviz_node = Node(
-    #     package="rviz2",
-    #     executable="rviz2",
-    #     name="rviz2_moveit",
-    #     output="log",
-    #     arguments=["-d", rviz_config_file],
-    #     parameters=[
-    #         robot_description,
-    #         robot_description_semantic,
-    #     ],
-    # )
+    # rviz with moveit configuration
+    rviz_config_file = PathJoinSubstitution(
+        [FindPackageShare("ar_moveit_config"), "rviz", "moveit.rviz"])
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2_moveit",
+        output="log",
+        arguments=["-d", rviz_config_file],
+        parameters=[
+            robot_description,
+            robot_description_semantic,
+            move_group_ompl_planning_pipeline_config,
+            robot_description_kinematics,
+            robot_description_planning,
+        ],
+    )
 
-    nodes_to_start = [move_group_node]
+    nodes_to_start = [follow_aruco_node, move_group_node, rviz_node]
     return LaunchDescription(declared_arguments + nodes_to_start)

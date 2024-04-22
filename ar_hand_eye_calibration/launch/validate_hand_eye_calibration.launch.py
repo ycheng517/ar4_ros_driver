@@ -22,13 +22,6 @@ def generate_launch_description():
                                   executable='aruco_node',
                                   parameters=[aruco_params])
 
-    calibration_aruco_publisher = Node(
-        package="ar_hand_eye_calibration",
-        executable="calibration_aruco_publisher.py",
-        name="calibration_aruco_publisher",
-        output="screen",
-    )
-
     calibration_tf_publisher = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory("easy_handeye2"),
@@ -39,6 +32,5 @@ def generate_launch_description():
     ld = LaunchDescription()
     ld.add_action(rs_launch)
     ld.add_action(aruco_recognition_node)
-    ld.add_action(calibration_aruco_publisher)
     ld.add_action(calibration_tf_publisher)
     return ld
