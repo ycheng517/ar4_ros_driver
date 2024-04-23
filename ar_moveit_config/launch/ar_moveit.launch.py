@@ -56,6 +56,7 @@ def load_yaml(package_name, file_name):
 def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     include_gripper = LaunchConfiguration("include_gripper")
+    rviz_config_file = LaunchConfiguration("rviz_config_file")
 
     declared_arguments = []
     declared_arguments.append(
@@ -71,6 +72,12 @@ def generate_launch_description():
             default_value="True",
             description="Run the servo gripper",
             choices=["True", "False"],
+        ))
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "rviz_config_file",
+            default_value="moveit.rviz",
+            description="Full path to the RViz configuration file to use",
         ))
 
     robot_description_content = Command([
@@ -172,7 +179,7 @@ def generate_launch_description():
 
     # rviz with moveit configuration
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("ar_moveit_config"), "rviz", "moveit.rviz"])
+        [FindPackageShare("ar_moveit_config"), "rviz", rviz_config_file])
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",

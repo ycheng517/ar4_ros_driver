@@ -9,10 +9,16 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
-    rs_launch = IncludeLaunchDescription(
+    realsense = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory("realsense2_camera"),
                          "launch", "rs_launch.py")
+        ]))
+
+    ar_moveit = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory("ar_moveit_config"),
+                         "launch", "ar_moveit.launch.py")
         ]))
 
     aruco_params = os.path.join(
@@ -38,19 +44,17 @@ def generate_launch_description():
         "tracking_marker_frame": "calibration_aruco",
     }
 
-    easy_handeye2_launch = IncludeLaunchDescription(
+    easy_handeye2 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory("easy_handeye2"),
                          "launch", "calibrate.launch.py")
         ]),
         launch_arguments=calibration_args.items())
-    easy_handeye2_delayed_launch = TimerAction(
-        period=5.0,  # Delay time in seconds
-        actions=[easy_handeye2_launch])
 
     ld = LaunchDescription()
-    ld.add_action(rs_launch)
+    ld.add_action(realsense)
+    ld.add_action(ar_moveit)
     ld.add_action(aruco_recognition_node)
     ld.add_action(calibration_aruco_publisher)
-    ld.add_action(easy_handeye2_delayed_launch)
+    ld.add_action(easy_handeye2)
     return ld
