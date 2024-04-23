@@ -72,8 +72,13 @@ def generate_launch_description():
         "robot_description_semantic": robot_description_semantic_content
     }
 
-    # robot_description_kinematics = PathJoinSubstitution(
-    #     [FindPackageShare("ar_moveit_config"), "config", "kinematics.yaml"])
+    robot_description_kinematics = {
+        "robot_description_kinematics":
+        load_yaml(
+            "ar_moveit_config",
+            os.path.join("config", "kinematics.yaml"),
+        )
+    }
 
     robot_description_planning = {
         "robot_description_planning":
@@ -119,17 +124,6 @@ def generate_launch_description():
         "publish_transforms_updates": True,
     }
 
-    robot_description_kinematics = {
-        "robot_description_kinematics": {
-            "ar_manipulator": {
-                "kinematics_solver":
-                "kdl_kinematics_plugin/KDLKinematicsPlugin",
-                "kinematics_solver_search_resolution": 0.005,
-                "kinematics_solver_timeout": 0.005,
-                "kinematics_solver_attempts": 3,
-            }
-        },
-    }
     params_dict = {}
     params_dict.update(robot_description)
     params_dict.update(robot_description_semantic)
@@ -145,7 +139,6 @@ def generate_launch_description():
     params_dict.update(trajectory_execution)
     params_dict.update(planning_scene_monitor_parameters)
 
-    # Start the actual move_group node/action server
     follow_aruco_node = Node(
         package="ar_hand_eye_calibration",
         executable="follow_aruco_marker.py",
@@ -154,7 +147,6 @@ def generate_launch_description():
         parameters=[params_dict],
     )
 
-    # Start the actual move_group node/action server
     ar_moveit_launch = PythonLaunchDescriptionSource([
         os.path.join(get_package_share_directory("ar_moveit_config"), "launch",
                      "ar_moveit.launch.py")

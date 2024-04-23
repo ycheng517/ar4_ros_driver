@@ -1,7 +1,7 @@
 repositories:
   easy_handeye2:
     type: git
-    url: https://github.com/marcoesposito1988/easy_handeye2.git
+    url: https://github.com/ycheng517/easy_handeye2.git
     version: master
   ros2_aruco:
     type: git

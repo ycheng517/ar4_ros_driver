@@ -109,8 +109,13 @@ def generate_launch_description():
         "robot_description_semantic": robot_description_semantic_content
     }
 
-    robot_description_kinematics = PathJoinSubstitution(
-        [FindPackageShare("ar_moveit_config"), "config", "kinematics.yaml"])
+    robot_description_kinematics = {
+        "robot_description_kinematics":
+        load_yaml(
+            "ar_moveit_config",
+            os.path.join("config", "kinematics.yaml"),
+        )
+    }
 
     robot_description_planning = {
         "robot_description_planning":

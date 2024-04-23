@@ -4,7 +4,7 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription, TimerAction
+from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
@@ -15,11 +15,16 @@ def generate_launch_description():
                          "launch", "rs_launch.py")
         ]))
 
-    ar_moveit = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            os.path.join(get_package_share_directory("ar_moveit_config"),
-                         "launch", "ar_moveit.launch.py")
-        ]))
+    ar_moveit_launch = PythonLaunchDescriptionSource([
+        os.path.join(get_package_share_directory("ar_moveit_config"), "launch",
+                     "ar_moveit.launch.py")
+    ])
+    ar_moveit_args = {
+        "include_gripper": "False",
+        "rviz_config_file": "moveit_with_camera.rviz"
+    }.items()
+    ar_moveit = IncludeLaunchDescription(ar_moveit_launch,
+                                         launch_arguments=ar_moveit_args)
 
     aruco_params = os.path.join(
         get_package_share_directory("ar_hand_eye_calibration"), "config",
