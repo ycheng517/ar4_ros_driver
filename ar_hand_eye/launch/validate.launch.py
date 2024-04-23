@@ -29,9 +29,8 @@ def generate_launch_description():
                          "launch", "rs_launch.py")
         ]))
 
-    aruco_params = os.path.join(
-        get_package_share_directory("ar_hand_eye_calibration"), "config",
-        "aruco_parameters.yaml")
+    aruco_params = os.path.join(get_package_share_directory("ar_hand_eye"),
+                                "config", "aruco_parameters.yaml")
     aruco_recognition_node = Node(package='ros2_aruco',
                                   executable='aruco_node',
                                   parameters=[aruco_params])
@@ -132,7 +131,7 @@ def generate_launch_description():
     params_dict.update(ompl_planning_pipeline_config)
     params_dict.update(
         load_yaml(
-            "ar_hand_eye_calibration",
+            "ar_hand_eye",
             os.path.join("config", "moveit_py_parameters.yaml"),
         ))
     params_dict.update(moveit_controllers)
@@ -140,7 +139,7 @@ def generate_launch_description():
     params_dict.update(planning_scene_monitor_parameters)
 
     follow_aruco_node = Node(
-        package="ar_hand_eye_calibration",
+        package="ar_hand_eye",
         executable="follow_aruco_marker.py",
         name="moveit_py",
         output="screen",

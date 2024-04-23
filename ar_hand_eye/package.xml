@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>ar_hand_eye_calibration</name>
+  <name>ar_hand_eye</name>
   <version>0.1.0</version>
   <description>
     Example hand eye calibration between an Intel Realsense camera and the AR4.
