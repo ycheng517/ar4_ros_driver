@@ -13,9 +13,3 @@ RUN git clone https://github.com/ycheng517/ar4_ros_driver.git
 RUN rosdep update
 
 RUN rosdep install --from-paths ar4_ros_driver --ignore-src -r -y
-
-# For calibration
-RUN apt-get install -y \
-  ros-${ROS_DISTRO}-librealsense2* \
-  ros-${ROS_DISTRO}-realsense2-*
-RUN apt install ros-${ROS_DISTRO}-rqt-py-common
