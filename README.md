@@ -3,17 +3,17 @@
 ROS 2 driver of the AR4 robot arm from [Annin Robotics](https://www.anninrobotics.com).
 Tested with ROS 2 Iron on Ubuntu 22.04.
 
-Supports:
+**Supports:**
 
 - AR4 (Original version)
 - AR4 MK2
 - AR4 servo gripper
 
-Features:
+**Features:**
 
-- Moveit control
+- Moveit control (GUI and Python interface example)
 - Gazebo simulation
-- Example Hand-Eye calibration
+- Hand-Eye calibration
 
 This is a refresh of [ar3_core](https://github.com/ongdexter/ar3_core).
 
