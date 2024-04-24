@@ -9,13 +9,22 @@ Supports:
 - AR4 MK2
 - AR4 servo gripper
 
+Features:
+
+- Moveit control
+- Gazebo simulation
+- Example Hand-Eye calibration
+
 This is a refresh of [ar3_core](https://github.com/ongdexter/ar3_core).
 
 ## Video Demo:
 
+Motion Planning using RViz and Moveit:
 [![AR4 ROS 2 Driver Demo](http://img.youtube.com/vi/XJCrfrW7jXE/0.jpg)](https://www.youtube.com/watch?v=XJCrfrW7jXE "AR4 ROS 2 Driver Demo")
 
 [Startup, Calibration, and Servo Gripper Demo](https://youtu.be/PQtXFzqRtHM)
+
+[Hand-Eye Calibration Demo](https://youtu.be/w3tWKYnLL98)
 
 ## Overview
 
@@ -157,3 +166,9 @@ ros2 launch ar_moveit_config ar_moveit.launch.py use_sim_time:=true include_grip
 ```
 
 You can now plan in RViz and control the simulated arm.
+
+---
+
+### Hand-Eye Calibration
+
+See [ar_hand_eye package's README](./ar_hand_eye/README.md)
