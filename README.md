@@ -20,6 +20,7 @@ This is a refresh of [ar3_core](https://github.com/ongdexter/ar3_core).
 ## Video Demo:
 
 Motion Planning using RViz and Moveit:
+
 [![AR4 ROS 2 Driver Demo](http://img.youtube.com/vi/XJCrfrW7jXE/0.jpg)](https://www.youtube.com/watch?v=XJCrfrW7jXE "AR4 ROS 2 Driver Demo")
 
 [Startup, Calibration, and Servo Gripper Demo](https://youtu.be/PQtXFzqRtHM)
