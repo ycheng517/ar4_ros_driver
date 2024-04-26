@@ -13,7 +13,7 @@
       <passive_joint name="gripper_jaw2_joint" />
     </group>
     <group_state name="open" group="ar_gripper">
-      <joint name="gripper_jaw1_joint" value="-0.014" />
+      <joint name="gripper_jaw1_joint" value="-0.012" />
     </group_state>
     <group_state name="closed" group="ar_gripper">
       <joint name="gripper_jaw1_joint" value="0" />
