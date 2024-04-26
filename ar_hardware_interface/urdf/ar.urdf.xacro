@@ -17,6 +17,7 @@
     plugin_name="ar_hardware_interface/ARHardwareInterface"
     serial_port="$(arg serial_port)"
     calibrate="$(arg calibrate)"
+    joint_offset_parameters_file="$(find ar_hardware_interface)/config/joint_offsets.yaml"
   />
 
   <xacro:if value="$(arg include_gripper)">

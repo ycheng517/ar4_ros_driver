@@ -6,7 +6,12 @@
     plugin_name
     serial_port
     calibrate
+    joint_offset_parameters_file
   ">
+
+    <xacro:property name="joint_offset_parameters"
+      value="${xacro.load_yaml(joint_offset_parameters_file)}"/>
+
     <ros2_control name="${name}" type="system">
 
       <hardware>
@@ -23,6 +28,7 @@
         <state_interface name="position">
           <param name="initial_value">0.0</param>
         </state_interface>
+        <param name="position_offset">${joint_offset_parameters['joint_1']}</param>
       </joint>
 
       <joint name="joint_2">
@@ -33,6 +39,7 @@
         <state_interface name="position">
           <param name="initial_value">0.0</param>
         </state_interface>
+        <param name="position_offset">${joint_offset_parameters['joint_2']}</param>
       </joint>
 
       <joint name="joint_3">
@@ -43,6 +50,7 @@
         <state_interface name="position">
           <param name="initial_value">0.0</param>
         </state_interface>
+        <param name="position_offset">${joint_offset_parameters['joint_3']}</param>
       </joint>
 
       <joint name="joint_4">
@@ -53,6 +61,7 @@
         <state_interface name="position">
           <param name="initial_value">0.0</param>
         </state_interface>
+        <param name="position_offset">${joint_offset_parameters['joint_4']}</param>
       </joint>
 
       <joint name="joint_5">
@@ -63,6 +72,7 @@
         <state_interface name="position">
           <param name="initial_value">0.0</param>
         </state_interface>
+        <param name="position_offset">${joint_offset_parameters['joint_5']}</param>
       </joint>
 
       <joint name="joint_6">
@@ -73,6 +83,7 @@
         <state_interface name="position">
           <param name="initial_value">0.0</param>
         </state_interface>
+        <param name="position_offset">${joint_offset_parameters['joint_6']}</param>
       </joint>
 
     </ros2_control>
