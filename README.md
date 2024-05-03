@@ -50,6 +50,10 @@ Motion Planning using RViz and Moveit:
   ```bash
   git clone https://github.com/ycheng517/ar4_ros_driver
   ```
+- Import required external repos:
+  ```bash
+  vcs import . --input ar_hand_eye/hand_eye_calibration.repos
+  ```
 - Install workspace dependencies:
   ```bash
   rosdep install --from-paths . --ignore-src -r -y
