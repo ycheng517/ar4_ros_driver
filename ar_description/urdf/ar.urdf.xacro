@@ -11,6 +11,6 @@
 
   <xacro:if value="$(arg include_gripper)">
     <xacro:include filename="$(find ar_description)/urdf/ar_gripper_macro.xacro"/>
-    <xacro:ar_gripper parent="link_6" />
+    <xacro:ar_gripper parent="ee_link" />
   </xacro:if>
 </robot>

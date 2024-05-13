@@ -11,7 +11,7 @@
   <xacro:ar_robot parent="world">
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:ar_robot>
-  <xacro:ar_gripper parent="link_6" />
+  <xacro:ar_gripper parent="ee_link" />
 
   <xacro:ar_ros2_control
     name="ARGazeboSystem"

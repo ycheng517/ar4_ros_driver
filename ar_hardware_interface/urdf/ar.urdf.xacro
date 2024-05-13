@@ -24,7 +24,7 @@
     <xacro:include filename="$(find ar_description)/urdf/ar_gripper_macro.xacro"/>
     <xacro:include filename="$(find ar_description)/urdf/ar_gripper.ros2_control.xacro"/>
 
-    <xacro:ar_gripper parent="link_6" />
+    <xacro:ar_gripper parent="ee_link" />
 
     <xacro:ar_gripper_ros2_control
       name="ar_servo_gripper"

@@ -204,5 +204,15 @@
       <axis xyz="0 0 1"/>
       <limit lower="${-155.0 / 180.0 * pi}" upper="${155.0 / 180.0 * pi}" effort="0" velocity="0.5"/>
     </joint>
+
+    <!-- center of the end effector mounting surface on link_6 -->
+    <link name="ee_link" />
+    <joint name="ee_joint" type="fixed">
+      <parent link="link_6" />
+      <child link="ee_link" />
+      <origin xyz="0 0 0.016" rpy="0 0 0" />
+    </joint>
+
+
   </xacro:macro>
 </robot>

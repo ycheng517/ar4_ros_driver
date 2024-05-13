@@ -43,8 +43,8 @@ def generate_launch_description():
         "name": "ar4_calibration",
         "calibration_type": "eye_on_base",
         "robot_base_frame": "base_link",
-        "robot_effector_frame": "link_6",
-        "tracking_base_frame": "camera_link",
+        "robot_effector_frame": "ee_link",
+        "tracking_base_frame": "camera_color_frame",
         "tracking_marker_frame": "calibration_aruco",
     }
 
@@ -55,8 +55,17 @@ def generate_launch_description():
         ]),
         launch_arguments=calibration_args.items())
 
+    # static transform publisher for camera_link to world
+    static_tf_publisher = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=["0", "0", "0", "0", "0", "0", "world", "camera_link"],
+        output="screen",
+    )
+
     ld = LaunchDescription()
     ld.add_action(realsense)
+    ld.add_action(static_tf_publisher)
     ld.add_action(ar_moveit)
     ld.add_action(aruco_recognition_node)
     ld.add_action(calibration_aruco_publisher)

@@ -3,7 +3,7 @@
   <xacro:macro name="ar_gripper" params="parent">
 
     <joint name="gripper_base_joint" type="fixed">
-      <origin xyz="0.0 0.0 0.016" rpy="-1.5708 0.0 0.0"/>
+      <origin xyz="0.0 0.0 0.0" rpy="-1.5708 0.0 0.0"/>
       <parent link="${parent}"/>
       <child link="gripper_base_link"/>
     </joint>

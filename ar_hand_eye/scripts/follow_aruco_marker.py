@@ -78,7 +78,8 @@ class ArucoMarkerFollower(Node):
         # get pose in robot base frame
         try:
             transformed_pose = self._transform_pose(cal_marker_pose,
-                                                    "camera_link", "base_link")
+                                                    "camera_color_frame",
+                                                    "base_link")
         except tf2_ros.LookupException as e:
             self.logger.error(f"Error transforming pose: {e}")
             return
@@ -93,7 +94,8 @@ class ArucoMarkerFollower(Node):
         self.arm.set_start_state_to_current_state()
 
         # set pose goal with PoseStamped message
-        self.arm.set_goal_state(pose_stamped_msg=pose_goal, pose_link="link_6")
+        self.arm.set_goal_state(pose_stamped_msg=pose_goal,
+                                pose_link="ee_link")
 
         # plan to goal
         self._plan_and_execute()
@@ -126,7 +128,7 @@ class ArucoMarkerFollower(Node):
         transformed_pose.orientation.y = flipped_quat[2]
         transformed_pose.orientation.z = flipped_quat[3]
 
-        transformed_pose.position.z += 0.05
+        transformed_pose.position.z += 0.09
 
         stamped_pose = PoseStamped()
         stamped_pose.header.frame_id = target_frame

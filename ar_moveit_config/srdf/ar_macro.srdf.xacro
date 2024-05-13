@@ -12,6 +12,7 @@
       <joint name="joint_4" />
       <joint name="joint_5" />
       <joint name="joint_6" />
+      <joint name="ee_joint"/>
     </group>
     <group_state name="home" group="ar_manipulator">
       <joint name="joint_1" value="0" />
