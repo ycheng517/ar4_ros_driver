@@ -21,6 +21,7 @@
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>moveit_py</exec_depend>
+  <exec_depend>python3-transforms3d</exec_depend>
   <exec_depend>ros2_aruco</exec_depend>
   <exec_depend>tf_transformations</exec_depend>
 
