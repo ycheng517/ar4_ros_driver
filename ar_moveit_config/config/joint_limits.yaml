@@ -23,14 +23,14 @@ joint_limits:
     max_velocity: 0.2618 # 15 deg/s
   joint_5:
     has_acceleration_limits: true
-    max_acceleration: 0.08727 # 5 deg/s^2
+    max_acceleration: 0.174533 # 10 deg/s^2
     has_velocity_limits: true
-    max_velocity: 0.2618 # 15 deg/s
+    max_velocity: 0.261799 # 30 deg/s
   joint_6:
     has_acceleration_limits: true
-    max_acceleration: 0.08727 # 5 deg/s^2
+    max_acceleration: 0.174533 # 10 deg/s^2
     has_velocity_limits: true
-    max_velocity: 0.2618 # 15 deg/s
+    max_velocity: 0.261799 # 30 deg/s
   gripper_jaw1_joint:
     has_acceleration_limits: true
     max_acceleration: 0.01 # m/s^2

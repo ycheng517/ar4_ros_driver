@@ -86,7 +86,7 @@
       <parent link="link_1"/>
       <child link="link_2"/>
       <axis xyz="0 0 -1"/>
-      <limit lower="${-42.0 / 180.0 * pi}" upper="${90.0 / 180.0 * pi}" effort="0.5" velocity="0"/>
+      <limit lower="${-42.0 / 180.0 * pi}" upper="${90.0 / 180.0 * pi}" effort="0.5" velocity="0.5"/>
     </joint>
     <link name="link_3">
       <inertial>
@@ -173,7 +173,7 @@
       <parent link="link_4"/>
       <child link="link_5"/>
       <axis xyz="1 0 0"/>
-      <limit lower="${-105.0 / 180.0 * pi}" upper="${105.0 / 180.0 * pi}" effort="0" velocity="0.5"/>
+      <limit lower="${-105.0 / 180.0 * pi}" upper="${105.0 / 180.0 * pi}" effort="0" velocity="1.0"/>
     </joint>
     <link name="link_6">
       <inertial>
@@ -202,7 +202,7 @@
       <parent link="link_5"/>
       <child link="link_6"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-155.0 / 180.0 * pi}" upper="${155.0 / 180.0 * pi}" effort="0" velocity="0.5"/>
+      <limit lower="${-155.0 / 180.0 * pi}" upper="${155.0 / 180.0 * pi}" effort="0" velocity="1.0"/>
     </joint>
 
     <!-- center of the end effector mounting surface on link_6 -->
