@@ -53,7 +53,7 @@
       </collision>
     </link>
     <joint name="joint_1" type="revolute">
-      <origin rpy="${pi} 0 0" xyz="0 0 0.003445"/>
+      <origin rpy="${pi} 0 0" xyz="0 0 0"/>
       <parent link="base_link"/>
       <child link="link_1"/>
       <axis xyz="0 0 1"/>
@@ -82,7 +82,7 @@
       </collision>
     </link>
     <joint name="joint_2" type="revolute">
-      <origin rpy="1.5708 0.5236 -1.5708" xyz="0 0.064146 -0.16608"/>
+      <origin rpy="1.5708 0 -1.5708" xyz="0 0.0642 -0.16977"/>
       <parent link="link_1"/>
       <child link="link_2"/>
       <axis xyz="0 0 -1"/>
@@ -111,7 +111,7 @@
       </collision>
     </link>
     <joint name="joint_3" type="revolute">
-      <origin rpy="0 0 -2.61799" xyz="0.1525 -0.26414 0"/>
+      <origin rpy="0 0 3.1416" xyz="0 -0.305 0"/>
       <parent link="link_2"/>
       <child link="link_3"/>
       <axis xyz="0 0 -1"/>
@@ -140,7 +140,7 @@
       </collision>
     </link>
     <joint name="joint_4" type="revolute">
-      <origin rpy="1.5708 -1.2554 -1.5708" xyz="0 0 0.00675"/>
+      <origin rpy="1.5708 0 -1.5708" xyz="0 0 0.0"/>
       <parent link="link_3"/>
       <child link="link_4"/>
       <axis xyz="0 0 -1"/>
@@ -169,7 +169,7 @@
       </collision>
     </link>
     <joint name="joint_5" type="revolute">
-      <origin rpy="${pi} 0 -2.8262" xyz="0 0 -0.22225"/>
+      <origin rpy="${pi} 0 -1.5708" xyz="0 0 -0.22263"/>
       <parent link="link_4"/>
       <child link="link_5"/>
       <axis xyz="1 0 0"/>
@@ -198,7 +198,7 @@
       </collision>
     </link>
     <joint name="joint_6" type="revolute">
-      <origin rpy="0 0 3.1416" xyz="-0.000294 0 0.02117"/>
+      <origin rpy="0 0 3.1416" xyz="0.000 0 0.03625"/>
       <parent link="link_5"/>
       <child link="link_6"/>
       <axis xyz="0 0 1"/>
@@ -210,7 +210,7 @@
     <joint name="ee_joint" type="fixed">
       <parent link="link_6" />
       <child link="ee_link" />
-      <origin xyz="0 0 0.016" rpy="0 0 0" />
+      <origin xyz="0 0 0.0" rpy="0 0 0" />
     </joint>
 
 
