@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: ar_description
+    relative_path: urdf/ar.urdf
+  srdf:
+    relative_path: config/ar_robot.srdf
+  package_settings:
+    author_name: Yifei Cheng
+    author_email: ycheng517@gmail.com
+    generated_timestamp: 1715563828
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity

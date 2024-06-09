@@ -1,0 +1,10 @@
+# Default initial positions for ar_robot's ros2_control fake system
+
+initial_positions:
+  gripper_jaw1_joint: 0
+  joint_1: 0
+  joint_2: 0
+  joint_3: 0
+  joint_4: 0
+  joint_5: 0
+  joint_6: 0
