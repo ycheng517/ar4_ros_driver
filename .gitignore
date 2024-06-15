@@ -6,6 +6,7 @@ log/
 # imported ROS projects
 easy_handeye2/
 ros2_aruco/
+pymoveit2/
 
 # Prerequisites
 *.d

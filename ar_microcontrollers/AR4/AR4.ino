@@ -287,7 +287,8 @@ void stateTRAJ() {
           }
         }
       } else if (function == "JC") {
-        // calibrate joint 6 first, as J6 cable can push the limit switch closed when J5 is at limit
+        // calibrate joint 6 first, as J6 cable can push the limit switch closed
+        // when J5 is at limit
         int calJoints6[] = {0, 0, 0, 0, 0, 1};
         calibrateJoints(calJoints6);
         int calJoints12345[] = {1, 1, 1, 1, 1, 0};
