@@ -1,11 +1,14 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg ar_model)">
   <xacro:arg name="include_gripper" default="true"/>
 
   <xacro:include filename="$(find ar_description)/urdf/ar_macro.xacro"/>
 
   <link name="world" />
-  <xacro:ar_robot parent="world">
+  <xacro:ar_robot
+    parent="world"
+    robot_parameters_file="$(find ar_description)/config/$(arg ar_model).yaml"
+  >
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:ar_robot>
 

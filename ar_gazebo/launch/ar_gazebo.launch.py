@@ -29,14 +29,21 @@
 # Author: Denis Stogl
 
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
+from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
+    ar_model_arg = DeclareLaunchArgument("ar_model",
+                                         default_value="ar4",
+                                         choices=["ar4", "ar4_mk3"],
+                                         description="Model of AR4")
+    ar_model_config = LaunchConfiguration("ar_model")
+
     initial_joint_controllers = PathJoinSubstitution([
         FindPackageShare("ar_hardware_interface"), "config", "controllers.yaml"
     ])
@@ -48,7 +55,8 @@ def generate_launch_description():
             FindPackageShare("ar_description"), "urdf", "ar_gazebo.urdf.xacro"
         ]),
         " ",
-        "name:=ar",
+        "ar_model:=",
+        ar_model_config,
         " ",
         "simulation_controllers:=",
         initial_joint_controllers,
@@ -109,12 +117,12 @@ def generate_launch_description():
         output="screen",
     )
 
-    nodes_to_start = [
+    return LaunchDescription([
+        ar_model_arg,
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_started,
         gripper_joint_controller_spawner_started,
         gazebo,
         gazebo_spawn_robot,
-    ]
-    return LaunchDescription(nodes_to_start)
+    ])
