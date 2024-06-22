@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
-  <xacro:macro name="ar_robot" params="parent *origin">
+  <xacro:macro name="ar_robot" params="
+    parent
+    *origin
+    robot_parameters_file
+  ">
+
+    <xacro:property name="robot_parameters" value="${xacro.load_yaml(robot_parameters_file)}"/>
 
     <joint name="base_joint" type="fixed">
       <xacro:insert_block name="origin" />
@@ -17,7 +23,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/base_link.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/base_link.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -26,7 +32,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/base_link.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/base_link.STL"/>
         </geometry>
       </collision>
     </link>
@@ -39,7 +45,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_1.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_1.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -48,7 +54,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_1.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_1.STL"/>
         </geometry>
       </collision>
     </link>
@@ -68,7 +74,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_2.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_2.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -77,7 +83,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_2.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_2.STL"/>
         </geometry>
       </collision>
     </link>
@@ -97,7 +103,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_3.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_3.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -106,7 +112,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_3.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_3.STL"/>
         </geometry>
       </collision>
     </link>
@@ -126,7 +132,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_4.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_4.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -135,7 +141,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_4.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_4.STL"/>
         </geometry>
       </collision>
     </link>
@@ -144,7 +150,7 @@
       <parent link="link_3"/>
       <child link="link_4"/>
       <axis xyz="0 0 -1"/>
-      <limit lower="${-165.0 / 180.0 * pi}" upper="${165.0 / 180.0 * pi}" effort="0" velocity="0.5"/>
+      <limit lower="${-1 * robot_parameters['j4_limit']}" upper="${robot_parameters['j4_limit']}" effort="0" velocity="0.5"/>
     </joint>
     <link name="link_5">
       <inertial>
@@ -155,7 +161,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_5.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_5.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -164,7 +170,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_5.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_5.STL"/>
         </geometry>
       </collision>
     </link>
@@ -184,7 +190,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_6.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_6.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -193,16 +199,16 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4/link_6.STL"/>
+          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_6.STL"/>
         </geometry>
       </collision>
     </link>
     <joint name="joint_6" type="revolute">
-      <origin rpy="0 0 3.1416" xyz="0.000 0 0.03625"/>
+      <origin rpy="0 0 3.1416" xyz="0.000 0 ${robot_parameters['l6_length']}"/>
       <parent link="link_5"/>
       <child link="link_6"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-155.0 / 180.0 * pi}" upper="${155.0 / 180.0 * pi}" effort="0" velocity="1.0"/>
+      <limit lower="${-1.0 * robot_parameters['j6_limit']}" upper="${robot_parameters['j6_limit']}" effort="0" velocity="1.0"/>
     </joint>
 
     <!-- center of the end effector mounting surface on link_6 -->
@@ -212,7 +218,6 @@
       <child link="ee_link" />
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </joint>
-
 
   </xacro:macro>
 </robot>

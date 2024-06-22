@@ -14,6 +14,7 @@ def generate_launch_description():
     calibrate = LaunchConfiguration("calibrate")
     include_gripper = LaunchConfiguration("include_gripper")
     arduino_serial_port = LaunchConfiguration("arduino_serial_port")
+    ar_model_config = LaunchConfiguration("ar_model")
 
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -22,7 +23,8 @@ def generate_launch_description():
             FindPackageShare("ar_hardware_interface"), "urdf", "ar.urdf.xacro"
         ]),
         " ",
-        "name:=ar",
+        "ar_model:=",
+        ar_model_config,
         " ",
         "serial_port:=",
         serial_port,
@@ -130,6 +132,11 @@ def generate_launch_description():
             default_value="/dev/ttyUSB0",
             description="Serial port of the Arduino nano for the servo gripper",
         ))
+    ld.add_action(
+        DeclareLaunchArgument("ar_model",
+                              default_value="ar4",
+                              choices=["ar4", "ar4_mk3"],
+                              description="Model of AR4"))
     ld.add_action(controller_manager_node)
     ld.add_action(spawn_joint_controller)
     ld.add_action(gripper_controller_spawner)

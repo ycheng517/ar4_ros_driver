@@ -57,6 +57,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     include_gripper = LaunchConfiguration("include_gripper")
     rviz_config_file = LaunchConfiguration("rviz_config_file")
+    ar_model_config = LaunchConfiguration("ar_model")
 
     declared_arguments = []
     declared_arguments.append(
@@ -79,6 +80,11 @@ def generate_launch_description():
             default_value="moveit.rviz",
             description="Full path to the RViz configuration file to use",
         ))
+    declared_arguments.append(
+        DeclareLaunchArgument("ar_model",
+                              default_value="ar4",
+                              choices=["ar4", "ar4_mk3"],
+                              description="Model of AR4"))
 
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -86,7 +92,8 @@ def generate_launch_description():
         PathJoinSubstitution(
             [FindPackageShare("ar_description"), "urdf", "ar.urdf.xacro"]),
         " ",
-        "name:=ar",
+        "ar_model:=",
+        ar_model_config,
         " ",
         "include_gripper:=",
         include_gripper,

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg ar_model)">
   <xacro:include filename="$(find ar_description)/urdf/ar_macro.xacro" />
   <xacro:include filename="$(find ar_description)/urdf/ar_gripper_macro.xacro" />
   <xacro:include filename="$(find ar_description)/urdf/ar.ros2_control.xacro" />
@@ -8,7 +8,10 @@
   <xacro:arg name="simulation_controllers" default="" />
 
   <link name="world" />
-  <xacro:ar_robot parent="world">
+  <xacro:ar_robot 
+    parent="world"
+    robot_parameters_file="$(find ar_description)/config/$(arg ar_model).yaml"
+  >
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:ar_robot>
   <xacro:ar_gripper parent="ee_link" />
@@ -18,7 +21,7 @@
     plugin_name="gazebo_ros2_control/GazeboSystem"
     serial_port="None"
     calibrate="False"
-    joint_offset_parameters_file="$(find ar_hardware_interface)/config/joint_offsets.yaml"
+    joint_offset_parameters_file="$(find ar_hardware_interface)/config/joint_offsets/$(arg ar_model).yaml"
   />
 
   <xacro:ar_gripper_ros2_control

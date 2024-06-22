@@ -29,6 +29,11 @@ def generate_launch_description():
     db_arg = DeclareLaunchArgument("db",
                                    default_value="False",
                                    description="Database flag")
+    ar_model_arg = DeclareLaunchArgument("ar_model",
+                                         default_value="ar4",
+                                         choices=["ar4", "ar4_mk3"],
+                                         description="Model of AR4")
+    ar_model_config = LaunchConfiguration("ar_model")
 
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -37,7 +42,8 @@ def generate_launch_description():
             FindPackageShare("ar_moveit_config"), "urdf", "fake_ar.urdf.xacro"
         ]),
         " ",
-        "name:=ar",
+        "ar_model:=",
+        ar_model_config,
     ])
     robot_description = {"robot_description": robot_description_content}
 
@@ -234,6 +240,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         db_arg,
+        ar_model_arg,
         rviz_node,
         # static_tf,
         robot_state_publisher,
