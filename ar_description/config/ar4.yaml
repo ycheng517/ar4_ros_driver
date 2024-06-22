@@ -1,0 +1,4 @@
+mesh_dir: ar4
+j4_limit: !degrees 165.0
+j6_limit: !degrees 155.0
+l6_length: 0.03625
