@@ -6,11 +6,12 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.substitutions import (
     Command,
     FindExecutable,
     PathJoinSubstitution,
+    LaunchConfiguration,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
@@ -23,6 +24,12 @@ def load_yaml(package_name, file_name):
 
 
 def generate_launch_description():
+    ar_model_config = LaunchConfiguration("ar_model")
+    ar_model_arg = DeclareLaunchArgument("ar_model",
+                                         default_value="ar4",
+                                         choices=["ar4", "ar4_mk3"],
+                                         description="Model of AR4")
+
     realsense = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory("realsense2_camera"),
@@ -48,7 +55,8 @@ def generate_launch_description():
         PathJoinSubstitution(
             [FindPackageShare("ar_description"), "urdf", "ar.urdf.xacro"]),
         " ",
-        "name:=ar",
+        "ar_model:=",
+        ar_model_config,
         " ",
         "include_gripper:=",
         "False",
@@ -158,6 +166,6 @@ def generate_launch_description():
                                          launch_arguments=ar_moveit_args)
 
     return LaunchDescription([
-        realsense, aruco_recognition_node, calibration_tf_publisher,
-        follow_aruco_node, ar_moveit
+        ar_model_arg, realsense, aruco_recognition_node,
+        calibration_tf_publisher, follow_aruco_node, ar_moveit
     ])
