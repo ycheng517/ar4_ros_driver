@@ -21,7 +21,7 @@
     plugin_name="gazebo_ros2_control/GazeboSystem"
     serial_port="None"
     calibrate="False"
-    joint_offset_parameters_file="$(find ar_hardware_interface)/config/joint_offsets.yaml"
+    joint_offset_parameters_file="$(find ar_hardware_interface)/config/joint_offsets/$(arg ar_model).yaml"
   />
 
   <xacro:ar_gripper_ros2_control
