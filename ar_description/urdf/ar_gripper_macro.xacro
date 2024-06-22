@@ -13,6 +13,9 @@
         <geometry>
           <mesh filename="file://$(find ar_description)/meshes/ar4_gripper/gripper_base_link.stl" />
         </geometry>
+        <material name="">
+          <color rgba="1 1 0 1"/>
+        </material>
       </visual>
       <collision>
         <geometry>
@@ -30,6 +33,9 @@
         <geometry>
           <mesh filename="file://$(find ar_description)/meshes/ar4_gripper/gripper_jaw1_link.stl" />
         </geometry>
+        <material name="">
+          <color rgba="1 1 0 1"/>
+        </material>
       </visual>
       <collision>
         <geometry>
@@ -47,6 +53,9 @@
         <geometry>
           <mesh filename="file://$(find ar_description)/meshes/ar4_gripper/gripper_jaw2_link.stl" />
         </geometry>
+        <material name="">
+          <color rgba="1 1 0 1"/>
+        </material>
       </visual>
       <collision>
         <geometry>
@@ -61,7 +70,7 @@
     </link>
 
     <joint name="gripper_jaw1_joint" type="prismatic">
-      <origin xyz="0.0 -0.036 -0.0155" rpy="0.0 0.0 0.0"/>
+      <origin xyz="0.0 -0.036 0" rpy="0.0 0.0 0.0"/>
       <parent link="gripper_base_link"/>
       <child link="gripper_jaw1_link"/>
       <axis xyz="1 0 0"/>
@@ -69,7 +78,7 @@
     </joint>
 
     <joint name="gripper_jaw2_joint" type="prismatic">
-      <origin xyz="0.0 -0.036 0.0097" rpy="0.0 ${-pi} 0.0"/>
+      <origin xyz="0.0 -0.036 0" rpy="0.0 ${-pi} 0.0"/>
       <parent link="gripper_base_link"/>
       <child link="gripper_jaw2_link"/>
       <axis xyz="1 0 0"/>
