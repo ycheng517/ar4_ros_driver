@@ -54,7 +54,8 @@ def generate_launch_description():
         PathJoinSubstitution(
             [FindPackageShare("ar_moveit_config"), "srdf", "ar.srdf.xacro"]),
         " ",
-        "name:=ar",
+        "name:=",
+        ar_model_config,
     ])
     robot_description_semantic = {
         "robot_description_semantic": robot_description_semantic_content

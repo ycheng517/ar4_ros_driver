@@ -70,7 +70,8 @@ def generate_launch_description():
         PathJoinSubstitution(
             [FindPackageShare("ar_moveit_config"), "srdf", "ar.srdf.xacro"]),
         " ",
-        "name:=ar",
+        "name:=",
+        ar_model_config,
         " ",
         "include_gripper:=",
         "False",
