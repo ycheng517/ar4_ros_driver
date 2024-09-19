@@ -1,20 +1,14 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg ar_model)">
-  <xacro:include filename="$(find ar_description)/urdf/ar_macro.xacro" />
-  <xacro:include filename="$(find ar_description)/urdf/ar_gripper_macro.xacro" />
+  <xacro:arg name="simulation_controllers" default="" />
+  <xacro:arg name="include_gripper" default="True" />
+  <xacro:arg name="include_track" default="True" />
+
+  <xacro:include filename="$(find ar_description)/urdf/ar.urdf.xacro" />
+  <!--<xacro:include
+  filename="$(find ar_description)/urdf/ar_macro.xacro" />-->
   <xacro:include filename="$(find ar_description)/urdf/ar.ros2_control.xacro" />
   <xacro:include filename="$(find ar_description)/urdf/ar_gripper.ros2_control.xacro" />
-
-  <xacro:arg name="simulation_controllers" default="" />
-
-  <link name="world" />
-  <xacro:ar_robot 
-    parent="world"
-    robot_parameters_file="$(find ar_description)/config/$(arg ar_model).yaml"
-  >
-    <origin xyz="0 0 0" rpy="0 0 0" />
-  </xacro:ar_robot>
-  <xacro:ar_gripper parent="ee_link" />
 
   <xacro:ar_ros2_control
     name="ARGazeboSystem"
@@ -25,11 +19,13 @@
     joint_offset_parameters_file="$(find ar_hardware_interface)/config/joint_offsets/$(arg ar_model).yaml"
   />
 
-  <xacro:ar_gripper_ros2_control
-    name="ARGripperGazeboSystem"
-    plugin_name="gazebo_ros2_control/GazeboSystem"
-    serial_port="None"
-  />
+  <xacro:if value="$(arg include_gripper)">
+    <xacro:ar_gripper_ros2_control
+      name="ARGripperGazeboSystem"
+      plugin_name="gazebo_ros2_control/GazeboSystem"
+      serial_port="None"
+    />
+  </xacro:if>
 
   <gazebo reference="world" />
   <gazebo>

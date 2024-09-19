@@ -35,14 +35,21 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-
+from launch.conditions import IfCondition
 
 def generate_launch_description():
     ar_model_arg = DeclareLaunchArgument("ar_model",
                                          default_value="ar4",
                                          choices=["ar4", "ar4_mk3"],
                                          description="Model of AR4")
+    include_gripper_arg= DeclareLaunchArgument(
+                                         "include_gripper",
+                                         default_value="True",
+                                         description="Run the servo gripper",
+                                         choices=["True", "False"])
+
     ar_model_config = LaunchConfiguration("ar_model")
+    include_gripper = LaunchConfiguration("include_gripper")
 
     initial_joint_controllers = PathJoinSubstitution([
         FindPackageShare("ar_hardware_interface"), "config", "controllers.yaml"
@@ -58,6 +65,9 @@ def generate_launch_description():
         "ar_model:=",
         ar_model_config,
         " ",
+        "include_gripper:=",
+        include_gripper,
+        " ",
         "simulation_controllers:=",
         initial_joint_controllers,
     ])
@@ -68,7 +78,7 @@ def generate_launch_description():
         executable="robot_state_publisher",
         output="both",
         parameters=[{
-            "use_sim_time": True
+            "use_sim_time": True,
         }, robot_description],
     )
 
@@ -79,6 +89,9 @@ def generate_launch_description():
             "joint_state_broadcaster", "-c", "/controller_manager",
             "--controller-manager-timeout", "60"
         ],
+        parameters=[{
+            "use_sim_time": True
+        }],
     )
 
     # There may be other controllers of the joints, but this is the initially-started one
@@ -89,15 +102,23 @@ def generate_launch_description():
             "joint_trajectory_controller", "-c", "/controller_manager",
             "--controller-manager-timeout", "60"
         ],
+        parameters=[{
+            "use_sim_time": True
+        }],
+    
     )
 
     gripper_joint_controller_spawner_started = Node(
         package="controller_manager",
         executable="spawner",
+        condition=IfCondition(include_gripper),
         arguments=[
             "gripper_controller", "-c", "/controller_manager",
             "--controller-manager-timeout", "60"
         ],
+        parameters=[{
+            "use_sim_time": True
+        }],
     )
 
     # Gazebo nodes
@@ -115,10 +136,15 @@ def generate_launch_description():
             "-entity", "ar", "-topic", "robot_description", "-timeout", "60"
         ],
         output="screen",
+        parameters=[{
+            "use_sim_time": True,
+        }],
+    
     )
 
     return LaunchDescription([
         ar_model_arg,
+        include_gripper_arg,
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_started,
