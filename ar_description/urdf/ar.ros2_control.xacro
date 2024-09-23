@@ -81,7 +81,7 @@
 
       <joint name="joint_6">
         <command_interface name="position">
-          <param name="min">${-robot_parameters['j4_limit']}</param>
+          <param name="min">${-robot_parameters['j6_limit']}</param>
           <param name="max">${robot_parameters['j6_limit']}</param>
         </command_interface>
         <state_interface name="position">
