@@ -7,7 +7,7 @@ Tested with ROS 2 Iron on Ubuntu 22.04.
 
 - AR4 (Original version)
 - AR4 MK2
-- AR4 MK3 (Note: MK3 is untested, let me know if it works for you)
+- AR4 MK3
 - AR4 servo gripper
 
 **Features:**
