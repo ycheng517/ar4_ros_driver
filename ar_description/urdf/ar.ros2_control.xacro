@@ -6,8 +6,12 @@
     plugin_name
     serial_port
     calibrate
+    robot_parameters_file
     joint_offset_parameters_file
   ">
+
+    <xacro:property name="robot_parameters"
+      value="${xacro.load_yaml(robot_parameters_file)}"/>
 
     <xacro:property name="joint_offset_parameters"
       value="${xacro.load_yaml(joint_offset_parameters_file)}"/>
@@ -55,8 +59,8 @@
 
       <joint name="joint_4">
         <command_interface name="position">
-          <param name="min">{-165*pi/180}</param>
-          <param name="max">{165*pi/180}</param>
+          <param name="min">${-robot_parameters['j4_limit']}</param>
+          <param name="max">${robot_parameters['j4_limit']}</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
@@ -77,8 +81,8 @@
 
       <joint name="joint_6">
         <command_interface name="position">
-          <param name="min">{-155*pi/180}</param>
-          <param name="max">{155*pi/180}</param>
+          <param name="min">${-robot_parameters['j4_limit']}</param>
+          <param name="max">${robot_parameters['j6_limit']}</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
