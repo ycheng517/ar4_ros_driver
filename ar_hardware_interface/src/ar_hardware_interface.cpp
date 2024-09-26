@@ -50,7 +50,9 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
   if (calibrate) {
     // run calibration
     RCLCPP_INFO(logger_, "Running joint calibration...");
-    driver_.calibrateJoints();
+    if (!driver_.calibrateJoints()) {
+      return hardware_interface::CallbackReturn::ERROR;
+    }
   }
 
   // init position commands at current positions

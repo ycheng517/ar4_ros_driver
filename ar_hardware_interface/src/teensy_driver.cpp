@@ -77,9 +77,9 @@ void TeensyDriver::update(std::vector<double>& pos_commands,
   joint_positions = joint_positions_deg_;
 }
 
-void TeensyDriver::calibrateJoints() {
+bool TeensyDriver::calibrateJoints() {
   std::string outMsg = "JC\n";
-  sendCommand(outMsg);
+  return sendCommand(outMsg);
 }
 
 void TeensyDriver::getJointPositions(std::vector<double>& joint_positions) {
@@ -90,44 +90,41 @@ void TeensyDriver::getJointPositions(std::vector<double>& joint_positions) {
 }
 
 // Send specific commands
-void TeensyDriver::sendCommand(std::string outMsg) { exchange(outMsg); }
+bool TeensyDriver::sendCommand(std::string outMsg) { return exchange(outMsg); }
 
 // Send msg to board and collect data
-void TeensyDriver::exchange(std::string outMsg) {
+bool TeensyDriver::exchange(std::string outMsg) {
   std::string inMsg;
   std::string errTransmit = "";
 
   if (!transmit(outMsg, errTransmit)) {
     RCLCPP_ERROR(logger_, "Error in transmit: %s", errTransmit.c_str());
+    return false;
   }
 
-  bool done = false;
-  while (!done) {
-    receive(inMsg);
-    // parse msg
-    std::string header = inMsg.substr(0, 2);
-    if (header == "ST") {
-      // init acknowledgement
-      checkInit(inMsg);
-      done = true;
-    } else if (header == "JC") {
-      // encoder calibration values
-      updateEncoderCalibrations(inMsg);
-      done = true;
-    } else if (header == "JP") {
-      // encoder steps
-      updateJointPositions(inMsg);
-      done = true;
-    } else if (header == "DB") {
-      // debug message
-      RCLCPP_DEBUG(logger_, "Debug message: %s", inMsg.c_str());
-      done = true;
-    } else {
-      // unknown header
-      RCLCPP_WARN(logger_, "Unknown header %s", header.c_str());
-      done = true;
+  receive(inMsg);
+  // parse msg
+  std::string header = inMsg.substr(0, 2);
+  if (header == "ST") {
+    // init acknowledgement
+    checkInit(inMsg);
+  } else if (header == "JC") {
+    if (hasError(inMsg)) {
+      return false;
     }
+    // encoder calibration values
+    updateEncoderCalibrations(inMsg);
+  } else if (header == "JP") {
+    // encoder steps
+    updateJointPositions(inMsg);
+  } else if (header == "DB") {
+    // debug message
+    RCLCPP_DEBUG(logger_, "Debug message: %s", inMsg.c_str());
+  } else {
+    // unknown header
+    RCLCPP_WARN(logger_, "Unknown header %s", header.c_str());
   }
+  return true;
 }
 
 bool TeensyDriver::transmit(std::string msg, std::string& err) {
@@ -206,6 +203,16 @@ void TeensyDriver::updateJointPositions(std::string msg) {
   joint_positions_deg_[3] = std::stod(msg.substr(idx4, idx5 - idx4));
   joint_positions_deg_[4] = std::stod(msg.substr(idx5, idx6 - idx5));
   joint_positions_deg_[5] = std::stod(msg.substr(idx6));
+}
+
+bool TeensyDriver::hasError(std::string msg) {
+  const std::string errmsg_code = "ERRMSG:";
+  idx = msg.find(errmsg_code, 2);
+  if (idx != std::string::npos) {
+    RCLCPP_ERROR(logger_, "Error message received: %s", msg.substr(idx+errmsg_code.size()).c_str());
+    return false;
+  }
+  return true;
 }
 
 }  // namespace ar_hardware_interface
