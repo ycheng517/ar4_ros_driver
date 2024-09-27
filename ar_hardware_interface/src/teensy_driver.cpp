@@ -207,12 +207,13 @@ void TeensyDriver::updateJointPositions(std::string msg) {
 
 bool TeensyDriver::hasError(std::string msg) {
   const std::string errmsg_code = "ERRMSG:";
-  idx = msg.find(errmsg_code, 2);
+  size_t idx = msg.find(errmsg_code, 2);
   if (idx != std::string::npos) {
-    RCLCPP_ERROR(logger_, "Error message received: %s", msg.substr(idx+errmsg_code.size()).c_str());
-    return false;
+    RCLCPP_ERROR(logger_, "Error message received: %s",
+                 msg.substr(idx + errmsg_code.size()).c_str());
+    return true;
   }
-  return true;
+  return false;
 }
 
 }  // namespace ar_hardware_interface

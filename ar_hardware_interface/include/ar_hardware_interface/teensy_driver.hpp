@@ -20,7 +20,7 @@ class TeensyDriver {
   void update(std::vector<double>& pos_commands,
               std::vector<double>& joint_states);
   void getJointPositions(std::vector<double>& joint_positions);
-  void calibrateJoints();
+  bool calibrateJoints();
 
   TeensyDriver();
 
@@ -36,7 +36,7 @@ class TeensyDriver {
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
 
   // Comms with teensy
-  void exchange(std::string outMsg);  // exchange joint commands/state
+  bool exchange(std::string outMsg);  // exchange joint commands/state
   bool transmit(std::string outMsg, std::string& err);
   void receive(std::string& inMsg);
   bool sendCommand(std::string outMsg);  // send arbitrary commands

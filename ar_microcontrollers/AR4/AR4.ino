@@ -176,7 +176,7 @@ bool calibrateJoints(int* calJoints) {
       }
     }
 
-    if (millis() - startTime > 5000) {
+    if (millis() - startTime > 20000) {
       return false;
     }
   }
