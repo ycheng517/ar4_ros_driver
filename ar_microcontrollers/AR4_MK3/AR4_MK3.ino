@@ -323,28 +323,30 @@ void stateTRAJ() {
         moveAwayFromLimitSwitch();
 
         // return to original position
-        for (int i = 0; i < NUM_JOINTS; ++i) {
-          stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] *
-                                           MOTOR_STEPS_PER_DEG[i]);
-          stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
-                                       MOTOR_STEPS_PER_DEG[i]);
+        readMotorSteps(curMotorSteps);
+        // repeatedly set pos, spd, acc 3x due to some joints occasionally not 
+        // moving
+        for (int j = 0; j < 3; j++) {
+          for (int i = 0; i < NUM_JOINTS; ++i) {
+            stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] *
+                                             MOTOR_STEPS_PER_DEG[i]);
+            stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
+                                         MOTOR_STEPS_PER_DEG[i]);
+            float target_pos =
+                (REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) *
+                ENC_DIR[i];
+            stepperJoints[i].move(target_pos);
+            stepperJoints[i].run();
+          }
         }
-
         bool restPosReached = false;
         unsigned long startTime = millis();
         while (!restPosReached && millis() - startTime < 10000) {
           restPosReached = true;
-          readMotorSteps(curMotorSteps);
-
           for (int i = 0; i < NUM_JOINTS; ++i) {
-            if (abs(REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) >
-                10) {
-              restPosReached = false;
-              float target_pos =
-                  (REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) *
-                  ENC_DIR[i];
-              stepperJoints[i].move(target_pos);
+            if (abs(stepperJoints[i].distanceToGo()) > 5) {
               stepperJoints[i].run();
+              restPosReached = false;
             }
           }
         }
@@ -352,9 +354,11 @@ void stateTRAJ() {
           // set all speeds to zero
           for (int i = 0; i < NUM_JOINTS; ++i) {
             stepperJoints[i].setSpeed(0);
+            stepperJoints[i].run();
           }
           String msg =
               String("JCRES0MSG") + "Failed to return to rest position.";
+          Serial.println(msg);
           continue;
         }
 
