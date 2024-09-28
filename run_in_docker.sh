@@ -36,7 +36,7 @@ docker run -it \
     --privileged \
     --runtime=nvidia \
     --workdir=/ar4_ros_driver \
-    ar4_ros_driver \
+    ar4_ros_driver:jazzy \
     bash
 
 echo "Done."

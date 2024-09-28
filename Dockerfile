@@ -1,4 +1,4 @@
-FROM ros:iron
+FROM ros:jazzy
 
 # nvidia-container-runtime
 ENV NVIDIA_VISIBLE_DEVICES \
