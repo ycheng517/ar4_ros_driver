@@ -20,7 +20,7 @@ class TeensyDriver {
   void update(std::vector<double>& pos_commands,
               std::vector<double>& joint_states);
   void getJointPositions(std::vector<double>& joint_positions);
-  void calibrateJoints();
+  bool calibrateJoints();
 
   TeensyDriver();
 
@@ -36,14 +36,15 @@ class TeensyDriver {
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
 
   // Comms with teensy
-  void exchange(std::string outMsg);  // exchange joint commands/state
+  bool exchange(std::string outMsg);  // exchange joint commands/state
   bool transmit(std::string outMsg, std::string& err);
   void receive(std::string& inMsg);
-  void sendCommand(std::string outMsg);  // send arbitrary commands
+  bool sendCommand(std::string outMsg);  // send arbitrary commands
 
   void checkInit(std::string msg);
   void updateEncoderCalibrations(std::string msg);
   void updateJointPositions(std::string msg);
+  bool succeeded(std::string msg);
 };
 
 }  // namespace ar_hardware_interface
