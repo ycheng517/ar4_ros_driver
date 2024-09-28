@@ -1,9 +1,0 @@
-repositories:
-  easy_handeye2:
-    type: git
-    url: https://github.com/ycheng517/easy_handeye2.git
-    version: master
-  ros2_aruco:
-    type: git
-    url: https://github.com/JMU-ROBOTICS-VIVA/ros2_aruco.git
-    version: main
