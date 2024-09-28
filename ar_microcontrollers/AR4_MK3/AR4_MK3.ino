@@ -177,6 +177,7 @@ bool calibrateJoints(int* calJoints) {
         }
       }
     }
+
     if (millis() - startTime > 20000) {
       return false;
     }
@@ -292,6 +293,7 @@ void stateTRAJ() {
             stepperJoints[i].run();
           }
         }
+
       } else if (function == "JC") {
         // calibrate all joints
         int calJoints[] = {1, 1, 1, 1, 1, 1};
@@ -311,7 +313,6 @@ void stateTRAJ() {
         for (int i = 0; i < NUM_JOINTS; ++i) {
           calSteps[i] = encPos[i].read();
         }
-
         for (int i = 0; i < NUM_JOINTS; ++i) {
           encPos[i].write(ENC_RANGE_STEPS[i] * ENC_MAX_AT_ANGLE_MIN[i]);
         }
@@ -331,7 +332,7 @@ void stateTRAJ() {
 
         bool restPosReached = false;
         unsigned long startTime = millis();
-        while (!restPosReached) {
+        while (!restPosReached && millis() - startTime < 10000) {
           restPosReached = true;
           readMotorSteps(curMotorSteps);
 
@@ -393,7 +394,7 @@ void stateTRAJ() {
         }
       }
 
-      inData = ""; // clear message
+      inData = "";  // clear message
     }
     for (int i = 0; i < NUM_JOINTS; ++i) {
       stepperJoints[i].run();

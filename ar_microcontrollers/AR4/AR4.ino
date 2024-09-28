@@ -156,7 +156,6 @@ bool calibrateJoints(int* calJoints) {
   for (int i = 0; i < NUM_JOINTS; i++) {
     stepperJoints[i].setSpeed(CAL_SPEED * CAL_SPEED_MULT[i] * CAL_DIR[i]);
   }
-  // make start time the current time
   unsigned long startTime = millis();
   while (!calAllDone) {
     calAllDone = true;
@@ -291,6 +290,7 @@ void stateTRAJ() {
             stepperJoints[i].run();
           }
         }
+
       } else if (function == "JC") {
         // calibrate all joints
         int calJoints[] = {1, 1, 1, 1, 1, 1};

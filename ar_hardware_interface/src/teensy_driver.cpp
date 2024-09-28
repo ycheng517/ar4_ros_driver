@@ -173,7 +173,7 @@ void TeensyDriver::checkInit(std::string msg) {
 }
 
 void TeensyDriver::updateEncoderCalibrations(std::string msg) {
-  // Skip the first 6 letters as they are the header: JCRES
+  // Skip the first 5 letters as they are the header: JCRES
   size_t idx1 = msg.find("A", 5) + 1;
   size_t idx2 = msg.find("B", 5) + 1;
   size_t idx3 = msg.find("C", 5) + 1;
