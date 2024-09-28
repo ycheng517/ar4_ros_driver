@@ -26,8 +26,6 @@ Motion Planning using RViz and Moveit:
 
 [Startup, Calibration, and Servo Gripper Demo](https://youtu.be/PQtXFzqRtHM)
 
-[Hand-Eye Calibration Demo](https://youtu.be/w3tWKYnLL98)
-
 ## Overview
 
 - **ar_description**
@@ -50,10 +48,6 @@ Motion Planning using RViz and Moveit:
 - Clone this repository:
   ```bash
   git clone https://github.com/ycheng517/ar4_ros_driver
-  ```
-- Import required external repos:
-  ```bash
-  vcs import . --input ar_hand_eye/hand_eye_calibration.repos
   ```
 - Install workspace dependencies:
   ```bash
@@ -179,4 +173,4 @@ You can now plan in RViz and control the simulated arm.
 
 ### Hand-Eye Calibration
 
-See [ar_hand_eye package's README](./ar_hand_eye/README.md)
+See [ar4_hand_eye_calibration](https://github.com/ycheng517/ar4_hand_eye_calibration)

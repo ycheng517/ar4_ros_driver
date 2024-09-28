@@ -12,8 +12,6 @@ RUN git clone https://github.com/ycheng517/ar4_ros_driver.git
 
 WORKDIR /ar4_ros_driver
 
-RUN vcs import . --input ar_hand_eye/hand_eye_calibration.repos
-
 RUN rosdep update
 
 RUN rosdep install --from-paths . --ignore-src -r -y
