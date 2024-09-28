@@ -44,7 +44,7 @@ class TeensyDriver {
   void checkInit(std::string msg);
   void updateEncoderCalibrations(std::string msg);
   void updateJointPositions(std::string msg);
-  bool hasError(std::string msg);
+  bool succeeded(std::string msg);
 };
 
 }  // namespace ar_hardware_interface

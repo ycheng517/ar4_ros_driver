@@ -300,7 +300,7 @@ void stateTRAJ() {
           for (int i = 0; i < NUM_JOINTS; ++i) {
             stepperJoints[i].setSpeed(0);
           }
-          String msg = String("JC") + "ERRMSG:" + "Failed to calibrate joints";
+          String msg = String("JCRES0MSG") + "Failed to calibrate joints.";
           Serial.println(msg);
           continue;
         }
@@ -351,12 +351,12 @@ void stateTRAJ() {
             stepperJoints[i].setSpeed(0);
           }
           String msg =
-              String("JC") + "ERRMSG:" + "Failed to return to rest position";
+              String("JCRES0MSG") + "Failed to return to rest position.";
           continue;
         }
 
         // calibration done, send calibration values
-        String msg = String("JC") + "A" + calSteps[0] + "B" + calSteps[1] +
+        String msg = String("JCRES1") + "A" + calSteps[0] + "B" + calSteps[1] +
                      "C" + calSteps[2] + "D" + calSteps[3] + "E" + calSteps[4] +
                      "F" + calSteps[5];
         Serial.println(msg);

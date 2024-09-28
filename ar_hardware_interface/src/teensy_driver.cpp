@@ -109,7 +109,7 @@ bool TeensyDriver::exchange(std::string outMsg) {
     // init acknowledgement
     checkInit(inMsg);
   } else if (header == "JC") {
-    if (hasError(inMsg)) {
+    if (!succeeded(inMsg)) {
       return false;
     }
     // encoder calibration values
@@ -173,12 +173,13 @@ void TeensyDriver::checkInit(std::string msg) {
 }
 
 void TeensyDriver::updateEncoderCalibrations(std::string msg) {
-  size_t idx1 = msg.find("A", 2) + 1;
-  size_t idx2 = msg.find("B", 2) + 1;
-  size_t idx3 = msg.find("C", 2) + 1;
-  size_t idx4 = msg.find("D", 2) + 1;
-  size_t idx5 = msg.find("E", 2) + 1;
-  size_t idx6 = msg.find("F", 2) + 1;
+  // Skip the first 6 letters as they are the header: JCRES
+  size_t idx1 = msg.find("A", 5) + 1;
+  size_t idx2 = msg.find("B", 5) + 1;
+  size_t idx3 = msg.find("C", 5) + 1;
+  size_t idx4 = msg.find("D", 5) + 1;
+  size_t idx5 = msg.find("E", 5) + 1;
+  size_t idx6 = msg.find("F", 5) + 1;
   enc_calibrations_[0] = std::stoi(msg.substr(idx1, idx2 - idx1));
   enc_calibrations_[1] = std::stoi(msg.substr(idx2, idx3 - idx2));
   enc_calibrations_[2] = std::stoi(msg.substr(idx3, idx4 - idx3));
@@ -205,15 +206,18 @@ void TeensyDriver::updateJointPositions(std::string msg) {
   joint_positions_deg_[5] = std::stod(msg.substr(idx6));
 }
 
-bool TeensyDriver::hasError(std::string msg) {
-  const std::string errmsg_code = "ERRMSG:";
-  size_t idx = msg.find(errmsg_code, 2);
-  if (idx != std::string::npos) {
-    RCLCPP_ERROR(logger_, "Error message received: %s",
-                 msg.substr(idx + errmsg_code.size()).c_str());
-    return true;
+bool TeensyDriver::succeeded(std::string msg) {
+  size_t res_idx = msg.find("RES", 2) + 3;
+  if (res_idx != std::string::npos && msg[res_idx] == '0') {
+    const std::string errmsg_code = "MSG";
+    size_t idx = msg.find(errmsg_code, 5);
+    if (idx != std::string::npos) {
+      RCLCPP_ERROR(logger_, msg.substr(idx + errmsg_code.size()).c_str());
+    }
+    return false;
   }
-  return false;
+
+  return true;
 }
 
 }  // namespace ar_hardware_interface
