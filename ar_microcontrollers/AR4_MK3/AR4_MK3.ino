@@ -147,7 +147,7 @@ void updateStepperSpeed(String inData) {
   JOINT_MAX_ACCEL[5] = inData.substring(idxAccelJ6 + 1).toFloat();
 }
 
-void calibrateJoints(int* calJoints) {
+bool calibrateJoints(int* calJoints) {
   // check which joints to calibrate
   bool calAllDone = false;
   bool calJointsDone[NUM_JOINTS];
@@ -159,6 +159,7 @@ void calibrateJoints(int* calJoints) {
   for (int i = 0; i < NUM_JOINTS; i++) {
     stepperJoints[i].setSpeed(CAL_SPEED * CAL_SPEED_MULT[i] * CAL_DIR[i]);
   }
+  unsigned long startTime = millis();
   while (!calAllDone) {
     calAllDone = true;
     for (int i = 0; i < NUM_JOINTS; ++i) {
@@ -176,10 +177,12 @@ void calibrateJoints(int* calJoints) {
         }
       }
     }
+    if (millis() - startTime > 20000) {
+      return false;
+    }
   }
   delay(2000);
-
-  return;
+  return true;
 }
 
 void moveAwayFromLimitSwitch() {
@@ -292,7 +295,16 @@ void stateTRAJ() {
       } else if (function == "JC") {
         // calibrate all joints
         int calJoints[] = {1, 1, 1, 1, 1, 1};
-        calibrateJoints(calJoints);
+        int success = calibrateJoints(calJoints);
+        if (!success) {
+          // set all speeds to zero
+          for (int i = 0; i < NUM_JOINTS; ++i) {
+            stepperJoints[i].setSpeed(0);
+          }
+          String msg = String("JCRES0MSG") + "Failed to calibrate joints.";
+          Serial.println(msg);
+          continue;
+        }
 
         // record encoder steps
         int calSteps[6];
@@ -318,6 +330,7 @@ void stateTRAJ() {
         }
 
         bool restPosReached = false;
+        unsigned long startTime = millis();
         while (!restPosReached) {
           restPosReached = true;
           readMotorSteps(curMotorSteps);
@@ -334,17 +347,28 @@ void stateTRAJ() {
             }
           }
         }
+        if (!restPosReached) {
+          // set all speeds to zero
+          for (int i = 0; i < NUM_JOINTS; ++i) {
+            stepperJoints[i].setSpeed(0);
+          }
+          String msg =
+              String("JCRES0MSG") + "Failed to return to rest position.";
+          continue;
+        }
 
         // calibration done, send calibration values
-        String msg = String("JC") + "A" + calSteps[0] + "B" + calSteps[1] +
+        String msg = String("JCRES1") + "A" + calSteps[0] + "B" + calSteps[1] +
                      "C" + calSteps[2] + "D" + calSteps[3] + "E" + calSteps[4] +
                      "F" + calSteps[5];
         Serial.println(msg);
+
       } else if (function == "JP") {
         readMotorSteps(curMotorSteps);
         encStepsToJointPos(curMotorSteps, curJointPos);
         String msg = String("JP") + JointPosToString(curJointPos);
         Serial.println(msg);
+
       } else if (function == "SS") {
         updateStepperSpeed(inData);
         // set motor speed and acceleration
@@ -361,14 +385,15 @@ void stateTRAJ() {
         // update host with joint positions
         String msg = String("JP") + JointPosToString(curJointPos);
         Serial.println(msg);
+
       } else if (function == "ST") {
         if (!initStateTraj(inData)) {
           STATE = STATE_ERR;
           return;
         }
       }
-      // clear message
-      inData = "";
+
+      inData = ""; // clear message
     }
     for (int i = 0; i < NUM_JOINTS; ++i) {
       stepperJoints[i].run();
