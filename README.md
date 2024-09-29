@@ -155,7 +155,7 @@ You can now plan in RViz and control the real-world arm. Joint commands and join
 
 ### Control simulated arm in Gazebo with MoveIt in RViz
 
-Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description:
+Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description.
 
 ```bash
 ros2 launch ar_gazebo ar_gazebo.launch.py

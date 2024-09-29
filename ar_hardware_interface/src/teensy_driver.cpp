@@ -45,6 +45,7 @@ bool TeensyDriver::init(std::string ar_model, std::string port, int baudrate,
   num_joints_ = num_joints;
   joint_positions_deg_.resize(num_joints_);
   enc_calibrations_.resize(num_joints_);
+  return true;
 }
 
 TeensyDriver::TeensyDriver() : serial_port_(io_service_) {}
