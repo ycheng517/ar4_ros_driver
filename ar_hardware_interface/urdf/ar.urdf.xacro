@@ -16,7 +16,7 @@
   </xacro:ar_robot>
 
   <xacro:ar_ros2_control
-    name="$(arg ar_model)"
+    ar_model="$(arg ar_model)"
     plugin_name="ar_hardware_interface/ARHardwareInterface"
     serial_port="$(arg serial_port)"
     calibrate="$(arg calibrate)"

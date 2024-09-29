@@ -1,13 +1,15 @@
-/* Compared to the firmware for AR4, The motor direction is inverted for all
- * axes except for J4.
- */
 #include <AccelStepper.h>
 #include <Encoder.h>
 #include <avr/pgmspace.h>
 #include <math.h>
 
+#include <map>
+
 // Firmware version
-const char* VERSION = "0.0.1";
+const char* VERSION = "0.1.0";
+
+// Model of the AR4, i.e. MK1, MK2, MK3
+String MODEL = "";
 
 ///////////////////////////////////////////////////////////////////////////////
 // Physical Params
@@ -17,8 +19,14 @@ const int STEP_PINS[] = {0, 2, 4, 6, 8, 10};
 const int DIR_PINS[] = {1, 3, 5, 7, 9, 11};
 const int LIMIT_PINS[] = {26, 27, 28, 29, 30, 31};
 
-const float MOTOR_STEPS_PER_DEG[] = {44.44444444, 55.55555556, 55.55555556,
-                                     49.77777777, 21.86024888, 22.22222222};
+std::map<String, const float*> MOTOR_STEPS_PER_DEG;
+const float MOTOR_STEPS_PER_DEG_MK1[] = {44.44444444, 55.55555556, 55.55555556,
+                                         42.72664356, 21.86024888, 22.22222222};
+const float MOTOR_STEPS_PER_DEG_MK2[] = {44.44444444, 55.55555556, 55.55555556,
+                                         49.77777777, 21.86024888, 22.22222222};
+const float MOTOR_STEPS_PER_DEG_MK3[] = {44.44444444, 55.55555556, 55.55555556,
+                                         49.77777777, 21.86024888, 22.22222222};
+
 const int MOTOR_STEPS_PER_REV[] = {400, 400, 400, 400, 800, 400};
 
 // set encoder pins
@@ -32,8 +40,14 @@ int ENC_MAX_AT_ANGLE_MIN[] = {1, 0, 1, 0, 0, 1};
 const float ENC_MULT[] = {10, 10, 10, 10, 5, 10};
 
 // define axis limits in degrees, for calibration
-int JOINT_LIMIT_MIN[] = {-170, -42, -89, -165, -105, -155};
-int JOINT_LIMIT_MAX[] = {170, 90, 52, 165, 105, 155};
+std::map<String, const int*> JOINT_LIMIT_MIN;
+int JOINT_LIMIT_MIN_MK1[] = {-170, -42, -89, -165, -105, -155};
+int JOINT_LIMIT_MIN_MK2[] = {-170, -42, -89, -165, -105, -155};
+int JOINT_LIMIT_MIN_MK3[] = {-170, -42, -89, -180, -105, -180};
+std::map<String, const int*> JOINT_LIMIT_MAX;
+int JOINT_LIMIT_MAX_MK1[] = {170, 90, 52, 165, 105, 155};
+int JOINT_LIMIT_MAX_MK2[] = {170, 90, 52, 165, 105, 155};
+int JOINT_LIMIT_MAX_MK3[] = {170, 90, 52, 180, 105, 180};
 
 ///////////////////////////////////////////////////////////////////////////////
 // ROS Driver Params
@@ -71,25 +85,87 @@ void setup() {
     pinMode(STEP_PINS[i], OUTPUT);
     pinMode(DIR_PINS[i], OUTPUT);
     pinMode(LIMIT_PINS[i], INPUT);
-
-    int joint_range = JOINT_LIMIT_MAX[i] - JOINT_LIMIT_MIN[i];
-    ENC_RANGE_STEPS[i] =
-        static_cast<int>(MOTOR_STEPS_PER_DEG[i] * joint_range * ENC_MULT[i]);
   }
 }
 
+void setupSteppersMK1() {
+  // initialise AccelStepper instance
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    stepperJoints[i] = AccelStepper(1, STEP_PINS[i], DIR_PINS[i]);
+    stepperJoints[i].setPinsInverted(true, false, false);  // DM542T CW
+    stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] *
+                                     MOTOR_STEPS_PER_DEG[MODEL][i]);
+    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
+                                 MOTOR_STEPS_PER_DEG[MODEL][i]);
+    stepperJoints[i].setMinPulseWidth(10);
+  }
+  stepperJoints[3].setPinsInverted(false, false, false);  // J4 DM320T CCW
+}
+
+void setupSteppersMK2() {
+  // initialise AccelStepper instance
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    stepperJoints[i] = AccelStepper(1, STEP_PINS[i], DIR_PINS[i]);
+    stepperJoints[i].setPinsInverted(false, false,
+                                     false);  // DM320T / DM332T --> CW
+    stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] *
+                                     MOTOR_STEPS_PER_DEG[MODEL][i]);
+    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
+                                 MOTOR_STEPS_PER_DEG[MODEL][i]);
+    stepperJoints[i].setMinPulseWidth(10);
+  }
+}
+
+void setupSteppersMK3() {
+  // initialise AccelStepper instance
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    stepperJoints[i] = AccelStepper(1, STEP_PINS[i], DIR_PINS[i]);
+    stepperJoints[i].setPinsInverted(false, false,
+                                     false);  // DM320T / DM332T --> CW
+    stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] *
+                                     MOTOR_STEPS_PER_DEG[MODEL][i]);
+    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
+                                 MOTOR_STEPS_PER_DEG[MODEL][i]);
+    stepperJoints[i].setMinPulseWidth(10);
+  }
+}
+
+// initialize stepper motors and constants based on the model. Also verifies
+// that the software version matches the firmware version
 bool initStateTraj(String inData) {
   // parse initialisation message
   int idxVersion = inData.indexOf('A');
-  String softwareVersion =
-      inData.substring(idxVersion + 1, inData.length() - 1);
+  int idxModel = inData.indexOf('B');
+  String softwareVersion = inData.substring(idxVersion + 1, idxModel);
   int versionMatches = (softwareVersion == VERSION);
 
+  String model = inData.substring(idxModel + 1, inData.length() - 1);
+  int modelMatches = false;
+  if (model == "MK1" || model == "MK2" || model == "MK3") {
+    modelMatches = true;
+    MODEL = model;
+
+    int joint_range = JOINT_LIMIT_MAX[MODEL][i] - JOINT_LIMIT_MIN[MODEL][i];
+    ENC_RANGE_STEPS[i] = static_cast<int>(MOTOR_STEPS_PER_DEG[MODEL][i] *
+                                          joint_range * ENC_MULT[i]);
+    if (model == "MK1") {
+      setupSteppersMK1();
+    } else if (model == "MK2") {
+      setupSteppersMK2();
+    } else if (model == "MK3") {
+      setupSteppersMK3();
+    }
+  }
+
   // return acknowledgement with result
-  String msg = String("ST") + "A" + versionMatches + "B" + VERSION;
+  String msg = String("ST") + "A" + versionMatches + "B" + VERSION + "C" +
+               modelMatches + "D" + MODEL;
   Serial.println(msg);
 
-  return versionMatches ? true : false;
+  if (versionMatches && modelMatches) {
+    return true;
+  }
+  return false;
 }
 
 void readMotorSteps(int* motorSteps) {
@@ -100,13 +176,13 @@ void readMotorSteps(int* motorSteps) {
 
 void encStepsToJointPos(int* encSteps, double* jointPos) {
   for (int i = 0; i < NUM_JOINTS; ++i) {
-    jointPos[i] = encSteps[i] / MOTOR_STEPS_PER_DEG[i] * ENC_DIR[i];
+    jointPos[i] = encSteps[i] / MOTOR_STEPS_PER_DEG[MODEL][i] * ENC_DIR[i];
   }
 }
 
 void jointPosToEncSteps(double* jointPos, int* encSteps) {
   for (int i = 0; i < NUM_JOINTS; ++i) {
-    encSteps[i] = jointPos[i] * MOTOR_STEPS_PER_DEG[i] * ENC_DIR[i];
+    encSteps[i] = jointPos[i] * MOTOR_STEPS_PER_DEG[MODEL][i] * ENC_DIR[i];
   }
 }
 
@@ -214,6 +290,79 @@ bool reachedLimitSwitch(int joint) {
   return true;
 }
 
+void doCalibrationRoutine() {
+  // calibrate all joints
+  int calJoints[] = {1, 1, 1, 1, 1, 1};
+  int success = calibrateJoints(calJoints);
+  if (!success) {
+    // set all speeds to zero
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      stepperJoints[i].setSpeed(0);
+    }
+    String msg = String("JCRES0MSG") + "Failed to calibrate joints.";
+    Serial.println(msg);
+    continue;
+  }
+
+  // record encoder steps
+  int calSteps[6];
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    calSteps[i] = encPos[i].read();
+  }
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    encPos[i].write(ENC_RANGE_STEPS[i] * ENC_MAX_AT_ANGLE_MIN[i]);
+  }
+
+  // move away from the limit switches a bit so that if the next command
+  // is in the wrong direction, the limit switches will not be run over
+  // immediately and become damaged.
+  moveAwayFromLimitSwitch();
+
+  // return to original position
+  int curMotorSteps[NUM_JOINTS];
+  readMotorSteps(curMotorSteps);
+  // repeatedly set pos, spd, acc 3x due to some joints occasionally not
+  // moving
+  for (int j = 0; j < 3; j++) {
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] *
+                                       MOTOR_STEPS_PER_DEG[i]);
+      stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] * MOTOR_STEPS_PER_DEG[i]);
+      float target_pos =
+          (REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) * ENC_DIR[i];
+      stepperJoints[i].move(target_pos);
+      stepperJoints[i].run();
+    }
+  }
+  bool restPosReached = false;
+  unsigned long startTime = millis();
+  while (!restPosReached && millis() - startTime < 10000) {
+    restPosReached = true;
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      if (abs(stepperJoints[i].distanceToGo()) > 5) {
+        stepperJoints[i].run();
+        restPosReached = false;
+      }
+    }
+  }
+  if (!restPosReached) {
+    // set all speeds to zero
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      stepperJoints[i].setSpeed(0);
+      stepperJoints[i].run();
+    }
+    String msg = String("JCRES0MSG") + "Failed to return to rest position.";
+    Serial.println(msg);
+    continue;
+  }
+
+  // calibration done, send calibration values
+  String msg = String("JCRES1") + "A" + calSteps[0] + "B" + calSteps[1] + "C" +
+               calSteps[2] + "D" + calSteps[3] + "E" + calSteps[4] + "F" +
+               calSteps[5];
+  Serial.println(msg);
+}
+
 void stateTRAJ() {
   // clear message
   String inData = "";
@@ -229,17 +378,6 @@ void stateTRAJ() {
     cmdEncSteps[i] = curMotorSteps[i];
   }
 
-  // initialise AccelStepper instance
-  for (int i = 0; i < NUM_JOINTS; ++i) {
-    stepperJoints[i] = AccelStepper(1, STEP_PINS[i], DIR_PINS[i]);
-    stepperJoints[i].setPinsInverted(false, false,
-                                     false);  // DM320T / DM332T --> CW
-    stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] *
-                                     MOTOR_STEPS_PER_DEG[i]);
-    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] * MOTOR_STEPS_PER_DEG[i]);
-    stepperJoints[i].setMinPulseWidth(10);
-  }
-
   // start loop
   while (STATE == STATE_TRAJ) {
     char received = '\0';
@@ -252,8 +390,19 @@ void stateTRAJ() {
     // process message when new line character is received
     if (received == '\n') {
       String function = inData.substring(0, 2);
-      // update trajectory information
+      if (function == "ST") {
+        if (!initStateTraj(inData)) {
+          STATE = STATE_ERR;
+          return;
+        }
+      } else if (MODEL == "") {
+        // if model is not set, do not proceed with any other function
+        STATE = STATE_ERR;
+        return;
+      }
+
       if (function == "MT") {
+        // update trajectory information
         readMotorSteps(curMotorSteps);
 
         // update host with joint positions
@@ -292,95 +441,21 @@ void stateTRAJ() {
             stepperJoints[i].run();
           }
         }
-
       } else if (function == "JC") {
-        // calibrate all joints
-        int calJoints[] = {1, 1, 1, 1, 1, 1};
-        int success = calibrateJoints(calJoints);
-        if (!success) {
-          // set all speeds to zero
-          for (int i = 0; i < NUM_JOINTS; ++i) {
-            stepperJoints[i].setSpeed(0);
-          }
-          String msg = String("JCRES0MSG") + "Failed to calibrate joints.";
-          Serial.println(msg);
-          continue;
-        }
-
-        // record encoder steps
-        int calSteps[6];
-        for (int i = 0; i < NUM_JOINTS; ++i) {
-          calSteps[i] = encPos[i].read();
-        }
-        for (int i = 0; i < NUM_JOINTS; ++i) {
-          encPos[i].write(ENC_RANGE_STEPS[i] * ENC_MAX_AT_ANGLE_MIN[i]);
-        }
-
-        // move away from the limit switches a bit so that if the next command
-        // is in the wrong direction, the limit switches will not be run over
-        // immediately and become damaged.
-        moveAwayFromLimitSwitch();
-
-        // return to original position
-        readMotorSteps(curMotorSteps);
-        // repeatedly set pos, spd, acc 3x due to some joints occasionally not
-        // moving
-        for (int j = 0; j < 3; j++) {
-          for (int i = 0; i < NUM_JOINTS; ++i) {
-            stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] *
-                                             MOTOR_STEPS_PER_DEG[i]);
-            stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
-                                         MOTOR_STEPS_PER_DEG[i]);
-            float target_pos =
-                (REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) *
-                ENC_DIR[i];
-            stepperJoints[i].move(target_pos);
-            stepperJoints[i].run();
-          }
-        }
-        bool restPosReached = false;
-        unsigned long startTime = millis();
-        while (!restPosReached && millis() - startTime < 10000) {
-          restPosReached = true;
-          for (int i = 0; i < NUM_JOINTS; ++i) {
-            if (abs(stepperJoints[i].distanceToGo()) > 5) {
-              stepperJoints[i].run();
-              restPosReached = false;
-            }
-          }
-        }
-        if (!restPosReached) {
-          // set all speeds to zero
-          for (int i = 0; i < NUM_JOINTS; ++i) {
-            stepperJoints[i].setSpeed(0);
-            stepperJoints[i].run();
-          }
-          String msg =
-              String("JCRES0MSG") + "Failed to return to rest position.";
-          Serial.println(msg);
-          continue;
-        }
-
-        // calibration done, send calibration values
-        String msg = String("JCRES1") + "A" + calSteps[0] + "B" + calSteps[1] +
-                     "C" + calSteps[2] + "D" + calSteps[3] + "E" + calSteps[4] +
-                     "F" + calSteps[5];
-        Serial.println(msg);
-
+        doCalibrationRoutine();
       } else if (function == "JP") {
         readMotorSteps(curMotorSteps);
         encStepsToJointPos(curMotorSteps, curJointPos);
         String msg = String("JP") + JointPosToString(curJointPos);
         Serial.println(msg);
-
       } else if (function == "SS") {
         updateStepperSpeed(inData);
         // set motor speed and acceleration
         for (int i = 0; i < NUM_JOINTS; ++i) {
           stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] *
-                                           MOTOR_STEPS_PER_DEG[i]);
+                                           MOTOR_STEPS_PER_DEG[MODEL][i]);
           stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
-                                       MOTOR_STEPS_PER_DEG[i]);
+                                       MOTOR_STEPS_PER_DEG[MODEL][i]);
         }
         // read current joint positions
         readMotorSteps(curMotorSteps);
@@ -389,12 +464,6 @@ void stateTRAJ() {
         // update host with joint positions
         String msg = String("JP") + JointPosToString(curJointPos);
         Serial.println(msg);
-
-      } else if (function == "ST") {
-        if (!initStateTraj(inData)) {
-          STATE = STATE_ERR;
-          return;
-        }
       }
 
       inData = "";  // clear message

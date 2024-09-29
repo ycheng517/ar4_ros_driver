@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <xacro:macro name="ar_ros2_control" params="
-    name
+    ar_model
     plugin_name
     serial_port
     calibrate
@@ -16,10 +16,11 @@
     <xacro:property name="joint_offset_parameters"
       value="${xacro.load_yaml(joint_offset_parameters_file)}"/>
 
-    <ros2_control name="${name}" type="system">
+    <ros2_control name="${ar_model}" type="system">
 
       <hardware>
         <plugin>${plugin_name}</plugin>
+        <param name="ar_model">${ar_model}</param>
         <param name="serial_port">${serial_port}</param>
         <param name="calibrate">${calibrate}</param>
       </hardware>
