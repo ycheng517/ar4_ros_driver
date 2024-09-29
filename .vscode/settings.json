@@ -78,10 +78,7 @@
       "typeindex": "cpp",
       "typeinfo": "cpp",
       "variant": "cpp",
-      "*.ipp": "cpp",
-      "boundingbox": "cpp",
-      "boundingsphere": "cpp",
-      "timer": "cpp"
+      "*.ipp": "cpp"
     },
     "ros.distro": "iron",
     "C_Cpp.default.includePath": [
