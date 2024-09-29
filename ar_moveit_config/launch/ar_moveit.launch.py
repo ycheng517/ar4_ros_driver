@@ -82,8 +82,8 @@ def generate_launch_description():
         ))
     declared_arguments.append(
         DeclareLaunchArgument("ar_model",
-                              default_value="ar4",
-                              choices=["ar4", "ar4_mk3"],
+                              default_value="mk1",
+                              choices=["mk1", "mk2", "mk3"],
                               description="Model of AR4"))
 
     robot_description_content = Command([

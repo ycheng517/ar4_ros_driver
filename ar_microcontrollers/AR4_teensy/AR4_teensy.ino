@@ -8,7 +8,7 @@
 // Firmware version
 const char* VERSION = "0.1.0";
 
-// Model of the AR4, i.e. MK1, MK2, MK3
+// Model of the AR4, i.e. mk1, mk2, mk3
 String MODEL = "";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,6 +79,18 @@ char JOINT_NAMES[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 int ENC_RANGE_STEPS[NUM_JOINTS];
 
 void setup() {
+  MOTOR_STEPS_PER_DEG["mk1"] = MOTOR_STEPS_PER_DEG_MK1;
+  MOTOR_STEPS_PER_DEG["mk2"] = MOTOR_STEPS_PER_DEG_MK2;
+  MOTOR_STEPS_PER_DEG["mk3"] = MOTOR_STEPS_PER_DEG_MK3;
+
+  JOINT_LIMIT_MIN["mk1"] = JOINT_LIMIT_MIN_MK1;
+  JOINT_LIMIT_MIN["mk2"] = JOINT_LIMIT_MIN_MK2;
+  JOINT_LIMIT_MIN["mk3"] = JOINT_LIMIT_MIN_MK3;
+
+  JOINT_LIMIT_MAX["mk1"] = JOINT_LIMIT_MAX_MK1;
+  JOINT_LIMIT_MAX["mk2"] = JOINT_LIMIT_MAX_MK2;
+  JOINT_LIMIT_MAX["mk3"] = JOINT_LIMIT_MAX_MK3;
+
   Serial.begin(9600);
 
   for (int i = 0; i < NUM_JOINTS; ++i) {
@@ -141,18 +153,21 @@ bool initStateTraj(String inData) {
 
   String model = inData.substring(idxModel + 1, inData.length() - 1);
   int modelMatches = false;
-  if (model == "MK1" || model == "MK2" || model == "MK3") {
+  if (model == "mk1" || model == "mk2" || model == "mk3") {
     modelMatches = true;
     MODEL = model;
 
-    int joint_range = JOINT_LIMIT_MAX[MODEL][i] - JOINT_LIMIT_MIN[MODEL][i];
-    ENC_RANGE_STEPS[i] = static_cast<int>(MOTOR_STEPS_PER_DEG[MODEL][i] *
-                                          joint_range * ENC_MULT[i]);
-    if (model == "MK1") {
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      int joint_range = JOINT_LIMIT_MAX[MODEL][i] - JOINT_LIMIT_MIN[MODEL][i];
+      ENC_RANGE_STEPS[i] = static_cast<int>(MOTOR_STEPS_PER_DEG[MODEL][i] *
+                                            joint_range * ENC_MULT[i]);
+    }
+
+    if (model == "mk1") {
       setupSteppersMK1();
-    } else if (model == "MK2") {
+    } else if (model == "mk2") {
       setupSteppersMK2();
-    } else if (model == "MK3") {
+    } else if (model == "mk3") {
       setupSteppersMK3();
     }
   }
@@ -301,7 +316,7 @@ void doCalibrationRoutine() {
     }
     String msg = String("JCRES0MSG") + "Failed to calibrate joints.";
     Serial.println(msg);
-    continue;
+    return;
   }
 
   // record encoder steps
@@ -326,8 +341,9 @@ void doCalibrationRoutine() {
   for (int j = 0; j < 3; j++) {
     for (int i = 0; i < NUM_JOINTS; ++i) {
       stepperJoints[i].setAcceleration(JOINT_MAX_ACCEL[i] *
-                                       MOTOR_STEPS_PER_DEG[i]);
-      stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] * MOTOR_STEPS_PER_DEG[i]);
+                                       MOTOR_STEPS_PER_DEG[MODEL][i]);
+      stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
+                                   MOTOR_STEPS_PER_DEG[MODEL][i]);
       float target_pos =
           (REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) * ENC_DIR[i];
       stepperJoints[i].move(target_pos);
@@ -353,7 +369,7 @@ void doCalibrationRoutine() {
     }
     String msg = String("JCRES0MSG") + "Failed to return to rest position.";
     Serial.println(msg);
-    continue;
+    return;
   }
 
   // calibration done, send calibration values

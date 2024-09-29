@@ -14,7 +14,7 @@ namespace ar_hardware_interface {
 
 class TeensyDriver {
  public:
-  void init(std::string ar_model, std::string port, int baudrate,
+  bool init(std::string ar_model, std::string port, int baudrate,
             int num_joints);
   void setStepperSpeed(std::vector<double>& max_speed,
                        std::vector<double>& max_accel);

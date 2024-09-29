@@ -124,7 +124,7 @@ ros2 launch ar_hardware_interface ar_hardware.launch.py \
 
 Available Launch Arguments:
 
-- `ar_model`: The model of the AR4. Options are `ar4` (which includes MK2) or `ar4_mk3`. Defaults to `ar4`.
+- `ar_model`: The model of the AR4. Options are `mk1`, `mk2`, or `mk3`. Defaults to `mk3`.
 - `calibrate`: Whether to calibrate the robot arm (determine the absolute position
   of each joint).
 - `include_gripper`: Whether to include the servo gripper. Defaults to: `include_gripper:=True`.

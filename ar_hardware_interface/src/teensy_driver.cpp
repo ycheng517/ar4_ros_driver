@@ -7,7 +7,7 @@
 
 namespace ar_hardware_interface {
 
-void TeensyDriver::init(std::string ar_model, std::string port, int baudrate,
+bool TeensyDriver::init(std::string ar_model, std::string port, int baudrate,
                         int num_joints) {
   // @TODO read version from config
   version_ = FW_VERSION;
@@ -19,7 +19,7 @@ void TeensyDriver::init(std::string ar_model, std::string port, int baudrate,
 
   if (ec) {
     RCLCPP_WARN(logger_, "Failed to connect to serial port %s", port.c_str());
-    return;
+    return false;
   } else {
     serial_port_.set_option(boost::asio::serial_port_base::baud_rate(
         static_cast<uint32_t>(baudrate)));
@@ -168,7 +168,7 @@ void TeensyDriver::checkInit(std::string msg) {
   std::size_t ar_model_matched_idx = msg.find("C", 2) + 1;
   std::size_t ar_model_idx = msg.find("D", 2) + 1;
   int ack = std::stoi(msg.substr(ack_idx, version_idx));
-  int std::size_t ar_model_matched =
+  int ar_model_matched =
       std::stoi(msg.substr(ar_model_matched_idx, ar_model_idx));
   if (!ack) {
     std::string version = msg.substr(version_idx);
