@@ -3,13 +3,15 @@
 #include <chrono>
 #include <thread>
 
-#define FW_VERSION "0.0.1"
+#define FW_VERSION "0.1.0"
 
 namespace ar_hardware_interface {
 
-void TeensyDriver::init(std::string port, int baudrate, int num_joints) {
+bool TeensyDriver::init(std::string ar_model, std::string port, int baudrate,
+                        int num_joints) {
   // @TODO read version from config
   version_ = FW_VERSION;
+  ar_model_ = ar_model;
 
   // establish connection with teensy board
   boost::system::error_code ec;
@@ -17,7 +19,7 @@ void TeensyDriver::init(std::string port, int baudrate, int num_joints) {
 
   if (ec) {
     RCLCPP_WARN(logger_, "Failed to connect to serial port %s", port.c_str());
-    return;
+    return false;
   } else {
     serial_port_.set_option(boost::asio::serial_port_base::baud_rate(
         static_cast<uint32_t>(baudrate)));
@@ -28,7 +30,7 @@ void TeensyDriver::init(std::string port, int baudrate, int num_joints) {
   }
 
   initialised_ = false;
-  std::string msg = "STA" + version_ + "\n";
+  std::string msg = "STA" + version_ + +"B" + ar_model_ + "\n";
 
   while (!initialised_) {
     RCLCPP_INFO(logger_, "Waiting for response from Teensy on port %s",
@@ -43,6 +45,7 @@ void TeensyDriver::init(std::string port, int baudrate, int num_joints) {
   num_joints_ = num_joints;
   joint_positions_deg_.resize(num_joints_);
   enc_calibrations_.resize(num_joints_);
+  return true;
 }
 
 TeensyDriver::TeensyDriver() : serial_port_(io_service_) {}
@@ -163,12 +166,21 @@ void TeensyDriver::receive(std::string& inMsg) {
 void TeensyDriver::checkInit(std::string msg) {
   std::size_t ack_idx = msg.find("A", 2) + 1;
   std::size_t version_idx = msg.find("B", 2) + 1;
+  std::size_t ar_model_matched_idx = msg.find("C", 2) + 1;
+  std::size_t ar_model_idx = msg.find("D", 2) + 1;
   int ack = std::stoi(msg.substr(ack_idx, version_idx));
-  if (ack) {
-    initialised_ = true;
-  } else {
+  int ar_model_matched =
+      std::stoi(msg.substr(ar_model_matched_idx, ar_model_idx));
+  if (!ack) {
     std::string version = msg.substr(version_idx);
     RCLCPP_ERROR(logger_, "Firmware version mismatch %s", version.c_str());
+  }
+  if (!ar_model_matched) {
+    std::string ar_model = msg.substr(ar_model_idx);
+    RCLCPP_ERROR(logger_, "Model mismatch %s", ar_model.c_str());
+  }
+  if (ack && ar_model_matched) {
+    initialised_ = true;
   }
 }
 

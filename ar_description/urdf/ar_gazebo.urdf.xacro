@@ -17,7 +17,7 @@
   <xacro:ar_gripper parent="ee_link" />
 
   <xacro:ar_ros2_control
-    name="ARGazeboSystem"
+    ar_model="$(arg ar_model)"
     plugin_name="gazebo_ros2_control/GazeboSystem"
     serial_port="None"
     calibrate="False"

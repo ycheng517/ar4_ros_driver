@@ -17,9 +17,13 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
 
   // init motor driver
   std::string serial_port = info_.hardware_parameters.at("serial_port");
+  std::string ar_model = info_.hardware_parameters.at("ar_model");
   int baud_rate = 9600;
-  driver_.init(serial_port, baud_rate, info_.joints.size());
-
+  bool success =
+      driver_.init(ar_model, serial_port, baud_rate, info_.joints.size());
+  if (!success) {
+    return hardware_interface::CallbackReturn::ERROR;
+  }
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
