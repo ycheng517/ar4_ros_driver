@@ -53,8 +53,12 @@ int JOINT_LIMIT_MAX_MK3[] = {170, 90, 52, 180, 105, 180};
 // ROS Driver Params
 ///////////////////////////////////////////////////////////////////////////////
 
-// roughly equals 0, -6, 0, 0, 0, 0 degrees
-const int REST_ENC_POSITIONS[] = {75507, 20000, 49234, 70489, 11470, 34311};
+// roughly equals 0, 0, 0, 0, 0, 0 degrees
+std::map<String, const int*> REST_ENC_POSITIONS;
+const int REST_ENC_POSITIONS_MK1[] = {75556, 23333, 49444, 70489, 11477, 34311};
+const int REST_ENC_POSITIONS_MK2[] = {75556, 23333, 49444, 70489, 11477, 34311};
+const int REST_ENC_POSITIONS_MK3[] = {75556, 23333, 49444, 89600, 11477, 40000};
+
 enum SM { STATE_TRAJ, STATE_ERR };
 SM STATE = STATE_TRAJ;
 
@@ -90,6 +94,10 @@ void setup() {
   JOINT_LIMIT_MAX["mk1"] = JOINT_LIMIT_MAX_MK1;
   JOINT_LIMIT_MAX["mk2"] = JOINT_LIMIT_MAX_MK2;
   JOINT_LIMIT_MAX["mk3"] = JOINT_LIMIT_MAX_MK3;
+
+  REST_ENC_POSITIONS["mk1"] = REST_ENC_POSITIONS_MK1;
+  REST_ENC_POSITIONS["mk2"] = REST_ENC_POSITIONS_MK2;
+  REST_ENC_POSITIONS["mk3"] = REST_ENC_POSITIONS_MK3;
 
   Serial.begin(9600);
 
@@ -345,7 +353,8 @@ void doCalibrationRoutine() {
       stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
                                    MOTOR_STEPS_PER_DEG[MODEL][i]);
       float target_pos =
-          (REST_ENC_POSITIONS[i] / ENC_MULT[i] - curMotorSteps[i]) * ENC_DIR[i];
+          (REST_ENC_POSITIONS[MODEL][i] / ENC_MULT[i] - curMotorSteps[i]) *
+          ENC_DIR[i];
       stepperJoints[i].move(target_pos);
       stepperJoints[i].run();
     }
