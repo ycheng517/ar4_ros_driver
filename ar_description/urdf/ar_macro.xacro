@@ -63,7 +63,7 @@
       <parent link="base_link"/>
       <child link="link_1"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-170.0 / 180.0 * pi}" upper="${170.0 / 180.0 * pi}" effort="0" velocity="0.5"/>
+      <limit lower="${robot_parameters['j1_limit_min']}" upper="${robot_parameters['j1_limit_max']}" effort="0" velocity="0.5"/>
     </joint>
     <link name="link_2">
       <inertial>
@@ -92,7 +92,7 @@
       <parent link="link_1"/>
       <child link="link_2"/>
       <axis xyz="0 0 -1"/>
-      <limit lower="${-42.0 / 180.0 * pi}" upper="${90.0 / 180.0 * pi}" effort="0.5" velocity="0.5"/>
+      <limit lower="${robot_parameters['j2_limit_min']}" upper="${robot_parameters['j2_limit_max']}" effort="0.5" velocity="0.5"/>
     </joint>
     <link name="link_3">
       <inertial>
@@ -121,7 +121,7 @@
       <parent link="link_2"/>
       <child link="link_3"/>
       <axis xyz="0 0 -1"/>
-      <limit lower="${-89.0 / 180.0 * pi}" upper="${52.0 / 180.0 * pi}" effort="0" velocity="0.5"/>
+      <limit lower="${robot_parameters['j3_limit_min']}" upper="${robot_parameters['j3_limit_max']}" effort="0" velocity="0.5"/>
     </joint>
     <link name="link_4">
       <inertial>
@@ -150,7 +150,7 @@
       <parent link="link_3"/>
       <child link="link_4"/>
       <axis xyz="0 0 -1"/>
-      <limit lower="${-1 * robot_parameters['j4_limit']}" upper="${robot_parameters['j4_limit']}" effort="0" velocity="0.5"/>
+      <limit lower="${robot_parameters['j4_limit_min']}" upper="${robot_parameters['j4_limit_max']}" effort="0" velocity="0.5"/>
     </joint>
     <link name="link_5">
       <inertial>
@@ -179,7 +179,7 @@
       <parent link="link_4"/>
       <child link="link_5"/>
       <axis xyz="1 0 0"/>
-      <limit lower="${-105.0 / 180.0 * pi}" upper="${105.0 / 180.0 * pi}" effort="0" velocity="1.0"/>
+      <limit lower="${robot_parameters['j5_limit_min']}" upper="${robot_parameters['j5_limit_max']}" effort="0" velocity="1.0"/>
     </joint>
     <link name="link_6">
       <inertial>
@@ -208,7 +208,7 @@
       <parent link="link_5"/>
       <child link="link_6"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-1.0 * robot_parameters['j6_limit']}" upper="${robot_parameters['j6_limit']}" effort="0" velocity="1.0"/>
+      <limit lower="${robot_parameters['j6_limit_min']}" upper="${robot_parameters['j6_limit_max']}" effort="0" velocity="1.0"/>
     </joint>
 
     <!-- center of the end effector mounting surface on link_6 -->

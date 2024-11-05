@@ -1,4 +1,17 @@
 mesh_dir: ar4_mk3
-j4_limit: !degrees 180.0
-j6_limit: !degrees 180.0
+
+j1_limit_min: !degrees -170
+j2_limit_min: !degrees -42
+j3_limit_min: !degrees -89
+j4_limit_min: !degrees -180
+j5_limit_min: !degrees -105
+j6_limit_min: !degrees -180
+
+j1_limit_max: !degrees 170
+j2_limit_max: !degrees 90
+j3_limit_max: !degrees 52
+j4_limit_max: !degrees 180
+j5_limit_max: !degrees 105
+j6_limit_max: !degrees 180
+
 l6_length: 0.041

@@ -27,8 +27,8 @@
 
       <joint name="joint_1">
         <command_interface name="position">
-          <param name="min">{-170*pi/180}</param>
-          <param name="max">{170*pi/180}</param>
+          <param name="min">${robot_parameters['j1_limit_min']}</param>
+          <param name="max">${robot_parameters['j1_limit_max']}</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
@@ -38,8 +38,8 @@
 
       <joint name="joint_2">
         <command_interface name="position">
-          <param name="min">{-42*pi/180}</param>
-          <param name="max">{90*pi/180}</param>
+          <param name="min">${robot_parameters['j2_limit_min']}</param>
+          <param name="max">${robot_parameters['j2_limit_max']}</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
@@ -49,8 +49,8 @@
 
       <joint name="joint_3">
         <command_interface name="position">
-          <param name="min">{-89*pi/180}</param>
-          <param name="max">{52*pi/180}</param>
+          <param name="min">${robot_parameters['j3_limit_min']}</param>
+          <param name="max">${robot_parameters['j3_limit_max']}</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
@@ -60,8 +60,8 @@
 
       <joint name="joint_4">
         <command_interface name="position">
-          <param name="min">${-robot_parameters['j4_limit']}</param>
-          <param name="max">${robot_parameters['j4_limit']}</param>
+          <param name="min">${robot_parameters['j4_limit_min']}</param>
+          <param name="max">${robot_parameters['j4_limit_max']}</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
@@ -71,8 +71,8 @@
 
       <joint name="joint_5">
         <command_interface name="position">
-          <param name="min">{-105*pi/180}</param>
-          <param name="max">{105*pi/180}</param>
+          <param name="min">${robot_parameters['j5_limit_min']}</param>
+          <param name="max">${robot_parameters['j5_limit_max']}</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
@@ -82,8 +82,8 @@
 
       <joint name="joint_6">
         <command_interface name="position">
-          <param name="min">${-robot_parameters['j6_limit']}</param>
-          <param name="max">${robot_parameters['j6_limit']}</param>
+          <param name="min">${robot_parameters['j6_limit_min']}</param>
+          <param name="max">${robot_parameters['j6_limit_max']}</param>
         </command_interface>
         <state_interface name="position">
           <param name="initial_value">0.0</param>
