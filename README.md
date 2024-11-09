@@ -76,13 +76,12 @@ procedure as specified in [AR4 Robot Setup](https://www.youtube.com/watch?v=OL6l
 ### [Optional] Running in Docker Container
 
 A docker container and run script has been provided that can be used to run the
-robot and any GUI programs. It requires an NVIDIA GPU, and the
-[NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html)
-to be installed. Then you can start the docker container with:
+robot and any GUI programs. It requires [rocker](https://github.com/osrf/rocker) to be installed. Then you can start the docker container with:
 
 ```bash
 docker build -t ar4_ros_driver .
-./run_in_docker.sh
+rocker --ssh --x11 --volume $(pwd):/ar4_ws/src/ar4_ros_driver -- ar4_ros_driver bash
+# Feel free to adjust the volume mounting based on your project structure
 ```
 
 ## Usage
