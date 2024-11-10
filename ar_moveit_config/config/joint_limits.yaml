@@ -1,5 +1,7 @@
 # These limits are used by MoveIt and augment/override the definitions in
 # ur_description.
+# You can confirm parameters are loaded despite warning, by:
+# ros2 param get /move_group robot_description_planning.joint_limits.joint_1.max_deceleration
 joint_limits:
   joint_1:
     has_acceleration_limits: true
@@ -36,3 +38,9 @@ joint_limits:
     max_acceleration: 0.01 # m/s^2
     has_velocity_limits: true
     max_velocity: 0.02 # m/s
+
+cartesian_limits:
+  max_trans_vel: 0.05 # m/s
+  max_trans_acc: 0.01 # m/s^2
+  max_trans_dec: -0.01 # m/s^2
+  max_rot_vel: 0.08727 # 5 deg/s
