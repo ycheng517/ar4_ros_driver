@@ -78,19 +78,16 @@ def generate_launch_description():
     }
 
     # Planning Configuration
-    ompl_planning_pipeline_config = {
-        "default_planning_pipeline": "ompl",
-        "planning_pipelines": ["ompl"],
-        "ompl": {
-            "planning_plugin": "ompl_interface/OMPLPlanner",
-            "request_adapters":
-            """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
-            "start_state_max_bounds_error": 0.1,
-        }
-    }
     ompl_planning_yaml = load_yaml("ar_moveit_config",
                                    "config/ompl_planning.yaml")
-    ompl_planning_pipeline_config["ompl"].update(ompl_planning_yaml)
+    pilz_planning_yaml = load_yaml("ar_moveit_config",
+                                   "config/pilz_planning.yaml")
+    planning_pipeline_config = {
+        "default_planning_pipeline": "ompl",
+        "planning_pipelines": ["ompl", "pilz"],
+        "ompl": ompl_planning_yaml,
+        "pilz": pilz_planning_yaml,
+    }
 
     # Trajectory Execution Configuration
     controllers_yaml = load_yaml("ar_moveit_config", "config/controllers.yaml")
@@ -116,6 +113,11 @@ def generate_launch_description():
         "publish_transforms_updates": True,
     }
 
+    # Starts Pilz Industrial Motion Planner MoveGroupSequenceAction and MoveGroupSequenceService servers
+    move_group_capabilities = {
+        "capabilities": "pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService"
+    }
+
     # Start the actual move_group node/action server
     run_move_group_node = Node(
         package="moveit_ros_move_group",
@@ -126,10 +128,11 @@ def generate_launch_description():
             robot_description_semantic,
             robot_description_kinematics,
             robot_description_planning,
-            ompl_planning_pipeline_config,
+            planning_pipeline_config,
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
+            move_group_capabilities,
         ],
     )
 
@@ -149,7 +152,7 @@ def generate_launch_description():
             robot_description_semantic,
             robot_description_kinematics,
             robot_description_planning,
-            ompl_planning_pipeline_config,
+            planning_pipeline_config,
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
