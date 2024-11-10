@@ -1,7 +1,8 @@
 # AR4 ROS Driver
 
 ROS 2 driver of the AR4 robot arm from [Annin Robotics](https://www.anninrobotics.com).
-Tested with ROS 2 Iron on Ubuntu 22.04.
+Tested with ROS 2 Iron on Ubuntu 22.04. Also supports Jazzy using
+[this branch](https://github.com/ycheng517/ar4_ros_driver/tree/feature/jazzy)
 
 **Supports:**
 
