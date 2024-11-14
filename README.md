@@ -143,7 +143,7 @@ ros2 launch ar_moveit_config ar_moveit.launch.py
 
 Available Launch Arguments:
 
-- `ar_model`: The model of the AR4. Options are `mk1`, `mk2`, or `mk3`. Defaults to `mk1`.
+- `ar_model`: The model of the AR4. Options are `mk1`, `mk2`, or `mk3`. Defaults to `mk3`.
 - `include_gripper`: Whether to include the servo gripper. Defaults to:
   `include_gripper:=True`.
 - `use_sim_time`: Make Moveit use simulation time. Should only be enabled when
