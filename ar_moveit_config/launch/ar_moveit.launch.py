@@ -82,7 +82,7 @@ def generate_launch_description():
         ))
     declared_arguments.append(
         DeclareLaunchArgument("ar_model",
-                              default_value="mk1",
+                              default_value="mk3",
                               choices=["mk1", "mk2", "mk3"],
                               description="Model of AR4"))
 

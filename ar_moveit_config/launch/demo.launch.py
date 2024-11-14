@@ -30,7 +30,7 @@ def generate_launch_description():
                                    default_value="False",
                                    description="Database flag")
     ar_model_arg = DeclareLaunchArgument("ar_model",
-                                         default_value="mk1",
+                                         default_value="mk3",
                                          choices=["mk1", "mk2", "mk3"],
                                          description="Model of AR4")
     ar_model_config = LaunchConfiguration("ar_model")
