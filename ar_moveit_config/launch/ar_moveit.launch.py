@@ -168,7 +168,7 @@ def generate_launch_description():
         "publish_state_updates": True,
         "publish_transforms_updates": True,
         "publish_robot_description": True,
-        "publish_robot_description_semantic": True
+        "publish_robot_description_semantic": True,
         # Two above added due to https://github.com/moveit/moveit2_tutorials/issues/528
     }
 
@@ -213,6 +213,7 @@ def generate_launch_description():
             planning_pipeline_config,
             robot_description_kinematics,
             robot_description_planning,
+            {"use_sim_time": use_sim_time},
         ],
     )
 

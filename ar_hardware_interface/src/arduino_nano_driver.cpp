@@ -61,7 +61,7 @@ bool ArduinoNanoDriver::transmit(std::string msg, std::string& err) {
   if (!ec) {
     return true;
   } else {
-    err = "Error in transmit";
+    err = ec.message();
     return false;
   }
 }

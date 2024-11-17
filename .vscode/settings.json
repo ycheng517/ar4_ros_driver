@@ -78,7 +78,9 @@
       "typeindex": "cpp",
       "typeinfo": "cpp",
       "variant": "cpp",
-      "*.ipp": "cpp"
+      "*.ipp": "cpp",
+      "callback": "cpp",
+      "image": "cpp"
     },
     "ros.distro": "iron",
     "C_Cpp.default.includePath": [
@@ -97,5 +99,8 @@
       "build": true,
       "install": true,
       "log": true
-    }
+    },
+    "cSpell.words": [
+      "RCLCPP"
+    ]
 }

@@ -15,12 +15,13 @@ namespace ar_hardware_interface {
 class TeensyDriver {
  public:
   bool init(std::string ar_model, std::string port, int baudrate,
-            int num_joints);
-  void setStepperSpeed(std::vector<double>& max_speed,
-                       std::vector<double>& max_accel);
+            int num_joints, bool velocity_control_enabled);
   void update(std::vector<double>& pos_commands,
-              std::vector<double>& joint_states);
+              std::vector<double>& vel_commands,
+              std::vector<double>& joint_states,
+              std::vector<double>& joint_velocities);
   void getJointPositions(std::vector<double>& joint_positions);
+  void getJointVelocities(std::vector<double>& joint_velocities);
   bool calibrateJoints();
   bool resetEStop();
   bool isEStopped();
@@ -35,8 +36,11 @@ class TeensyDriver {
   boost::asio::serial_port serial_port_;
   int num_joints_;
   std::vector<double> joint_positions_deg_;
+  std::vector<double> joint_velocities_deg_;
   std::vector<int> enc_calibrations_;
+  bool velocity_control_enabled_ = true;
   bool is_estopped_;
+
   rclcpp::Logger logger_ = rclcpp::get_logger("teensy_driver");
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
 
@@ -47,10 +51,13 @@ class TeensyDriver {
   bool sendCommand(std::string outMsg);  // send arbitrary commands
 
   void checkInit(std::string msg);
+
+  template <typename T>
+  void parseValuesToVector(const std::string msg, std::vector<T>& values);
   void updateEncoderCalibrations(std::string msg);
   void updateJointPositions(std::string msg);
+  void updateJointVelocities(std::string msg);
   void updateEStopStatus(std::string msg);
-  bool succeeded(std::string msg);
 };
 
 }  // namespace ar_hardware_interface

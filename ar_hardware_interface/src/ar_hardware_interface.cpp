@@ -18,9 +18,13 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
   // init motor driver
   std::string serial_port = info_.hardware_parameters.at("serial_port");
   std::string ar_model = info_.hardware_parameters.at("ar_model");
+  std::string velocity_control_p =
+      info_.hardware_parameters.at("velocity_control_enabled");
+  bool velocity_control_enabled =
+      velocity_control_p == "True" || velocity_control_p == "true";
   int baud_rate = 9600;
-  bool success =
-      driver_.init(ar_model, serial_port, baud_rate, info_.joints.size());
+  bool success = driver_.init(ar_model, serial_port, baud_rate,
+                              info_.joints.size(), velocity_control_enabled);
   if (!success) {
     return hardware_interface::CallbackReturn::ERROR;
   }
@@ -30,8 +34,10 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
 void ARHardwareInterface::init_variables() {
   // resize vectors
   int num_joints = info_.joints.size();
-  actuator_commands_.resize(num_joints);
+  actuator_pos_commands_.resize(num_joints);
+  actuator_vel_commands_.resize(num_joints);
   actuator_positions_.resize(num_joints);
+  actuator_velocities_.resize(num_joints);
   joint_positions_.resize(num_joints);
   joint_velocities_.resize(num_joints);
   joint_efforts_.resize(num_joints);
@@ -73,7 +79,9 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
   for (size_t i = 0; i < info_.joints.size(); ++i) {
     // apply offsets, convert from deg to rad for moveit
     joint_positions_[i] = degToRad(actuator_positions_[i] + joint_offsets_[i]);
+    joint_velocities_[i] = degToRad(actuator_velocities_[i]);
     joint_position_commands_[i] = joint_positions_[i];
+    joint_velocity_commands_[i] = joint_velocities_[i];
   }
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -92,6 +100,8 @@ ARHardwareInterface::export_state_interfaces() {
   for (size_t i = 0; i < info_.joints.size(); ++i) {
     state_interfaces.emplace_back(info_.joints[i].name, "position",
                                   &joint_positions_[i]);
+    state_interfaces.emplace_back(info_.joints[i].name, "velocity",
+                                  &joint_velocities_[i]);
   }
   return state_interfaces;
 }
@@ -102,6 +112,8 @@ ARHardwareInterface::export_command_interfaces() {
   for (size_t i = 0; i < info_.joints.size(); ++i) {
     command_interfaces.emplace_back(info_.joints[i].name, "position",
                                     &joint_position_commands_[i]);
+    command_interfaces.emplace_back(info_.joints[i].name, "velocity",
+                                    &joint_velocity_commands_[i]);
   }
   return command_interfaces;
 }
@@ -109,18 +121,12 @@ ARHardwareInterface::export_command_interfaces() {
 hardware_interface::return_type ARHardwareInterface::read(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   driver_.getJointPositions(actuator_positions_);
+  driver_.getJointVelocities(actuator_velocities_);
   for (size_t i = 0; i < info_.joints.size(); ++i) {
     // apply offsets, convert from deg to rad for moveit
     joint_positions_[i] = degToRad(actuator_positions_[i] + joint_offsets_[i]);
+    joint_velocities_[i] = degToRad(actuator_velocities_[i]);
   }
-  std::string logInfo = "Joint Pos: ";
-  for (size_t i = 0; i < info_.joints.size(); i++) {
-    std::stringstream jointPositionStm;
-    jointPositionStm << std::fixed << std::setprecision(2)
-                     << radToDeg(joint_positions_[i]);
-    logInfo += info_.joints[i].name + ": " + jointPositionStm.str() + " | ";
-  }
-  RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   return hardware_interface::return_type::OK;
 }
 
@@ -128,18 +134,12 @@ hardware_interface::return_type ARHardwareInterface::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   for (size_t i = 0; i < info_.joints.size(); ++i) {
     // convert from rad to deg, apply offsets
-    actuator_commands_[i] =
+    actuator_pos_commands_[i] =
         radToDeg(joint_position_commands_[i]) - joint_offsets_[i];
+    actuator_vel_commands_[i] = radToDeg(joint_velocity_commands_[i]);
   }
-  std::string logInfo = "Joint Cmd: ";
-  for (size_t i = 0; i < info_.joints.size(); i++) {
-    std::stringstream jointPositionStm;
-    jointPositionStm << std::fixed << std::setprecision(2)
-                     << radToDeg(joint_position_commands_[i]);
-    logInfo += info_.joints[i].name + ": " + jointPositionStm.str() + " | ";
-  }
-  RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
-  driver_.update(actuator_commands_, actuator_positions_);
+  driver_.update(actuator_pos_commands_, actuator_vel_commands_,
+                 actuator_positions_, actuator_velocities_);
   if (driver_.isEStopped()) {
     std::string logWarn =
         "Hardware in EStop state. To reset the EStop "
