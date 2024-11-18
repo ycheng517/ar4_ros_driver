@@ -151,6 +151,15 @@ Available Launch Arguments:
 
 You can now plan in RViz and control the real-world arm. Joint commands and joint states will be updated through the hardware interface.
 
+NOTE: At any point you may interrupt the robot movement by pressing the E-Stop button
+on the robot. This would abruptly stop the robot motion! To reset the E-Stop state of
+the robot use the following command
+
+```bash
+ros2 run ar_hardware_interface reset_estop.sh <AR_MODEL>
+```
+where `<AR_MODEL>` is the model of the AR4, one of `mk1`, `mk2`, or `mk3`
+
 ---
 
 ### Control simulated arm in Gazebo with MoveIt in RViz

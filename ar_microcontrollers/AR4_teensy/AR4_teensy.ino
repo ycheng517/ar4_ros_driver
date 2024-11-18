@@ -15,6 +15,7 @@ String MODEL = "";
 // Physical Params
 ///////////////////////////////////////////////////////////////////////////////
 
+const int ESTOP_PIN = 39;
 const int STEP_PINS[] = {0, 2, 4, 6, 8, 10};
 const int DIR_PINS[] = {1, 3, 5, 7, 9, 11};
 const int LIMIT_PINS[] = {26, 27, 28, 29, 30, 31};
@@ -82,6 +83,39 @@ char JOINT_NAMES[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 // num of encoder steps in range of motion of joint
 int ENC_RANGE_STEPS[NUM_JOINTS];
 
+bool estop_pressed = false;
+
+void estopPressed() {
+  estop_pressed = true;
+}
+
+void resetEstop() {
+  // if ESTOP button is pressed still, do not reset the flag!
+  if (digitalRead(ESTOP_PIN) == LOW) {
+    return;
+  }
+
+  // reset any previously set MT commands
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    // NOTE: This may seem redundant but is the only permitted way to set
+    // _stepInterval and _n to 0, which is required to avoid a jerk resume
+    // when Estop is reset after interruption of an accelerated motion
+    stepperJoints[i].setCurrentPosition(stepperJoints[i].currentPosition());
+  }
+
+  estop_pressed = false;
+}
+
+bool safeRun(AccelStepper& stepperJoint) {
+  if (estop_pressed) return false;
+  return stepperJoint.run();
+}
+
+bool safeRunSpeed(AccelStepper& stepperJoint) {
+  if (estop_pressed) return false;
+  return stepperJoint.runSpeed();
+}
+
 void setup() {
   MOTOR_STEPS_PER_DEG["mk1"] = MOTOR_STEPS_PER_DEG_MK1;
   MOTOR_STEPS_PER_DEG["mk2"] = MOTOR_STEPS_PER_DEG_MK2;
@@ -106,6 +140,9 @@ void setup() {
     pinMode(DIR_PINS[i], OUTPUT);
     pinMode(LIMIT_PINS[i], INPUT);
   }
+
+  pinMode(ESTOP_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(ESTOP_PIN), estopPressed, FALLING);
 }
 
 void setupSteppersMK1() {
@@ -267,7 +304,7 @@ bool calibrateJoints(int* calJoints) {
         // check limit switches
         if (!reachedLimitSwitch(i)) {
           // limit switch not reached, continue moving
-          stepperJoints[i].runSpeed();
+          safeRunSpeed(stepperJoints[i]);
           calAllDone = false;
         } else {
           // limit switch reached
@@ -291,7 +328,7 @@ void moveAwayFromLimitSwitch() {
   }
   for (int j = 0; j < 10000000; j++) {
     for (int i = 0; i < NUM_JOINTS; ++i) {
-      stepperJoints[i].runSpeed();
+      safeRunSpeed(stepperJoints[i]);
     }
   }
   for (int i = 0; i < NUM_JOINTS; i++) {
@@ -356,7 +393,7 @@ void doCalibrationRoutine() {
           (REST_ENC_POSITIONS[MODEL][i] / ENC_MULT[i] - curMotorSteps[i]) *
           ENC_DIR[i];
       stepperJoints[i].move(target_pos);
-      stepperJoints[i].run();
+      safeRun(stepperJoints[i]);
     }
   }
   bool restPosReached = false;
@@ -365,7 +402,7 @@ void doCalibrationRoutine() {
     restPosReached = true;
     for (int i = 0; i < NUM_JOINTS; ++i) {
       if (abs(stepperJoints[i].distanceToGo()) > 5) {
-        stepperJoints[i].run();
+        safeRun(stepperJoints[i]);
         restPosReached = false;
       }
     }
@@ -374,7 +411,7 @@ void doCalibrationRoutine() {
     // set all speeds to zero
     for (int i = 0; i < NUM_JOINTS; ++i) {
       stepperJoints[i].setSpeed(0);
-      stepperJoints[i].run();
+      safeRun(stepperJoints[i]);
     }
     String msg = String("JCRES0MSG") + "Failed to return to rest position.";
     Serial.println(msg);
@@ -430,9 +467,8 @@ void stateTRAJ() {
         // update trajectory information
         readMotorSteps(curMotorSteps);
 
-        // update host with joint positions
-        encStepsToJointPos(curMotorSteps, curJointPos);
-        String msg = String("JP") + JointPosToString(curJointPos);
+        // update the host about estop state
+        String msg = String("ES") + estop_pressed;
         Serial.println(msg);
 
         // get new position commands
@@ -463,7 +499,7 @@ void stateTRAJ() {
             //   diffMotSteps = diffMotSteps / 2;
             // }
             stepperJoints[i].move(diffMotSteps);
-            stepperJoints[i].run();
+            safeRun(stepperJoints[i]);
           }
         }
       } else if (function == "JC") {
@@ -489,12 +525,17 @@ void stateTRAJ() {
         // update host with joint positions
         String msg = String("JP") + JointPosToString(curJointPos);
         Serial.println(msg);
+      } else if (function == "RE") {
+        resetEstop();
+        // update host with Estop status after trying to reset it
+        String msg = String("ES") + estop_pressed;
+        Serial.println(msg);
       }
 
       inData = "";  // clear message
     }
     for (int i = 0; i < NUM_JOINTS; ++i) {
-      stepperJoints[i].run();
+      safeRun(stepperJoints[i]);
     }
   }
 }
