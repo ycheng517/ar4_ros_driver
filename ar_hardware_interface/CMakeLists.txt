@@ -69,6 +69,11 @@ install(DIRECTORY config launch urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(PROGRAMS
+  scripts/reset_estop.sh
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 ament_export_targets(export_ar_hardware_interface HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS} Boost)
 

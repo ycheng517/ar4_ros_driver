@@ -45,6 +45,7 @@ bool TeensyDriver::init(std::string ar_model, std::string port, int baudrate,
   num_joints_ = num_joints;
   joint_positions_deg_.resize(num_joints_);
   enc_calibrations_.resize(num_joints_);
+  is_estopped_ = false;
   return true;
 }
 
@@ -92,6 +93,16 @@ void TeensyDriver::getJointPositions(std::vector<double>& joint_positions) {
   joint_positions = joint_positions_deg_;
 }
 
+bool TeensyDriver::resetEStop() {
+  std::string msg = "RE\n";
+  exchange(msg);
+  return !is_estopped_;
+}
+
+bool TeensyDriver::isEStopped() {
+  return is_estopped_;
+}
+
 // Send specific commands
 bool TeensyDriver::sendCommand(std::string outMsg) { return exchange(outMsg); }
 
@@ -120,6 +131,9 @@ bool TeensyDriver::exchange(std::string outMsg) {
   } else if (header == "JP") {
     // encoder steps
     updateJointPositions(inMsg);
+  } else if (header == "ES") {
+    // estop status
+    updateEStopStatus(inMsg);
   } else if (header == "DB") {
     // debug message
     RCLCPP_DEBUG(logger_, "Debug message: %s", inMsg.c_str());
@@ -216,6 +230,10 @@ void TeensyDriver::updateJointPositions(std::string msg) {
   joint_positions_deg_[3] = std::stod(msg.substr(idx4, idx5 - idx4));
   joint_positions_deg_[4] = std::stod(msg.substr(idx5, idx6 - idx5));
   joint_positions_deg_[5] = std::stod(msg.substr(idx6));
+}
+
+void TeensyDriver::updateEStopStatus(std::string msg) {
+  is_estopped_ = msg.substr(2) == "1" ? true : false;
 }
 
 bool TeensyDriver::succeeded(std::string msg) {

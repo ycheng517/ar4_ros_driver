@@ -49,14 +49,23 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
     const rclcpp_lifecycle::State& /*previous_state*/) {
   RCLCPP_INFO(logger_, "Activating hardware interface...");
 
+  // Reset Estop (if any)
+  bool success = driver_.resetEStop();
+  if (!success) {
+    RCLCPP_ERROR(logger_,
+                 "Cannot activate. Hardware E-stop state cannot be reset.");
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
   // calibrate joints if needed
   bool calibrate = info_.hardware_parameters.at("calibrate") == "True";
-  if (calibrate) {
+  if (calibrate && !calibrated_) {
     // run calibration
     RCLCPP_INFO(logger_, "Running joint calibration...");
     if (!driver_.calibrateJoints()) {
       return hardware_interface::CallbackReturn::ERROR;
     }
+    calibrated_ = true;
   }
 
   // init position commands at current positions
@@ -131,6 +140,14 @@ hardware_interface::return_type ARHardwareInterface::write(
   }
   RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   driver_.update(actuator_commands_, actuator_positions_);
+  if (driver_.isEStopped()) {
+    std::string logWarn =
+        "Hardware in EStop state. To reset the EStop "
+        "reactivate the hardware component using 'ros2 "
+        "run ar_hardware_interface reset_estop.sh'.";
+    RCLCPP_WARN(logger_, logWarn.c_str());
+    return hardware_interface::return_type::ERROR;
+  }
   return hardware_interface::return_type::OK;
 }
 

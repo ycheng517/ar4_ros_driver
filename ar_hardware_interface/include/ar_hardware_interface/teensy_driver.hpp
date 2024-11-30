@@ -22,6 +22,8 @@ class TeensyDriver {
               std::vector<double>& joint_states);
   void getJointPositions(std::vector<double>& joint_positions);
   bool calibrateJoints();
+  bool resetEStop();
+  bool isEStopped();
 
   TeensyDriver();
 
@@ -34,6 +36,7 @@ class TeensyDriver {
   int num_joints_;
   std::vector<double> joint_positions_deg_;
   std::vector<int> enc_calibrations_;
+  bool is_estopped_;
   rclcpp::Logger logger_ = rclcpp::get_logger("teensy_driver");
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
 
@@ -46,6 +49,7 @@ class TeensyDriver {
   void checkInit(std::string msg);
   void updateEncoderCalibrations(std::string msg);
   void updateJointPositions(std::string msg);
+  void updateEStopStatus(std::string msg);
   bool succeeded(std::string msg);
 };
 

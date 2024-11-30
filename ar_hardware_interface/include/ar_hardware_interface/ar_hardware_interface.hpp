@@ -49,6 +49,8 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
   std::vector<double> joint_effort_commands_;
 
   // Misc
+  bool calibrated_ = false;
+
   void init_variables();
   double degToRad(double deg) { return deg / 180.0 * M_PI; };
   double radToDeg(double rad) { return rad / M_PI * 180.0; };
