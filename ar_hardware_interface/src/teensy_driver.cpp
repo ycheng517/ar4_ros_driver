@@ -135,6 +135,7 @@ void TeensyDriver::getJointPositions(std::vector<double>& joint_positions) {
 
 bool TeensyDriver::resetEStop() {
   std::string msg = "RE\n";
+  exchange(msg);
   return !is_estopped_;
 }
 
@@ -142,6 +143,7 @@ bool TeensyDriver::isEStopped() { return is_estopped_; }
 
 void TeensyDriver::getJointVelocities(std::vector<double>& joint_velocities) {
   // get current joint velocities
+  std::string msg = "JV\n";
   exchange(msg);
   joint_velocities = joint_velocities_deg_;
 }

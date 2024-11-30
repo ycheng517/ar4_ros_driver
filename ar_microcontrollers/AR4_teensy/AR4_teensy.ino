@@ -101,6 +101,7 @@ void resetEstop() {
     // _stepInterval and _n to 0, which is required to avoid a jerk resume
     // when Estop is reset after interruption of an accelerated motion
     stepperJoints[i].setCurrentPosition(stepperJoints[i].currentPosition());
+    stepperJoints[i].setSpeed(0);
   }
 
   estop_pressed = false;
@@ -409,7 +410,7 @@ bool moveAwayFromLimitSwitch(int* calJoints) {
 
   bool limitSwitchesActive = true;
   unsigned long startTime = millis();
-  while (limitSwitchesActive || millis() - startTime < 5000) {
+  while (limitSwitchesActive || millis() - startTime < 4000) {
     limitSwitchesActive = false;
     updateAllLimitSwitches();
     for (int i = 0; i < NUM_JOINTS; ++i) {
@@ -417,7 +418,7 @@ bool moveAwayFromLimitSwitch(int* calJoints) {
         if (limitSwitches[i].isPressed()) {
           limitSwitchesActive = true;
         }
-        stepperJoints[i].runSpeed();
+        safeRunSpeed(stepperJoints[i]);
       }
     }
 
@@ -486,6 +487,9 @@ bool doCalibrationRoutine(String& outputMsg) {
   readMotorSteps(curMotorSteps);
   MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
   for (int i = 0; i < NUM_JOINTS; ++i) {
+    if (estop_pressed) {
+      return false;
+    }
     stepperJoints[i].runToPosition();
   }
 
@@ -594,10 +598,8 @@ void stateTRAJ() {
 
         MoveTo(inData, curMotorSteps);
 
-        // update host with joint positions
-        double curJointPos[NUM_JOINTS];
-        encStepsToJointPos(curMotorSteps, curJointPos);
-        String msg = String("JP") + JointPosToString(curJointPos);
+        // update the host about estop state
+        String msg = String("ES") + estop_pressed;
         Serial.println(msg);
 
       } else if (function == "MV") {
@@ -610,8 +612,9 @@ void stateTRAJ() {
 
         MoveVelocity(inData);
 
-        // update target joint velocities
-        Serial.println("JV" + JointVelToString(lastVelocity));
+        // update the host about estop state
+        String msg = String("ES") + estop_pressed;
+        Serial.println(msg);
 
       } else if (function == "JP") {
         readMotorSteps(curMotorSteps);
