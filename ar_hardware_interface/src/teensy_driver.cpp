@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <thread>
 
-#define FW_VERSION "0.2.0"
+#define FW_VERSION "2.0.0"
 
 namespace ar_hardware_interface {
 

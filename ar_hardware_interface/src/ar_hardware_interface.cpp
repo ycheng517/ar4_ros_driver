@@ -74,16 +74,6 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
     calibrated_ = true;
   }
 
-  // // init position commands at current positions
-  // driver_.getJointPositions(actuator_positions_);
-  // for (size_t i = 0; i < info_.joints.size(); ++i) {
-  //   // apply offsets, convert from deg to rad for moveit
-  //   joint_positions_[i] = degToRad(actuator_positions_[i] +
-  //   joint_offsets_[i]); joint_velocities_[i] =
-  //   degToRad(actuator_velocities_[i]); joint_position_commands_[i] =
-  //   joint_positions_[i]; joint_velocity_commands_[i] = joint_velocities_[i];
-  // }
-
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 

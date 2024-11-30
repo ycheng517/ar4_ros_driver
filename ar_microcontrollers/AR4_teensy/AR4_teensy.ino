@@ -7,7 +7,7 @@
 #include <map>
 
 // Firmware version
-const char* VERSION = "0.2.0";
+const char* VERSION = "2.0.0";
 
 // Model of the AR4, i.e. mk1, mk2, mk3
 String MODEL = "";
