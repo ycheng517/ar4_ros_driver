@@ -36,8 +36,10 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
 
   // Motor driver
   TeensyDriver driver_;
-  std::vector<double> actuator_commands_;
+  std::vector<double> actuator_pos_commands_;
+  std::vector<double> actuator_vel_commands_;
   std::vector<double> actuator_positions_;
+  std::vector<double> actuator_velocities_;
 
   // Shared memory
   std::vector<double> joint_offsets_;

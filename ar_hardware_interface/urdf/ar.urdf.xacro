@@ -22,6 +22,7 @@
     calibrate="$(arg calibrate)"
     robot_parameters_file="$(find ar_description)/config/$(arg ar_model).yaml"
     joint_offset_parameters_file="$(find ar_hardware_interface)/config/joint_offsets/$(arg ar_model).yaml"
+    driver_parameters_file="$(find ar_hardware_interface)/config/driver.yaml"
   />
 
   <xacro:if value="$(arg include_gripper)">

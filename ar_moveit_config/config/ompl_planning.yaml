@@ -1,5 +1,4 @@
-planning_plugins:
-  - ompl_interface/OMPLPlanner
+planning_plugin: ompl_interface/OMPLPlanner
 request_adapters: >-
   default_planner_request_adapters/AddTimeOptimalParameterization
   default_planner_request_adapters/ResolveConstraintFrames
@@ -62,6 +61,7 @@ planner_configs:
   PRMstarkConfigDefault:
     type: geometric::PRMstar
 ar_manipulator:
+  default_planner_config: RRTConnectkConfigDefault
   planner_configs:
     - SBLkConfigDefault
     - ESTkConfigDefault
@@ -78,6 +78,7 @@ ar_manipulator:
   #projection_evaluator: joints(shoulder_pan_joint,shoulder_lift_joint)
   longest_valid_segment_fraction: 0.01
 ar_gripper:
+  default_planner_config: RRTConnectkConfigDefault
   planner_configs:
     - SBLkConfigDefault
     - ESTkConfigDefault
@@ -90,3 +91,5 @@ ar_gripper:
     - TRRTkConfigDefault
     - PRMkConfigDefault
     - PRMstarkConfigDefault
+
+start_state_max_bounds_error: 0.1

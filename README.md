@@ -183,3 +183,18 @@ You can now plan in RViz and control the simulated arm.
 ### Hand-Eye Calibration
 
 See [ar4_hand_eye_calibration](https://github.com/ycheng517/ar4_hand_eye_calibration)
+
+## Tuning and Tweaks
+
+### Tuning Joint Offsets
+
+If for some reason your robot's joint positions appear misaligned after moving
+to the home position, you can adjust the joint offsets in the
+[joint_offsets/](./ar_hardware_interface/config/joint_offsets/) config folder.
+Select and modify the YAML file corresponding to your AR model to fine-tune the joint positions.
+
+### Switching to Position Control
+
+By default this repo uses velocity-based joint trajectory control. It allows the arm to move a lot faster and the arm movement is also a lot smoother. If for any
+reason you'd like to use the simpler classic position-only control mode, you can
+set `velocity_control_enabled: false` in [driver.yaml](./ar_hardware_interface/config/driver.yaml). Note that you'll need to reduce velocity and acceleration scaling in order for larger motions to succeed.

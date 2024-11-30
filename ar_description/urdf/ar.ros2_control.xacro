@@ -8,6 +8,7 @@
     calibrate
     robot_parameters_file
     joint_offset_parameters_file
+    driver_parameters_file
   ">
 
     <xacro:property name="robot_parameters"
@@ -16,6 +17,9 @@
     <xacro:property name="joint_offset_parameters"
       value="${xacro.load_yaml(joint_offset_parameters_file)}"/>
 
+    <xacro:property name="driver_parameters"
+      value="${xacro.load_yaml(driver_parameters_file)}"/>
+
     <ros2_control name="${ar_model}" type="system">
 
       <hardware>
@@ -23,6 +27,7 @@
         <param name="ar_model">${ar_model}</param>
         <param name="serial_port">${serial_port}</param>
         <param name="calibrate">${calibrate}</param>
+        <param name="velocity_control_enabled">${driver_parameters['velocity_control_enabled']}</param>
       </hardware>
 
       <joint name="joint_1">
@@ -30,7 +35,11 @@
           <param name="min">${robot_parameters['j1_limit_min']}</param>
           <param name="max">${robot_parameters['j1_limit_max']}</param>
         </command_interface>
+        <command_interface name="velocity" />
         <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity">
           <param name="initial_value">0.0</param>
         </state_interface>
         <param name="position_offset">${joint_offset_parameters['joint_1']}</param>
@@ -41,7 +50,11 @@
           <param name="min">${robot_parameters['j2_limit_min']}</param>
           <param name="max">${robot_parameters['j2_limit_max']}</param>
         </command_interface>
+        <command_interface name="velocity" />
         <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity">
           <param name="initial_value">0.0</param>
         </state_interface>
         <param name="position_offset">${joint_offset_parameters['joint_2']}</param>
@@ -52,7 +65,11 @@
           <param name="min">${robot_parameters['j3_limit_min']}</param>
           <param name="max">${robot_parameters['j3_limit_max']}</param>
         </command_interface>
+        <command_interface name="velocity" />
         <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity">
           <param name="initial_value">0.0</param>
         </state_interface>
         <param name="position_offset">${joint_offset_parameters['joint_3']}</param>
@@ -63,7 +80,11 @@
           <param name="min">${robot_parameters['j4_limit_min']}</param>
           <param name="max">${robot_parameters['j4_limit_max']}</param>
         </command_interface>
+        <command_interface name="velocity" />
         <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity">
           <param name="initial_value">0.0</param>
         </state_interface>
         <param name="position_offset">${joint_offset_parameters['joint_4']}</param>
@@ -74,7 +95,11 @@
           <param name="min">${robot_parameters['j5_limit_min']}</param>
           <param name="max">${robot_parameters['j5_limit_max']}</param>
         </command_interface>
+        <command_interface name="velocity" />
         <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity">
           <param name="initial_value">0.0</param>
         </state_interface>
         <param name="position_offset">${joint_offset_parameters['joint_5']}</param>
@@ -85,7 +110,11 @@
           <param name="min">${robot_parameters['j6_limit_min']}</param>
           <param name="max">${robot_parameters['j6_limit_max']}</param>
         </command_interface>
+        <command_interface name="velocity" />
         <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity">
           <param name="initial_value">0.0</param>
         </state_interface>
         <param name="position_offset">${joint_offset_parameters['joint_6']}</param>
