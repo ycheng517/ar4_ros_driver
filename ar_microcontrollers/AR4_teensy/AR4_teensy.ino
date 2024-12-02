@@ -348,6 +348,18 @@ void MoveTo(String inData, int* motorSteps) {
   MoveTo(cmdEncSteps, motorSteps);
 }
 
+bool AtPosition(const int* targetMotorSteps, const int* currMotorSteps,
+                const int maxDiff) {
+  bool allDone = true;
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    int diffEncSteps = targetMotorSteps[i] - currMotorSteps[i];
+    if (abs(diffEncSteps) > maxDiff) {
+      allDone = false;
+    }
+  }
+  return allDone;
+}
+
 void setAllMaxSpeeds() {
   for (int i = 0; i < NUM_JOINTS; ++i) {
     stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
@@ -483,14 +495,20 @@ bool doCalibrationRoutine(String& outputMsg) {
   }
 
   // return to original position
+  unsigned long startTime = millis();
   int curMotorSteps[NUM_JOINTS];
   readMotorSteps(curMotorSteps);
-  MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
-  for (int i = 0; i < NUM_JOINTS; ++i) {
-    if (estop_pressed) {
+  while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
+    if (millis() - startTime > 10000) {
+      outputMsg = "ER: Failed to return to original position.";
       return false;
     }
-    stepperJoints[i].runToPosition();
+
+    readMotorSteps(curMotorSteps);
+    MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      safeRun(stepperJoints[i]);
+    }
   }
 
   // calibration done, send calibration values
