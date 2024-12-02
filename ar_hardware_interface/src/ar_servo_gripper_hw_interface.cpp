@@ -47,9 +47,6 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_deactivate(
 std::vector<hardware_interface::StateInterface>
 ARServoGripperHWInterface::export_state_interfaces() {
   std::vector<hardware_interface::StateInterface> state_interfaces;
-
-  RCLCPP_INFO(logger_, "Debug: Exporting state interfaces for joint %s",
-              info_.joints[0].name.c_str());
   for (size_t i = 0; i < info_.joints.size(); ++i) {
     state_interfaces.emplace_back(info_.joints[i].name, "position", &position_);
     state_interfaces.emplace_back(info_.joints[i].name, "velocity", &velocity_);

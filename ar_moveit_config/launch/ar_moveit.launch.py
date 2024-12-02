@@ -167,9 +167,8 @@ def generate_launch_description():
         "publish_geometry_updates": True,
         "publish_state_updates": True,
         "publish_transforms_updates": True,
-        "publish_robot_description": True,
+        # Added due to https://github.com/moveit/moveit2_tutorials/issues/528
         "publish_robot_description_semantic": True,
-        # Two above added due to https://github.com/moveit/moveit2_tutorials/issues/528
     }
 
     # Starts Pilz Industrial Motion Planner MoveGroupSequenceAction and MoveGroupSequenceService servers

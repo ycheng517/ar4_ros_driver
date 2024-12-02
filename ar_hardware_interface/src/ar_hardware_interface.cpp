@@ -28,6 +28,19 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
   if (!success) {
     return hardware_interface::CallbackReturn::ERROR;
   }
+
+  // calibrate joints if needed
+  bool calibrate = info_.hardware_parameters.at("calibrate") == "True";
+  if (calibrate) {
+    // run calibration
+    RCLCPP_INFO(logger_, "Running joint calibration...");
+    if (!driver_.calibrateJoints()) {
+      RCLCPP_INFO(logger_, "calibration failed.");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+  }
+  RCLCPP_INFO(logger_, "calibration succeeded.");
+
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -61,17 +74,6 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_activate(
     RCLCPP_ERROR(logger_,
                  "Cannot activate. Hardware E-stop state cannot be reset.");
     return hardware_interface::CallbackReturn::ERROR;
-  }
-
-  // calibrate joints if needed
-  bool calibrate = info_.hardware_parameters.at("calibrate") == "True";
-  if (calibrate && !calibrated_) {
-    // run calibration
-    RCLCPP_INFO(logger_, "Running joint calibration...");
-    if (!driver_.calibrateJoints()) {
-      return hardware_interface::CallbackReturn::ERROR;
-    }
-    calibrated_ = true;
   }
 
   return hardware_interface::CallbackReturn::SUCCESS;

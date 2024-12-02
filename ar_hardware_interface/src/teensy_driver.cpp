@@ -155,6 +155,7 @@ bool TeensyDriver::exchange(std::string outMsg) {
   std::string inMsg;
   std::string errTransmit = "";
 
+  // RCLCPP_INFO(logger_, "Sending message: %s", outMsg.c_str());
   if (!transmit(outMsg, errTransmit)) {
     RCLCPP_ERROR(logger_, "Error in transmit: %s", errTransmit.c_str());
     return false;
