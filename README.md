@@ -81,7 +81,10 @@ robot and any GUI programs. It requires [rocker](https://github.com/osrf/rocker)
 
 ```bash
 docker build -t ar4_ros_driver .
-rocker --ssh --x11 --volume $(pwd):/ar4_ws/src/ar4_ros_driver -- ar4_ros_driver bash
+
+rocker --ssh --x11 --privileged \
+  --volume $(pwd):/ar4_ws/src/ar4_ros_driver -- \
+  ar4_ros_driver bash
 # Feel free to adjust the volume mounting based on your project structure
 ```
 
@@ -158,6 +161,7 @@ the robot use the following command
 ```bash
 ros2 run ar_hardware_interface reset_estop.sh <AR_MODEL>
 ```
+
 where `<AR_MODEL>` is the model of the AR4, one of `mk1`, `mk2`, or `mk3`
 
 ---

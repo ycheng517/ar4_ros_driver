@@ -109,7 +109,8 @@ bool ArduinoNanoDriver::writePosition(double position) {
   std::string msg = "SV0P" + std::to_string(static_cast<int>(position)) + "\n";
   std::string reply = sendCommand(msg);
   if (reply != "Done") {
-    RCLCPP_ERROR(logger_, "Failed to write position %f", position);
+    RCLCPP_ERROR(logger_, "Failed to write position %f, got reply: %s",
+                 position, reply.c_str());
     return false;
   }
   return true;

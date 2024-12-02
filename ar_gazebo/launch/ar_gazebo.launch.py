@@ -115,6 +115,16 @@ def generate_launch_description():
             'gz_args': f'-r -v 4 --physics-engine gz-physics-bullet-featherstone-plugin {world}',
             'on_exit_shutdown': 'True'}.items())
 
+    # Bridge
+    gazebo_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            "/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"
+        ],
+        output='screen'
+    )
+
     # Spawn robot
     gazebo_spawn_robot = Node(
         package="ros_gz_sim",
@@ -132,5 +142,6 @@ def generate_launch_description():
         initial_joint_controller_spawner_started,
         gripper_joint_controller_spawner_started,
         gazebo,
+        gazebo_bridge,
         gazebo_spawn_robot,
     ])
