@@ -69,12 +69,7 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
-        parameters=[
-            # {
-            #     "use_sim_time": True
-            # }, 
-            robot_description,
-        ],
+        parameters=[robot_description],
     )
 
     joint_state_broadcaster_spawner = Node(
