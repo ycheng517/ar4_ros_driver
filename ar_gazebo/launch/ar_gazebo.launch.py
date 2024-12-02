@@ -107,14 +107,6 @@ def generate_launch_description():
         'empty.world'
     )
 
-    gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [FindPackageShare("ros_gz_sim"), "/launch",
-             "/gz_sim.launch.py"]), 
-        launch_arguments={
-            'gz_args': f'-r -v 4 --physics-engine gz-physics-bullet-featherstone-plugin {world}',
-            'on_exit_shutdown': 'True'}.items())
-
     # Bridge
     gazebo_bridge = Node(
         package='ros_gz_bridge',
@@ -124,6 +116,14 @@ def generate_launch_description():
         ],
         output='screen'
     )
+
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [FindPackageShare("ros_gz_sim"), "/launch",
+             "/gz_sim.launch.py"]),
+        launch_arguments={
+            'gz_args': f'-r -v 4 --physics-engine gz-physics-bullet-featherstone-plugin {world}',
+            'on_exit_shutdown': 'True'}.items())
 
     # Spawn robot
     gazebo_spawn_robot = Node(
@@ -137,11 +137,11 @@ def generate_launch_description():
 
     return LaunchDescription([
         ar_model_arg,
+        gazebo_bridge,
+        gazebo,
+        gazebo_spawn_robot,
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_started,
         gripper_joint_controller_spawner_started,
-        gazebo,
-        gazebo_bridge,
-        gazebo_spawn_robot,
     ])
