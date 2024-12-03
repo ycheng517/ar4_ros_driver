@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>ar_hardware_interface</name>
-  <version>2.0.0</version>
+  <version>3.0.0</version>
   <description>
     The ar_hardware_interface package provides the hardware interface for
     running an AR4 robot using the ros2_control software framework.
