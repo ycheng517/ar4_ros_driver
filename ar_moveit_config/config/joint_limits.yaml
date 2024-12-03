@@ -7,49 +7,49 @@ joint_limits:
     has_acceleration_limits: true
     max_acceleration: 0.5236 # 30 deg/s^2
     has_deceleration_limits: true
-    max_deceleration: 0.5236 # 30 deg/s^2
+    max_deceleration: -0.5236 # 30 deg/s^2
     has_velocity_limits: true
     max_velocity: 1.0472 # 60 deg/s
   joint_2:
     has_acceleration_limits: true
     max_acceleration: 0.5236 # 30 deg/s^2
     has_deceleration_limits: true
-    max_deceleration: 0.5236 # 30 deg/s^2
+    max_deceleration: -0.5236 # 30 deg/s^2
     has_velocity_limits: true
     max_velocity: 1.0472 # 60 deg/s
   joint_3:
     has_acceleration_limits: true
     max_acceleration: 0.5236 # 30 deg/s^2
     has_deceleration_limits: true
-    max_deceleration: 0.5236 # 30 deg/s^2
+    max_deceleration: -0.5236 # 30 deg/s^2
     has_velocity_limits: true
     max_velocity: 1.0472 # 60 deg/s
   joint_4:
     has_acceleration_limits: true
     max_acceleration: 0.5236 # 30 deg/s^2
     has_deceleration_limits: true
-    max_deceleration: 0.5236 # 30 deg/s^2
+    max_deceleration: -0.5236 # 30 deg/s^2
     has_velocity_limits: true
     max_velocity: 1.0472 # 60 deg/s
   joint_5:
     has_acceleration_limits: true
     max_acceleration: 0.5236 # 30 deg/s^2
     has_deceleration_limits: true
-    max_deceleration: 0.5236 # 30 deg/s^2
+    max_deceleration: -0.5236 # 30 deg/s^2
     has_velocity_limits: true
     max_velocity: 1.0472 # 60 deg/s
   joint_6:
     has_acceleration_limits: true
     max_acceleration: 0.5236 # 30 deg/s^2
     has_deceleration_limits: true
-    max_deceleration: 0.5236 # 30 deg/s^2
+    max_deceleration: -0.5236 # 30 deg/s^2
     has_velocity_limits: true
     max_velocity: 1.0472 # 60 deg/s
   gripper_jaw1_joint:
     has_acceleration_limits: true
     max_acceleration: 0.1 # m/s^2
     has_deceleration_limits: true
-    max_deceleration: 0.1 # m/s^2
+    max_deceleration: -0.1 # m/s^2
     has_velocity_limits: true
     max_velocity: 0.05 # m/s
 

@@ -1,4 +1,4 @@
-FROM ros:iron
+FROM ros:jazzy
 
 WORKDIR /ar4_ws
 RUN mkdir -p /ar4_ws/src && \

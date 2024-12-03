@@ -27,7 +27,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Denis Stogl
+import os
 
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
@@ -67,9 +69,7 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
-        parameters=[{
-            "use_sim_time": True
-        }, robot_description],
+        parameters=[robot_description],
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -101,28 +101,47 @@ def generate_launch_description():
     )
 
     # Gazebo nodes
+    world = os.path.join(
+        get_package_share_directory('ar_gazebo'),
+        'worlds',
+        'empty.world'
+    )
+
+    # Bridge
+    gazebo_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            "/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"
+        ],
+        output='screen'
+    )
+
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [FindPackageShare("gazebo_ros"), "/launch",
-             "/gazebo.launch.py"]), )
+            [FindPackageShare("ros_gz_sim"), "/launch",
+             "/gz_sim.launch.py"]),
+        launch_arguments={
+            'gz_args': f'-r -v 4 --physics-engine gz-physics-bullet-featherstone-plugin {world}',
+            'on_exit_shutdown': 'True'}.items())
 
     # Spawn robot
     gazebo_spawn_robot = Node(
-        package="gazebo_ros",
-        executable="spawn_entity.py",
-        name="spawn_ar",
+        package="ros_gz_sim",
+        executable="create",
         arguments=[
-            "-entity", "ar", "-topic", "robot_description", "-timeout", "60"
+            "-name", ar_model_config, "-topic", "robot_description"
         ],
         output="screen",
     )
 
     return LaunchDescription([
         ar_model_arg,
+        gazebo_bridge,
+        gazebo,
+        gazebo_spawn_robot,
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_started,
         gripper_joint_controller_spawner_started,
-        gazebo,
-        gazebo_spawn_robot,
     ])

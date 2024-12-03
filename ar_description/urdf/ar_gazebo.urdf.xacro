@@ -18,7 +18,7 @@
 
   <xacro:ar_ros2_control
     ar_model="$(arg ar_model)"
-    plugin_name="gazebo_ros2_control/GazeboSystem"
+    plugin_name="gz_ros2_control/GazeboSimSystem"
     serial_port="None"
     calibrate="False"
     robot_parameters_file="$(find ar_description)/config/$(arg ar_model).yaml"
@@ -28,13 +28,13 @@
 
   <xacro:ar_gripper_ros2_control
     name="ARGripperGazeboSystem"
-    plugin_name="gazebo_ros2_control/GazeboSystem"
+    plugin_name="gz_ros2_control/GazeboSimSystem"
     serial_port="None"
   />
 
   <gazebo reference="world" />
   <gazebo>
-    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+    <plugin filename="libgz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       <parameters>$(arg simulation_controllers)</parameters>
     </plugin>
   </gazebo>
