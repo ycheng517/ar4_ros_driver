@@ -1,8 +1,8 @@
 # AR4 ROS Driver
 
 ROS 2 driver of the AR4 robot arm from [Annin Robotics](https://www.anninrobotics.com).
-Tested with ROS 2 Iron on Ubuntu 22.04. Also supports Jazzy using
-[this branch](https://github.com/ycheng517/ar4_ros_driver/tree/feature/jazzy)
+Tested with ROS 2 Jazzy on Ubuntu 24.04. Also supports ROS 2 Iron using
+[this branch](https://github.com/ycheng517/ar4_ros_driver/tree/feature/iron)
 
 **Supports:**
 
@@ -203,3 +203,8 @@ Select and modify the YAML file corresponding to your AR model to fine-tune the 
 By default this repo uses velocity-based joint trajectory control. It allows the arm to move a lot faster and the arm movement is also a lot smoother. If for any
 reason you'd like to use the simpler classic position-only control mode, you can
 set `velocity_control_enabled: false` in [driver.yaml](./ar_hardware_interface/config/driver.yaml). Note that you'll need to reduce velocity and acceleration scaling in order for larger motions to succeed.
+
+## Demo Project (and Python Interface Usage)
+
+See: [Tabletop Handybot](https://github.com/ycheng517/tabletop-handybot) for a
+demo of using [PyMoveit2](https://github.com/AndrejOrsula/pymoveit2) to interface with this driver
