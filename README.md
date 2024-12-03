@@ -82,10 +82,11 @@ robot and any GUI programs. It requires [rocker](https://github.com/osrf/rocker)
 ```bash
 docker build -t ar4_ros_driver .
 
-rocker --ssh --x11 --privileged \
+# Adjust the volume mounting and devices based on your project and hardware
+rocker --ssh --x11 \
+  --devices /dev/ttyUSB0 /ttyACM0 \
   --volume $(pwd):/ar4_ws/src/ar4_ros_driver -- \
   ar4_ros_driver bash
-# Feel free to adjust the volume mounting based on your project structure
 ```
 
 ## Usage
