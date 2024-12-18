@@ -20,7 +20,7 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
 endforeach()
 
 add_library(annin_ar4_driver SHARED 
-  src/annin_ar4_driver.cpp
+  src/ar_hardware_interface.cpp
   src/ar_servo_gripper_hw_interface.cpp
   src/teensy_driver.cpp
   src/arduino_nano_driver.cpp
