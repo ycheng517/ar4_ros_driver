@@ -122,8 +122,7 @@ ros2 launch annin_ar4_moveit_config demo.launch.py
 Start the `annin_ar4_driver` module, which will load configs and the robot description:
 
 ```bash
-ros2 launch annin_ar4_driver ar_hardware.launch.py \
-  calibrate:=True
+ros2 launch annin_ar4_driver driver.launch.py calibrate:=True
 ```
 
 Available Launch Arguments:
@@ -142,7 +141,7 @@ runs with `calibrate:=False`.
 Start MoveIt and RViz:
 
 ```bash
-ros2 launch annin_ar4_moveit_config ar_moveit.launch.py
+ros2 launch annin_ar4_moveit_config moveit.launch.py
 ```
 
 Available Launch Arguments:
@@ -172,13 +171,13 @@ where `<AR_MODEL>` is the model of the AR4, one of `mk1`, `mk2`, or `mk3`
 Start the `annin_ar4_gazebo` module, which will start the Gazebo simulator and load the robot description.
 
 ```bash
-ros2 launch annin_ar4_gazebo annin_ar4_gazebo.launch.py
+ros2 launch annin_ar4_gazebo gazebo.launch.py
 ```
 
 Start Moveit and RViz:
 
 ```bash
-ros2 launch annin_ar4_moveit_config ar_moveit.launch.py use_sim_time:=true include_gripper:=True
+ros2 launch annin_ar4_moveit_config moveit.launch.py use_sim_time:=true include_gripper:=True
 ```
 
 You can now plan in RViz and control the simulated arm.
