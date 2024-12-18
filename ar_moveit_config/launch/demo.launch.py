@@ -38,7 +38,7 @@ def generate_launch_description():
         PathJoinSubstitution([FindExecutable(name="xacro")]),
         " ",
         PathJoinSubstitution([
-            FindPackageShare("ar_moveit_config"), "urdf", "fake_ar.urdf.xacro"
+            FindPackageShare("annin_ar4_moveit_config"), "urdf", "fake_ar.urdf.xacro"
         ]),
         " ",
         "ar_model:=",
@@ -51,7 +51,7 @@ def generate_launch_description():
         PathJoinSubstitution([FindExecutable(name="xacro")]),
         " ",
         PathJoinSubstitution(
-            [FindPackageShare("ar_moveit_config"), "srdf", "ar.srdf.xacro"]),
+            [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]),
         " ",
         "name:=",
         ar_model_config,
@@ -63,7 +63,7 @@ def generate_launch_description():
     robot_description_kinematics = {
         "robot_description_kinematics":
         load_yaml(
-            "ar_moveit_config",
+            "annin_ar4_moveit_config",
             os.path.join("config", "kinematics.yaml"),
         )
     }
@@ -71,15 +71,15 @@ def generate_launch_description():
     robot_description_planning = {
         "robot_description_planning":
         load_yaml(
-            "ar_moveit_config",
+            "annin_ar4_moveit_config",
             os.path.join("config", "joint_limits.yaml"),
         )
     }
 
     # Planning Configuration
-    ompl_planning_yaml = load_yaml("ar_moveit_config",
+    ompl_planning_yaml = load_yaml("annin_ar4_moveit_config",
                                    "config/ompl_planning.yaml")
-    pilz_planning_yaml = load_yaml("ar_moveit_config",
+    pilz_planning_yaml = load_yaml("annin_ar4_moveit_config",
                                    "config/pilz_planning.yaml")
     planning_pipeline_config = {
         "default_planning_pipeline": "ompl",
@@ -89,7 +89,7 @@ def generate_launch_description():
     }
 
     # Trajectory Execution Configuration
-    controllers_yaml = load_yaml("ar_moveit_config", "config/controllers.yaml")
+    controllers_yaml = load_yaml("annin_ar4_moveit_config", "config/controllers.yaml")
 
     moveit_controllers = {
         "moveit_simple_controller_manager":
@@ -136,7 +136,7 @@ def generate_launch_description():
     )
 
     # RViz
-    rviz_base = os.path.join(get_package_share_directory("ar_moveit_config"),
+    rviz_base = os.path.join(get_package_share_directory("annin_ar4_moveit_config"),
                              "rviz")
     rviz_full_config = os.path.join(rviz_base, "moveit.rviz")
 
@@ -178,7 +178,7 @@ def generate_launch_description():
 
     # ros2_control using FakeSystem as hardware
     ros2_controllers_path = os.path.join(
-        get_package_share_directory("ar_hardware_interface"),
+        get_package_share_directory("annin_ar4_driver"),
         "config",
         "controllers.yaml",
     )

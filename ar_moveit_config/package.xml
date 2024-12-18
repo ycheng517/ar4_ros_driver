@@ -1,5 +1,5 @@
 <package format="3">
-  <name>ar_moveit_config</name>
+  <name>annin_ar4_moveit_config</name>
   <version>3.0.0</version>
   <description>
     Configuration and launch files for using the AR4 robot with MoveIt 2
@@ -12,7 +12,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   
-  <exec_depend>ar_description</exec_depend>
+  <exec_depend>annin_ar4_description</exec_depend>
   <exec_depend>gripper_controllers</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>

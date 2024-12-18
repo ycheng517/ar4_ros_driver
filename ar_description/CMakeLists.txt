@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ar_description)
+project(annin_ar4_description)
 
 find_package(ament_cmake REQUIRED)
 

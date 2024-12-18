@@ -10,7 +10,7 @@
 #include "math.h"
 #include "time.h"
 
-namespace ar_hardware_interface {
+namespace annin_ar4_driver {
 
 class TeensyDriver {
  public:
@@ -60,6 +60,6 @@ class TeensyDriver {
   void updateEStopStatus(std::string msg);
 };
 
-}  // namespace ar_hardware_interface
+}  // namespace annin_ar4_driver
 
 #endif  // TEENSY_DRIVER

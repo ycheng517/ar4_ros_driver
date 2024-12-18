@@ -20,7 +20,7 @@ def generate_launch_description():
         PathJoinSubstitution([FindExecutable(name="xacro")]),
         " ",
         PathJoinSubstitution([
-            FindPackageShare("ar_hardware_interface"), "urdf", "ar.urdf.xacro"
+            FindPackageShare("annin_ar4_driver"), "urdf", "ar.urdf.xacro"
         ]),
         " ",
         "ar_model:=",
@@ -41,11 +41,11 @@ def generate_launch_description():
     robot_description = {"robot_description": robot_description_content}
 
     joint_controllers_cfg = PathJoinSubstitution([
-        FindPackageShare("ar_hardware_interface"), "config", "controllers.yaml"
+        FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"
     ])
 
     update_rate_config_file = PathJoinSubstitution([
-        FindPackageShare("ar_hardware_interface"),
+        FindPackageShare("annin_ar4_driver"),
         "config",
         "controller_update_rate.yaml",
     ])

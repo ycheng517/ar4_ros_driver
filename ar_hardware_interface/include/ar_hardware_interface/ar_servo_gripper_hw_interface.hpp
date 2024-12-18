@@ -8,11 +8,11 @@
 #include <rclcpp/rclcpp.hpp>
 #include <thread>
 
-#include "ar_hardware_interface/arduino_nano_driver.hpp"
+#include "annin_ar4_driver/arduino_nano_driver.hpp"
 
 using namespace hardware_interface;
 
-namespace ar_hardware_interface {
+namespace annin_ar4_driver {
 class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
  public:
   RCLCPP_SHARED_PTR_DEFINITIONS(ARServoGripperHWInterface);
@@ -55,4 +55,4 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
            sin((angular_pos - zero_deg_offset_) * M_PI / 180);
   };
 };
-}  // namespace ar_hardware_interface
+}  // namespace annin_ar4_driver

@@ -1,4 +1,4 @@
-# ar_description
+# annin_ar4_description
 
 This module contains the hardware description for the AR4 robot from Annin
 Robotics. The URDFs were modified from the original ones. The main

@@ -1,4 +1,4 @@
-#include "ar_hardware_interface/teensy_driver.hpp"
+#include "annin_ar4_driver/teensy_driver.hpp"
 
 #include <chrono>
 #include <stdexcept>
@@ -6,7 +6,7 @@
 
 #define FW_VERSION "2.0.0"
 
-namespace ar_hardware_interface {
+namespace annin_ar4_driver {
 
 bool TeensyDriver::init(std::string ar_model, std::string port, int baudrate,
                         int num_joints, bool velocity_control_enabled) {
@@ -300,4 +300,4 @@ void TeensyDriver::parseValuesToVector(const std::string msg,
   }
 }
 
-}  // namespace ar_hardware_interface
+}  // namespace annin_ar4_driver

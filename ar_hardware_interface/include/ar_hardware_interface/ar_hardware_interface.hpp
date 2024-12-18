@@ -6,11 +6,11 @@
 #include <rclcpp/rclcpp.hpp>
 #include <thread>
 
-#include "ar_hardware_interface/teensy_driver.hpp"
+#include "annin_ar4_driver/teensy_driver.hpp"
 
 using namespace hardware_interface;
 
-namespace ar_hardware_interface {
+namespace annin_ar4_driver {
 class ARHardwareInterface : public hardware_interface::SystemInterface {
  public:
   RCLCPP_SHARED_PTR_DEFINITIONS(ARHardwareInterface);
@@ -31,7 +31,7 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
       const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
  private:
-  rclcpp::Logger logger_ = rclcpp::get_logger("ar_hardware_interface");
+  rclcpp::Logger logger_ = rclcpp::get_logger("annin_ar4_driver");
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
 
   // Motor driver
@@ -55,4 +55,4 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
   double degToRad(double deg) { return deg / 180.0 * M_PI; };
   double radToDeg(double rad) { return rad / M_PI * 180.0; };
 };
-}  // namespace ar_hardware_interface
+}  // namespace annin_ar4_driver

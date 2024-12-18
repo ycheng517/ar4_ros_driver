@@ -1,8 +1,8 @@
-#include "ar_hardware_interface/arduino_nano_driver.hpp"
+#include "annin_ar4_driver/arduino_nano_driver.hpp"
 
 #define FW_VERSION "0.0.1"
 
-namespace ar_hardware_interface {
+namespace annin_ar4_driver {
 
 bool ArduinoNanoDriver::init(std::string port, int baudrate) {
   // @TODO read version from config
@@ -116,4 +116,4 @@ bool ArduinoNanoDriver::writePosition(double position) {
   return true;
 }
 
-}  // namespace ar_hardware_interface
+}  // namespace annin_ar4_driver

@@ -1,10 +1,10 @@
 // main program for running the ardunio nano driver and sending some test
 // commands
 
-#include <ar_hardware_interface/arduino_nano_driver.hpp>
+#include <annin_ar4_driver/arduino_nano_driver.hpp>
 
 int main() {
-  ar_hardware_interface::ArduinoNanoDriver driver;
+  annin_ar4_driver::ArduinoNanoDriver driver;
   bool success = driver.init("/dev/ttyUSB0", 9600);
   if (!success) {
     return -1;

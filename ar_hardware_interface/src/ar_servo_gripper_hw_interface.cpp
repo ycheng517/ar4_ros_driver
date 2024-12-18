@@ -1,7 +1,7 @@
-#include <ar_hardware_interface/ar_servo_gripper_hw_interface.hpp>
+#include <annin_ar4_driver/ar_servo_gripper_hw_interface.hpp>
 #include <sstream>
 
-namespace ar_hardware_interface {
+namespace annin_ar4_driver {
 
 hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
     const hardware_interface::HardwareInfo& info) {
@@ -89,9 +89,9 @@ hardware_interface::return_type ARServoGripperHWInterface::write(
   return hardware_interface::return_type::OK;
 }
 
-}  // namespace ar_hardware_interface
+}  // namespace annin_ar4_driver
 
 #include "pluginlib/class_list_macros.hpp"
 
-PLUGINLIB_EXPORT_CLASS(ar_hardware_interface::ARServoGripperHWInterface,
+PLUGINLIB_EXPORT_CLASS(annin_ar4_driver::ARServoGripperHWInterface,
                        hardware_interface::SystemInterface)

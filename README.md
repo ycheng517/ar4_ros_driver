@@ -29,18 +29,18 @@ Motion Planning using RViz and Moveit:
 
 ## Overview
 
-- **ar_description**
+- **annin_ar4_description**
   - Hardware description of arm & servo gripper urdf.
-- **ar_hardware_interface**
+- **annin_ar4_driver**
   - ROS interfaces for the arm and servo gripper drivers, built on the ros2_control framework.
   - Manages joint offsets, limits and conversion between joint and actuator messages.
   - Handles communication with the microcontrollers.
-- **ar_microcontrollers**
-  - Firmware for the microcontrollers, ie. Teensy and Arduino Nano.
-- **ar_moveit_config**
+- **annin_ar4_firmware**
+  - Firmware for the Teensy and Arduino Nano microcontrollers.
+- **annin_ar4_moveit_config**
   - MoveIt module for motion planning.
   - Controlling the arm and servo gripper through Rviz.
-- **ar_gazebo**
+- **annin_ar4_gazebo**
   - Simulation on Gazebo.
 
 ## Installation
@@ -70,7 +70,7 @@ Motion Planning using RViz and Moveit:
 
 ### Firmware Flashing
 
-The Teensy and Arduino Nano sketches provided in [ar_microcontrollers](./ar_microcontrollers/)
+The Teensy and Arduino Nano sketches provided in [annin_ar4_firmware](./annin_ar4_firmware/)
 are compatible with the default hardware. To flash it, follow the same
 procedure as specified in [AR4 Robot Setup](https://www.youtube.com/watch?v=OL6lXu8VU4s).
 
@@ -95,11 +95,11 @@ There are two modules that you will always need to run:
 
 1. **Arm module** - this can be for either a real-world or simulated arm
 
-   - For controlling the real-world arm, you will need to run the `ar_hardware_interface` module
-   - For the simulated arm, you will need to run the `ar_gazebo` module
+   - For controlling the real-world arm, you will need to run the `annin_ar4_driver` module
+   - For the simulated arm, you will need to run the `annin_ar4_gazebo` module
    - Either of the modules will load the necessary hardware descriptions for MoveIt
 
-2. **MoveIt module** - the `ar_moveit_config` module provides the MoveIt interface and RViz GUI.
+2. **MoveIt module** - the `annin_ar4_moveit_config` module provides the MoveIt interface and RViz GUI.
 
 The various use cases of the modules and instructions to run them are described below:
 
@@ -112,17 +112,17 @@ If you are unfamiliar with MoveIt, it is recommended to start with this to explo
 The robot description, moveit interface and RViz will all be loaded in the single demo launch file
 
 ```bash
-ros2 launch ar_moveit_config demo.launch.py
+ros2 launch annin_ar4_moveit_config demo.launch.py
 ```
 
 ---
 
 ### Control real-world arm with MoveIt in RViz
 
-Start the `ar_hardware_interface` module, which will load configs and the robot description:
+Start the `annin_ar4_driver` module, which will load configs and the robot description:
 
 ```bash
-ros2 launch ar_hardware_interface ar_hardware.launch.py \
+ros2 launch annin_ar4_driver ar_hardware.launch.py \
   calibrate:=True
 ```
 
@@ -142,7 +142,7 @@ runs with `calibrate:=False`.
 Start MoveIt and RViz:
 
 ```bash
-ros2 launch ar_moveit_config ar_moveit.launch.py
+ros2 launch annin_ar4_moveit_config ar_moveit.launch.py
 ```
 
 Available Launch Arguments:
@@ -160,7 +160,7 @@ on the robot. This would abruptly stop the robot motion! To reset the E-Stop sta
 the robot use the following command
 
 ```bash
-ros2 run ar_hardware_interface reset_estop.sh <AR_MODEL>
+ros2 run annin_ar4_driver reset_estop.sh <AR_MODEL>
 ```
 
 where `<AR_MODEL>` is the model of the AR4, one of `mk1`, `mk2`, or `mk3`
@@ -169,16 +169,16 @@ where `<AR_MODEL>` is the model of the AR4, one of `mk1`, `mk2`, or `mk3`
 
 ### Control simulated arm in Gazebo with MoveIt in RViz
 
-Start the `ar_gazebo` module, which will start the Gazebo simulator and load the robot description.
+Start the `annin_ar4_gazebo` module, which will start the Gazebo simulator and load the robot description.
 
 ```bash
-ros2 launch ar_gazebo ar_gazebo.launch.py
+ros2 launch annin_ar4_gazebo annin_ar4_gazebo.launch.py
 ```
 
 Start Moveit and RViz:
 
 ```bash
-ros2 launch ar_moveit_config ar_moveit.launch.py use_sim_time:=true include_gripper:=True
+ros2 launch annin_ar4_moveit_config ar_moveit.launch.py use_sim_time:=true include_gripper:=True
 ```
 
 You can now plan in RViz and control the simulated arm.
@@ -195,14 +195,14 @@ See [ar4_hand_eye_calibration](https://github.com/ycheng517/ar4_hand_eye_calibra
 
 If for some reason your robot's joint positions appear misaligned after moving
 to the home position, you can adjust the joint offsets in the
-[joint_offsets/](./ar_hardware_interface/config/joint_offsets/) config folder.
+[joint_offsets/](./annin_ar4_driver/config/joint_offsets/) config folder.
 Select and modify the YAML file corresponding to your AR model to fine-tune the joint positions.
 
 ### Switching to Position Control
 
 By default this repo uses velocity-based joint trajectory control. It allows the arm to move a lot faster and the arm movement is also a lot smoother. If for any
 reason you'd like to use the simpler classic position-only control mode, you can
-set `velocity_control_enabled: false` in [driver.yaml](./ar_hardware_interface/config/driver.yaml). Note that you'll need to reduce velocity and acceleration scaling in order for larger motions to succeed.
+set `velocity_control_enabled: false` in [driver.yaml](./annin_ar4_driver/config/driver.yaml). Note that you'll need to reduce velocity and acceleration scaling in order for larger motions to succeed.
 
 ## Demo Project (and Python Interface Usage)
 

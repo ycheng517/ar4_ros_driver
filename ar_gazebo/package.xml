@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>ar_gazebo</name>
+  <name>annin_ar4_gazebo</name>
   <version>3.0.0</version>
   <description>Gazebo simulation the AR4 robot</description>
   <author>Yifei Cheng</author>
@@ -8,8 +8,8 @@
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <exec_depend>ar_description</exec_depend>
-  <exec_depend>ar_hardware_interface</exec_depend>
+  <exec_depend>annin_ar4_description</exec_depend>
+  <exec_depend>annin_ar4_driver</exec_depend>
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>gripper_controllers</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>

@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg ar_model)">
-  <xacro:include filename="$(find ar_description)/urdf/ar_macro.xacro" />
-  <xacro:include filename="$(find ar_description)/urdf/ar_gripper_macro.xacro" />
-  <xacro:include filename="$(find ar_description)/urdf/ar.ros2_control.xacro" />
-  <xacro:include filename="$(find ar_description)/urdf/ar_gripper.ros2_control.xacro" />
+  <xacro:include filename="$(find annin_ar4_description)/urdf/ar_macro.xacro" />
+  <xacro:include filename="$(find annin_ar4_description)/urdf/ar_gripper_macro.xacro" />
+  <xacro:include filename="$(find annin_ar4_description)/urdf/ar.ros2_control.xacro" />
+  <xacro:include filename="$(find annin_ar4_description)/urdf/ar_gripper.ros2_control.xacro" />
 
   <xacro:arg name="simulation_controllers" default="" />
 
   <link name="world" />
   <xacro:ar_robot 
     parent="world"
-    robot_parameters_file="$(find ar_description)/config/$(arg ar_model).yaml"
+    robot_parameters_file="$(find annin_ar4_description)/config/$(arg ar_model).yaml"
   >
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:ar_robot>
@@ -21,9 +21,9 @@
     plugin_name="gz_ros2_control/GazeboSimSystem"
     serial_port="None"
     calibrate="False"
-    robot_parameters_file="$(find ar_description)/config/$(arg ar_model).yaml"
-    joint_offset_parameters_file="$(find ar_hardware_interface)/config/joint_offsets/$(arg ar_model).yaml"
-    driver_parameters_file="$(find ar_hardware_interface)/config/driver.yaml"
+    robot_parameters_file="$(find annin_ar4_description)/config/$(arg ar_model).yaml"
+    joint_offset_parameters_file="$(find annin_ar4_driver)/config/joint_offsets/$(arg ar_model).yaml"
+    driver_parameters_file="$(find annin_ar4_driver)/config/driver.yaml"
   />
 
   <xacro:ar_gripper_ros2_control

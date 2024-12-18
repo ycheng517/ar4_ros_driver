@@ -47,14 +47,14 @@ def generate_launch_description():
     ar_model_config = LaunchConfiguration("ar_model")
 
     initial_joint_controllers = PathJoinSubstitution([
-        FindPackageShare("ar_hardware_interface"), "config", "controllers.yaml"
+        FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"
     ])
 
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
         " ",
         PathJoinSubstitution([
-            FindPackageShare("ar_description"), "urdf", "ar_gazebo.urdf.xacro"
+            FindPackageShare("annin_ar4_description"), "urdf", "annin_ar4_gazebo.urdf.xacro"
         ]),
         " ",
         "ar_model:=",
@@ -102,7 +102,7 @@ def generate_launch_description():
 
     # Gazebo nodes
     world = os.path.join(
-        get_package_share_directory('ar_gazebo'),
+        get_package_share_directory('annin_ar4_gazebo'),
         'worlds',
         'empty.world'
     )

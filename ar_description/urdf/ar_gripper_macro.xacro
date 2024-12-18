@@ -11,7 +11,7 @@
     <link name="gripper_base_link">
       <visual>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4_gripper/gripper_base_link.stl" />
+          <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_base_link.stl" />
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -19,7 +19,7 @@
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4_gripper/gripper_base_link.stl" />
+          <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_base_link.stl" />
         </geometry>
       </collision>
       <inertial>
@@ -31,7 +31,7 @@
     <link name="gripper_jaw1_link">
       <visual>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4_gripper/gripper_jaw1_link.stl" />
+          <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_jaw1_link.stl" />
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -39,7 +39,7 @@
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4_gripper/gripper_jaw1_link.stl" />
+          <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_jaw1_link.stl" />
         </geometry>
       </collision>
       <inertial>
@@ -51,7 +51,7 @@
     <link name="gripper_jaw2_link">
       <visual>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4_gripper/gripper_jaw2_link.stl" />
+          <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_jaw2_link.stl" />
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -59,7 +59,7 @@
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/ar4_gripper/gripper_jaw2_link.stl" />
+          <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_jaw2_link.stl" />
         </geometry>
       </collision>
       <inertial>

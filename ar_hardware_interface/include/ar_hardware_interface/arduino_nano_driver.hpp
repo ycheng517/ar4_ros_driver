@@ -9,7 +9,7 @@
 #include "math.h"
 #include "time.h"
 
-namespace ar_hardware_interface {
+namespace annin_ar4_driver {
 
 class ArduinoNanoDriver {
  public:
@@ -38,4 +38,4 @@ class ArduinoNanoDriver {
   bool checkInit(std::string msg);
 };
 
-}  // namespace ar_hardware_interface
+}  // namespace annin_ar4_driver

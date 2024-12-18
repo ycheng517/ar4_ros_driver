@@ -1,4 +1,4 @@
-# ar_hardware_interface
+# annin_ar4_driver
 
 This module contains the hardware interface for the AR4 robot.
 

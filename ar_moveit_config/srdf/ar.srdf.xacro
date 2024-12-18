@@ -2,11 +2,11 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
   <xacro:arg name="include_gripper" default="true"/>
 
-  <xacro:include filename="$(find ar_moveit_config)/srdf/ar_macro.srdf.xacro"/>
+  <xacro:include filename="$(find annin_ar4_moveit_config)/srdf/ar_macro.srdf.xacro"/>
   <xacro:ar_srdf />
 
   <xacro:if value="$(arg include_gripper)">
-    <xacro:include filename="$(find ar_moveit_config)/srdf/ar_gripper_macro.srdf.xacro"/>
+    <xacro:include filename="$(find annin_ar4_moveit_config)/srdf/ar_gripper_macro.srdf.xacro"/>
     <xacro:ar_gripper_srdf />
   </xacro:if>
 

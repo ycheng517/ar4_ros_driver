@@ -1,7 +1,7 @@
-#include <ar_hardware_interface/ar_hardware_interface.hpp>
+#include <annin_ar4_driver/annin_ar4_driver.hpp>
 #include <sstream>
 
-namespace ar_hardware_interface {
+namespace annin_ar4_driver {
 
 hardware_interface::CallbackReturn ARHardwareInterface::on_init(
     const hardware_interface::HardwareInfo& info) {
@@ -136,7 +136,7 @@ hardware_interface::return_type ARHardwareInterface::write(
     std::string logWarn =
         "Hardware in EStop state. To reset the EStop "
         "reactivate the hardware component using 'ros2 "
-        "run ar_hardware_interface reset_estop.sh'.";
+        "run annin_ar4_driver reset_estop.sh'.";
     RCLCPP_WARN(logger_, logWarn.c_str());
 
     return hardware_interface::return_type::ERROR;
@@ -144,9 +144,9 @@ hardware_interface::return_type ARHardwareInterface::write(
   return hardware_interface::return_type::OK;
 }
 
-}  // namespace ar_hardware_interface
+}  // namespace annin_ar4_driver
 
 #include "pluginlib/class_list_macros.hpp"
 
-PLUGINLIB_EXPORT_CLASS(ar_hardware_interface::ARHardwareInterface,
+PLUGINLIB_EXPORT_CLASS(annin_ar4_driver::ARHardwareInterface,
                        hardware_interface::SystemInterface)

@@ -23,7 +23,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/base_link.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/base_link.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -32,7 +32,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/base_link.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/base_link.STL"/>
         </geometry>
       </collision>
     </link>
@@ -45,7 +45,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_1.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_1.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -54,7 +54,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_1.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_1.STL"/>
         </geometry>
       </collision>
     </link>
@@ -79,7 +79,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_2.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_2.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -88,7 +88,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_2.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_2.STL"/>
         </geometry>
       </collision>
     </link>
@@ -113,7 +113,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_3.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_3.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -122,7 +122,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_3.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_3.STL"/>
         </geometry>
       </collision>
     </link>
@@ -147,7 +147,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_4.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_4.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -156,7 +156,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_4.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_4.STL"/>
         </geometry>
       </collision>
     </link>
@@ -181,7 +181,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_5.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_5.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -190,7 +190,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_5.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_5.STL"/>
         </geometry>
       </collision>
     </link>
@@ -215,7 +215,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_6.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_6.STL"/>
         </geometry>
         <material name="">
           <color rgba="1 1 0 1"/>
@@ -224,7 +224,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find ar_description)/meshes/${robot_parameters['mesh_dir']}/link_6.STL"/>
+          <mesh filename="file://$(find annin_ar4_description)/meshes/${robot_parameters['mesh_dir']}/link_6.STL"/>
         </geometry>
       </collision>
     </link>

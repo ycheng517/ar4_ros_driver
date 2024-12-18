@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>ar_hardware_interface</name>
+  <name>annin_ar4_driver</name>
   <version>3.0.0</version>
   <description>
-    The ar_hardware_interface package provides the hardware interface for
+    The annin_ar4_driver package provides the hardware interface for
     running an AR4 robot using the ros2_control software framework.
   </description>
   <license>MIT</license>
@@ -14,7 +14,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>ar_description</depend>
+  <depend>annin_ar4_description</depend>
   <depend>boost</depend>
   <depend>controller_manager</depend>
   <depend>hardware_interface</depend>
