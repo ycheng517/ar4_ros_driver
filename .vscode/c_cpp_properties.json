@@ -7,7 +7,7 @@
       },
       "includePath": [
         "/opt/ros/iron/include/**",
-        "${workspaceFolder}/ar_hardware_interface/include/**",
+        "${workspaceFolder}/annin_ar4_driver/include/**",
         "/usr/include/**"
       ],
       "name": "ROS",
