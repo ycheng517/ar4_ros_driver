@@ -1,0 +1,16 @@
+<library path="annin_ar4_driver">
+  <class name="annin_ar4_driver/ARHardwareInterface"
+         type="annin_ar4_driver::ARHardwareInterface"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+		  ROS2 Control System Driver for Annin Robotics.
+    </description>
+  </class>
+  <class name="annin_ar4_driver/ARServoGripperHWInterface"
+         type="annin_ar4_driver::ARServoGripperHWInterface"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+		  Gripper driver for the AR4 servo gripper.
+    </description>
+  </class>
+</library>
