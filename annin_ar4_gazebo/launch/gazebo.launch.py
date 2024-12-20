@@ -54,7 +54,7 @@ def generate_launch_description():
         PathJoinSubstitution([FindExecutable(name="xacro")]),
         " ",
         PathJoinSubstitution([
-            FindPackageShare("annin_ar4_description"), "urdf", "annin_ar4_gazebo.urdf.xacro"
+            FindPackageShare("annin_ar4_description"), "urdf", "ar_gazebo.urdf.xacro"
         ]),
         " ",
         "ar_model:=",
