@@ -45,7 +45,7 @@ Motion Planning using RViz and Moveit:
 
 ## Installation
 
-- Install [ROS 2 Iron](https://docs.ros.org/en/iron/Installation.html) for Ubuntu 22.04
+- Install [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/Installation.html) for Ubuntu 24.04
 - Clone this repository:
   ```bash
   git clone https://github.com/ycheng517/ar4_ros_driver
