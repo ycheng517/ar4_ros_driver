@@ -73,6 +73,8 @@ Motion Planning using RViz and Moveit:
 The Teensy and Arduino Nano sketches provided in [annin_ar4_firmware](./annin_ar4_firmware/)
 are compatible with the default hardware. To flash it, follow the same
 procedure as specified in [AR4 Robot Setup](https://www.youtube.com/watch?v=OL6lXu8VU4s).
+An extra step required is to install [Bounce2](https://github.com/thomasfredericks/Bounce2) 
+from the Library Manager in Arduino.
 
 ### [Optional] Running in Docker Container
 
