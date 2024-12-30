@@ -74,10 +74,12 @@ def generate_launch_description():
             description="Run the servo gripper",
             choices=["True", "False"],
         ))
+    rviz_config_file_default = PathJoinSubstitution(
+        [FindPackageShare("annin_ar4_moveit_config"), "rviz", "moveit.rviz"])
     declared_arguments.append(
         DeclareLaunchArgument(
             "rviz_config_file",
-            default_value="moveit.rviz",
+            default_value=rviz_config_file_default,
             description="Full path to the RViz configuration file to use",
         ))
     declared_arguments.append(
@@ -196,8 +198,6 @@ def generate_launch_description():
     )
 
     # rviz with moveit configuration
-    rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("annin_ar4_moveit_config"), "rviz", rviz_config_file])
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
