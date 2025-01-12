@@ -85,6 +85,10 @@ void TeensyDriver::update(std::vector<double>& pos_commands,
       outMsg += 'A' + i;
       outMsg += std::to_string(vel_commands[i]);
     }
+    for (int i = 0; i < num_joints_; ++i) {
+      outMsg += 'A' + i + num_joints_;
+      outMsg += std::to_string(pos_commands[i]);
+    }
   } else {
     outMsg += "MT";
     for (int i = 0; i < num_joints_; ++i) {
