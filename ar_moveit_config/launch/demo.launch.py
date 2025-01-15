@@ -22,8 +22,9 @@ def load_yaml(package_name, file_name):
     with open(absolute_file_path, "r", encoding="utf-8") as file:
         return yaml.safe_load(file)
 
-
 def generate_launch_description():
+
+    tf_prefix_value = ""
 
     # Command-line arguments
     db_arg = DeclareLaunchArgument("db",
@@ -34,6 +35,10 @@ def generate_launch_description():
                                          choices=["mk1", "mk2", "mk3"],
                                          description="Model of AR4")
     ar_model_config = LaunchConfiguration("ar_model")
+    tf_prefix_arg = DeclareLaunchArgument("tf_prefix",
+                                         default_value=tf_prefix_value,
+                                         description="Prefix for AR4 tf_tree")
+    tf_prefix = LaunchConfiguration("tf_prefix")
 
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -44,6 +49,9 @@ def generate_launch_description():
         " ",
         "ar_model:=",
         ar_model_config,
+        " ",
+        "tf_prefix:=",
+        tf_prefix,
     ])
     robot_description = {"robot_description": robot_description_content}
 
@@ -56,6 +64,9 @@ def generate_launch_description():
         " ",
         "name:=",
         ar_model_config,
+        " ",
+        "prefix:=",
+        tf_prefix,
     ])
     robot_description_semantic = {
         "robot_description_semantic": robot_description_semantic_content
@@ -226,6 +237,7 @@ def generate_launch_description():
     return LaunchDescription([
         db_arg,
         ar_model_arg,
+        tf_prefix_arg,
         rviz_node,
         # static_tf,
         robot_state_publisher,
