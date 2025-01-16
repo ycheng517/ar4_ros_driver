@@ -58,6 +58,7 @@ def generate_launch_description():
     include_gripper = LaunchConfiguration("include_gripper")
     rviz_config_file = LaunchConfiguration("rviz_config_file")
     ar_model_config = LaunchConfiguration("ar_model")
+    tf_prefix = LaunchConfiguration("tf_prefix")
 
     declared_arguments = []
     declared_arguments.append(
@@ -66,6 +67,13 @@ def generate_launch_description():
             default_value="False",
             description="Make MoveIt use simulation time. This is needed "+\
                 "for trajectory planing in simulation.",
+        ))
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "tf_prefix",
+            default_value="",
+            description="Prefix for AR4 tf_tree",
+            # choices=["True", "False"],
         ))
     declared_arguments.append(
         DeclareLaunchArgument(
@@ -95,6 +103,9 @@ def generate_launch_description():
         "ar_model:=",
         ar_model_config,
         " ",
+        "tf_prefix:=",
+        tf_prefix,
+        " ",
         "include_gripper:=",
         include_gripper,
     ])
@@ -109,6 +120,9 @@ def generate_launch_description():
         " ",
         "name:=",
         ar_model_config,
+        " ",
+        "prefix:=",
+        tf_prefix,
         " ",
         "include_gripper:=",
         include_gripper,

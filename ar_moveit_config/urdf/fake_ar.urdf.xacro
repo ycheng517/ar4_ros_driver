@@ -5,14 +5,17 @@
   <xacro:include filename="$(find ar_description)/urdf/ar.ros2_control.xacro"/>
   <xacro:include filename="$(find ar_description)/urdf/ar_gripper.ros2_control.xacro"/>
 
+  <xacro:arg name="tf_prefix" default="" />
+
   <link name="world" />
   <xacro:ar_robot
+    tf_prefix="$(arg tf_prefix)"
     parent="world"
     robot_parameters_file="$(find ar_description)/config/$(arg ar_model).yaml"
   >
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:ar_robot>
-  <xacro:ar_gripper parent="ee_link" />
+  <xacro:ar_gripper parent="$(arg tf_prefix)ee_link" />
 
   <xacro:ar_ros2_control
     ar_model="$(arg ar_model)"
@@ -22,6 +25,7 @@
     robot_parameters_file="$(find ar_description)/config/$(arg ar_model).yaml"
     joint_offset_parameters_file="$(find ar_hardware_interface)/config/joint_offsets/$(arg ar_model).yaml"
     driver_parameters_file="$(find ar_hardware_interface)/config/driver.yaml"
+    tf_prefix="$(arg tf_prefix)"
   />
   <xacro:ar_gripper_ros2_control
     name="ARGripperFakeSystem"

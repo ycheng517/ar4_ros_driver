@@ -9,6 +9,7 @@
     robot_parameters_file
     joint_offset_parameters_file
     driver_parameters_file
+    tf_prefix
   ">
 
     <xacro:property name="robot_parameters"
@@ -28,9 +29,10 @@
         <param name="serial_port">${serial_port}</param>
         <param name="calibrate">${calibrate}</param>
         <param name="velocity_control_enabled">${driver_parameters['velocity_control_enabled']}</param>
+        <param name="tf_prefix">${tf_prefix}</param>
       </hardware>
 
-      <joint name="joint_1">
+      <joint name="${tf_prefix}joint_1">
         <command_interface name="position">
           <param name="min">${robot_parameters['j1_limit_min']}</param>
           <param name="max">${robot_parameters['j1_limit_max']}</param>
@@ -45,7 +47,7 @@
         <param name="position_offset">${joint_offset_parameters['joint_1']}</param>
       </joint>
 
-      <joint name="joint_2">
+      <joint name="${tf_prefix}joint_2">
         <command_interface name="position">
           <param name="min">${robot_parameters['j2_limit_min']}</param>
           <param name="max">${robot_parameters['j2_limit_max']}</param>
@@ -60,7 +62,7 @@
         <param name="position_offset">${joint_offset_parameters['joint_2']}</param>
       </joint>
 
-      <joint name="joint_3">
+      <joint name="${tf_prefix}joint_3">
         <command_interface name="position">
           <param name="min">${robot_parameters['j3_limit_min']}</param>
           <param name="max">${robot_parameters['j3_limit_max']}</param>
@@ -75,7 +77,7 @@
         <param name="position_offset">${joint_offset_parameters['joint_3']}</param>
       </joint>
 
-      <joint name="joint_4">
+      <joint name="${tf_prefix}joint_4">
         <command_interface name="position">
           <param name="min">${robot_parameters['j4_limit_min']}</param>
           <param name="max">${robot_parameters['j4_limit_max']}</param>
@@ -90,7 +92,7 @@
         <param name="position_offset">${joint_offset_parameters['joint_4']}</param>
       </joint>
 
-      <joint name="joint_5">
+      <joint name="${tf_prefix}joint_5">
         <command_interface name="position">
           <param name="min">${robot_parameters['j5_limit_min']}</param>
           <param name="max">${robot_parameters['j5_limit_max']}</param>
@@ -105,7 +107,7 @@
         <param name="position_offset">${joint_offset_parameters['joint_5']}</param>
       </joint>
 
-      <joint name="joint_6">
+      <joint name="${tf_prefix}joint_6">
         <command_interface name="position">
           <param name="min">${robot_parameters['j6_limit_min']}</param>
           <param name="max">${robot_parameters['j6_limit_max']}</param>
