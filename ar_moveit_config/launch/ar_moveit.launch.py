@@ -71,7 +71,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "tf_prefix",
-            default_value="ar4_",
+            default_value="",
             description="Prefix for AR4 tf_tree",
             # choices=["True", "False"],
         ))

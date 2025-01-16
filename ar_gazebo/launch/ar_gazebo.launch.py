@@ -38,11 +38,17 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
+    tf_prefix_value = ""
+
     ar_model_arg = DeclareLaunchArgument("ar_model",
                                          default_value="mk3",
                                          choices=["mk1", "mk2", "mk3"],
                                          description="Model of AR4")
     ar_model_config = LaunchConfiguration("ar_model")
+    tf_prefix_arg = DeclareLaunchArgument("tf_prefix",
+                                         default_value=tf_prefix_value,
+                                         description="Prefix for AR4 tf_tree")
+    tf_prefix = LaunchConfiguration("tf_prefix")
 
     initial_joint_controllers = PathJoinSubstitution([
         FindPackageShare("ar_hardware_interface"), "config", "controllers.yaml"
@@ -57,6 +63,9 @@ def generate_launch_description():
         " ",
         "ar_model:=",
         ar_model_config,
+        " ",
+        "tf_prefix:=",
+        tf_prefix,
         " ",
         "simulation_controllers:=",
         initial_joint_controllers,
@@ -119,6 +128,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         ar_model_arg,
+        tf_prefix_arg,
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_started,
