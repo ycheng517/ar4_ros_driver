@@ -74,7 +74,7 @@
       <parent link="gripper_base_link"/>
       <child link="gripper_jaw1_link"/>
       <axis xyz="1 0 0"/>
-      <limit lower="-0.014" upper="0" effort="-1" velocity="1.0"/>
+      <limit lower="-0.014" upper="0" effort="1000" velocity="1.0"/>
     </joint>
 
     <joint name="gripper_jaw2_joint" type="prismatic">
@@ -82,8 +82,15 @@
       <parent link="gripper_base_link"/>
       <child link="gripper_jaw2_link"/>
       <axis xyz="1 0 0"/>
-      <limit lower="-0.014" upper="0" effort="-1" velocity="1.0"/>
+      <limit lower="-0.014" upper="0" effort="1000" velocity="1.0"/>
       <mimic joint="gripper_jaw1_joint" multiplier="1" offset="0"/>
+    </joint>
+
+    <!-- Fix for https://github.com/ros-controls/gz_ros2_control/issues/96 when running in sim -->
+    <link name="dummy_mimic_fix"/>
+    <joint name="gripper_jaw2_joint_mimic" type="fixed">
+      <parent link="gripper_base_link" />
+      <child link="dummy_mimic_fix" />
     </joint>
 
   </xacro:macro>

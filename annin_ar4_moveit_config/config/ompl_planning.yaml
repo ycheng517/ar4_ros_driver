@@ -1,13 +1,12 @@
 planning_plugins:
   - ompl_interface/OMPLPlanner
-request_adapters:
-  - default_planning_request_adapters/CheckStartStateBounds
-  - default_planning_request_adapters/CheckStartStateCollision
-  - default_planning_request_adapters/ResolveConstraintFrames
-  - default_planning_request_adapters/ValidateWorkspaceBounds
-response_adapters:
-  - default_planning_response_adapters/AddTimeOptimalParameterization
-  - default_planning_response_adapters/ValidateSolution
+request_adapters: >-
+  default_planner_request_adapters/AddTimeOptimalParameterization
+  default_planner_request_adapters/ResolveConstraintFrames
+  default_planner_request_adapters/FixWorkspaceBounds
+  default_planner_request_adapters/FixStartStateBounds
+  default_planner_request_adapters/FixStartStateCollision
+  default_planner_request_adapters/FixStartStatePathConstraints
 planner_configs:
   SBLkConfigDefault:
     type: geometric::SBL

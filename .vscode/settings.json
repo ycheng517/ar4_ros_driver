@@ -88,16 +88,16 @@
       "buffered_value": "cpp",
       "fast_back_stack": "cpp"
     },
-    "ros.distro": "jazzy",
+    "ros.distro": "humble",
     "C_Cpp.default.includePath": [
-        "/opt/ros/jazzy/include/**"
+        "/opt/ros/humble/include/**"
     ],
     "C_Cpp.default.cppStandard": "c++17",
     "python.autoComplete.extraPaths": [
-        "/opt/ros/jazzy/lib/python3.10/site-packages"
+        "/opt/ros/humble/lib/python3.10/site-packages"
     ],
     "python.analysis.extraPaths": [
-        "/opt/ros/jazzy/lib/python3.10/site-packages"
+        "/opt/ros/humble/lib/python3.10/site-packages"
     ],
     "editor.formatOnSave": true,
     "editor.tabSize": 2,
