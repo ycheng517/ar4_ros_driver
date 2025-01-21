@@ -64,97 +64,104 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "use_sim_time",
             default_value="False",
-            description="Make MoveIt use simulation time. This is needed "+\
-                "for trajectory planing in simulation.",
-        ))
+            description="Make MoveIt use simulation time. This is needed "
+            + "for trajectory planing in simulation.",
+        )
+    )
     declared_arguments.append(
         DeclareLaunchArgument(
             "include_gripper",
             default_value="True",
             description="Run the servo gripper",
             choices=["True", "False"],
-        ))
+        )
+    )
     rviz_config_file_default = PathJoinSubstitution(
-        [FindPackageShare("annin_ar4_moveit_config"), "rviz", "moveit.rviz"])
+        [FindPackageShare("annin_ar4_moveit_config"), "rviz", "moveit.rviz"]
+    )
     declared_arguments.append(
         DeclareLaunchArgument(
             "rviz_config_file",
             default_value=rviz_config_file_default,
             description="Full path to the RViz configuration file to use",
-        ))
+        )
+    )
     declared_arguments.append(
-        DeclareLaunchArgument("ar_model",
-                              default_value="mk3",
-                              choices=["mk1", "mk2", "mk3"],
-                              description="Model of AR4"))
+        DeclareLaunchArgument(
+            "ar_model",
+            default_value="mk3",
+            choices=["mk1", "mk2", "mk3"],
+            description="Model of AR4",
+        )
+    )
 
-    robot_description_content = Command([
-        PathJoinSubstitution([FindExecutable(name="xacro")]),
-        " ",
-        PathJoinSubstitution(
-            [FindPackageShare("annin_ar4_description"), "urdf", "ar.urdf.xacro"]),
-        " ",
-        "ar_model:=",
-        ar_model_config,
-        " ",
-        "include_gripper:=",
-        include_gripper,
-    ])
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("annin_ar4_description"), "urdf", "ar.urdf.xacro"]
+            ),
+            " ",
+            "ar_model:=",
+            ar_model_config,
+            " ",
+            "include_gripper:=",
+            include_gripper,
+        ]
+    )
     robot_description = {"robot_description": robot_description_content}
 
     # MoveIt Configuration
-    robot_description_semantic_content = Command([
-        PathJoinSubstitution([FindExecutable(name="xacro")]),
-        " ",
-        PathJoinSubstitution(
-            [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]),
-        " ",
-        "name:=",
-        ar_model_config,
-        " ",
-        "include_gripper:=",
-        include_gripper,
-    ])
+    robot_description_semantic_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]
+            ),
+            " ",
+            "name:=",
+            ar_model_config,
+            " ",
+            "include_gripper:=",
+            include_gripper,
+        ]
+    )
     robot_description_semantic = {
         "robot_description_semantic": robot_description_semantic_content
     }
 
     robot_description_kinematics = {
-        "robot_description_kinematics":
-        load_yaml(
+        "robot_description_kinematics": load_yaml(
             "annin_ar4_moveit_config",
             os.path.join("config", "kinematics.yaml"),
         )
     }
 
     robot_description_planning = {
-        "robot_description_planning":
-        load_yaml(
+        "robot_description_planning": load_yaml(
             "annin_ar4_moveit_config",
             os.path.join("config", "joint_limits.yaml"),
         )
     }
 
     # Planning Configuration
-    ompl_planning_yaml = load_yaml("annin_ar4_moveit_config",
-                                   "config/ompl_planning.yaml")
-    pilz_planning_yaml = load_yaml("annin_ar4_moveit_config",
-                                   "config/pilz_planning.yaml")
+    ompl_planning_yaml = load_yaml(
+        "annin_ar4_moveit_config", "config/ompl_planning.yaml"
+    )
     planning_pipeline_config = {
         "default_planning_pipeline": "ompl",
-        "planning_pipelines": ["ompl", "pilz"],
+        "planning_pipelines": ["ompl"],
         "ompl": ompl_planning_yaml,
-        "pilz": pilz_planning_yaml,
     }
 
     # Trajectory Execution Configuration
     controllers_yaml = load_yaml("annin_ar4_moveit_config", "config/controllers.yaml")
 
     moveit_controllers = {
-        "moveit_simple_controller_manager":
-        controllers_yaml,
-        "moveit_controller_manager":
-        "moveit_simple_controller_manager/MoveItSimpleControllerManager",
+        "moveit_simple_controller_manager": controllers_yaml,
+        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
 
     trajectory_execution = {
@@ -173,11 +180,6 @@ def generate_launch_description():
         "publish_robot_description_semantic": True,
     }
 
-    # Starts Pilz Industrial Motion Planner MoveGroupSequenceAction and MoveGroupSequenceService servers
-    move_group_capabilities = {
-        "capabilities": "pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService"
-    }
-
     # Start the actual move_group node/action server
     move_group_node = Node(
         package="moveit_ros_move_group",
@@ -192,7 +194,6 @@ def generate_launch_description():
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
-            move_group_capabilities,
             {"use_sim_time": use_sim_time},
         ],
     )

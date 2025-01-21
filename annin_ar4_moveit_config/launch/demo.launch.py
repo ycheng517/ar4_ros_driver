@@ -23,79 +23,83 @@ def load_yaml(package_name, file_name):
 
 
 def generate_launch_description():
-
     # Command-line arguments
-    db_arg = DeclareLaunchArgument("db",
-                                   default_value="False",
-                                   description="Database flag")
-    ar_model_arg = DeclareLaunchArgument("ar_model",
-                                         default_value="mk3",
-                                         choices=["mk1", "mk2", "mk3"],
-                                         description="Model of AR4")
+    db_arg = DeclareLaunchArgument(
+        "db", default_value="False", description="Database flag"
+    )
+    ar_model_arg = DeclareLaunchArgument(
+        "ar_model",
+        default_value="mk3",
+        choices=["mk1", "mk2", "mk3"],
+        description="Model of AR4",
+    )
     ar_model_config = LaunchConfiguration("ar_model")
 
-    robot_description_content = Command([
-        PathJoinSubstitution([FindExecutable(name="xacro")]),
-        " ",
-        PathJoinSubstitution([
-            FindPackageShare("annin_ar4_moveit_config"), "urdf", "fake_ar.urdf.xacro"
-        ]),
-        " ",
-        "ar_model:=",
-        ar_model_config,
-    ])
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("annin_ar4_moveit_config"),
+                    "urdf",
+                    "fake_ar.urdf.xacro",
+                ]
+            ),
+            " ",
+            "ar_model:=",
+            ar_model_config,
+        ]
+    )
     robot_description = {"robot_description": robot_description_content}
 
     # MoveIt Configuration
-    robot_description_semantic_content = Command([
-        PathJoinSubstitution([FindExecutable(name="xacro")]),
-        " ",
-        PathJoinSubstitution(
-            [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]),
-        " ",
-        "name:=",
-        ar_model_config,
-    ])
+    robot_description_semantic_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]
+            ),
+            " ",
+            "name:=",
+            ar_model_config,
+        ]
+    )
     robot_description_semantic = {
         "robot_description_semantic": robot_description_semantic_content
     }
 
     robot_description_kinematics = {
-        "robot_description_kinematics":
-        load_yaml(
+        "robot_description_kinematics": load_yaml(
             "annin_ar4_moveit_config",
             os.path.join("config", "kinematics.yaml"),
         )
     }
 
     robot_description_planning = {
-        "robot_description_planning":
-        load_yaml(
+        "robot_description_planning": load_yaml(
             "annin_ar4_moveit_config",
             os.path.join("config", "joint_limits.yaml"),
         )
     }
 
     # Planning Configuration
-    ompl_planning_yaml = load_yaml("annin_ar4_moveit_config",
-                                   "config/ompl_planning.yaml")
-    pilz_planning_yaml = load_yaml("annin_ar4_moveit_config",
-                                   "config/pilz_planning.yaml")
+    ompl_planning_yaml = load_yaml(
+        "annin_ar4_moveit_config", "config/ompl_planning.yaml"
+    )
     planning_pipeline_config = {
         "default_planning_pipeline": "ompl",
-        "planning_pipelines": ["ompl", "pilz"],
+        "planning_pipelines": ["ompl"],
         "ompl": ompl_planning_yaml,
-        "pilz": pilz_planning_yaml,
     }
 
     # Trajectory Execution Configuration
     controllers_yaml = load_yaml("annin_ar4_moveit_config", "config/controllers.yaml")
 
     moveit_controllers = {
-        "moveit_simple_controller_manager":
-        controllers_yaml,
-        "moveit_controller_manager":
-        "moveit_simple_controller_manager/MoveItSimpleControllerManager",
+        "moveit_simple_controller_manager": controllers_yaml,
+        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
 
     trajectory_execution = {
@@ -112,11 +116,6 @@ def generate_launch_description():
         "publish_transforms_updates": True,
     }
 
-    # Starts Pilz Industrial Motion Planner MoveGroupSequenceAction and MoveGroupSequenceService servers
-    move_group_capabilities = {
-        "capabilities": "pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService"
-    }
-
     # Start the actual move_group node/action server
     run_move_group_node = Node(
         package="moveit_ros_move_group",
@@ -131,13 +130,13 @@ def generate_launch_description():
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
-            move_group_capabilities,
         ],
     )
 
     # RViz
-    rviz_base = os.path.join(get_package_share_directory("annin_ar4_moveit_config"),
-                             "rviz")
+    rviz_base = os.path.join(
+        get_package_share_directory("annin_ar4_moveit_config"), "rviz"
+    )
     rviz_full_config = os.path.join(rviz_base, "moveit.rviz")
 
     rviz_node = Node(
@@ -222,15 +221,17 @@ def generate_launch_description():
         ],
     )
 
-    return LaunchDescription([
-        db_arg,
-        ar_model_arg,
-        rviz_node,
-        # static_tf,
-        robot_state_publisher,
-        run_move_group_node,
-        ros2_control_node,
-        joint_state_broadcaster_spawner,
-        joint_controller_spawner,
-        gripper_controller_spawner,
-    ])
+    return LaunchDescription(
+        [
+            db_arg,
+            ar_model_arg,
+            rviz_node,
+            # static_tf,
+            robot_state_publisher,
+            run_move_group_node,
+            ros2_control_node,
+            joint_state_broadcaster_spawner,
+            joint_controller_spawner,
+            gripper_controller_spawner,
+        ]
+    )
