@@ -90,7 +90,7 @@
     },
     "ros.distro": "jazzy",
     "C_Cpp.default.includePath": [
-        "\"/opt/ros/jazzy/include/**\""
+        "/opt/ros/jazzy/include/**"
     ],
     "C_Cpp.default.cppStandard": "c++17",
     "python.autoComplete.extraPaths": [
