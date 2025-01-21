@@ -6,7 +6,7 @@
         "limitSymbolsToIncludedHeaders": false
       },
       "includePath": [
-        "/opt/ros/iron/include/**",
+        "/opt/ros/jazzy/include/**",
         "${workspaceFolder}/annin_ar4_driver/include/**",
         "/usr/include/**"
       ],
