@@ -1,11 +1,13 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg ar_model)">
+  <xacro:arg name="tf_prefix" default="" />
   <xacro:arg name="include_gripper" default="true"/>
 
   <xacro:include filename="$(find annin_ar4_description)/urdf/ar_macro.xacro"/>
 
   <link name="world" />
   <xacro:ar_robot
+    tf_prefix="$(arg tf_prefix)"
     parent="world"
     robot_parameters_file="$(find annin_ar4_description)/config/$(arg ar_model).yaml"
   >
@@ -14,6 +16,6 @@
 
   <xacro:if value="$(arg include_gripper)">
     <xacro:include filename="$(find annin_ar4_description)/urdf/ar_gripper_macro.xacro"/>
-    <xacro:ar_gripper parent="ee_link" />
+    <xacro:ar_gripper parent="$(arg tf_prefix)ee_link" />
   </xacro:if>
 </robot>

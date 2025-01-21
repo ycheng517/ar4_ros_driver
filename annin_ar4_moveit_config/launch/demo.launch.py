@@ -4,6 +4,7 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
+from launch.conditions import IfCondition
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.parameter_descriptions import ParameterFile
@@ -23,6 +24,9 @@ def load_yaml(package_name, file_name):
 
 
 def generate_launch_description():
+
+    tf_prefix_value = ""
+
     # Command-line arguments
     db_arg = DeclareLaunchArgument(
         "db", default_value="False", description="Database flag"
@@ -34,6 +38,12 @@ def generate_launch_description():
         description="Model of AR4",
     )
     ar_model_config = LaunchConfiguration("ar_model")
+    tf_prefix_arg = DeclareLaunchArgument(
+        "tf_prefix",
+        default_value=tf_prefix_value,
+        description="Prefix for AR4 tf_tree"
+    )
+    tf_prefix = LaunchConfiguration("tf_prefix")
 
     robot_description_content = Command(
         [
@@ -49,6 +59,9 @@ def generate_launch_description():
             " ",
             "ar_model:=",
             ar_model_config,
+            " ",
+            "tf_prefix:=",
+            tf_prefix,
         ]
     )
     robot_description = {"robot_description": robot_description_content}
@@ -64,6 +77,9 @@ def generate_launch_description():
             " ",
             "name:=",
             ar_model_config,
+            " ",
+            "prefix:=",
+            tf_prefix,
         ]
     )
     robot_description_semantic = {
@@ -225,6 +241,7 @@ def generate_launch_description():
         [
             db_arg,
             ar_model_arg,
+            tf_prefix_arg,
             rviz_node,
             # static_tf,
             robot_state_publisher,

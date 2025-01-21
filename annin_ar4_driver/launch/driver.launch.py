@@ -15,6 +15,10 @@ def generate_launch_description():
     include_gripper = LaunchConfiguration("include_gripper")
     arduino_serial_port = LaunchConfiguration("arduino_serial_port")
     ar_model_config = LaunchConfiguration("ar_model")
+    # tf_prefix_arg = DeclareLaunchArgument("tf_prefix",
+    #                                      default_value=tf_prefix_value,
+    #                                      description="Prefix for AR4 tf_tree")
+    tf_prefix = LaunchConfiguration("tf_prefix")
 
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -31,6 +35,9 @@ def generate_launch_description():
         " ",
         "calibrate:=",
         calibrate,
+        " ",
+        "tf_prefix:=",
+        tf_prefix,
         " ",
         "include_gripper:=",
         include_gripper,
@@ -118,6 +125,13 @@ def generate_launch_description():
             default_value="True",
             description="Calibrate the robot on startup",
             choices=["True", "False"],
+        ))
+    ld.add_action(
+        DeclareLaunchArgument(
+            "tf_prefix",
+            default_value="ar4_",
+            description="Prefix for AR4 tf_tree",
+            # choices=["True", "False"],
         ))
     ld.add_action(
         DeclareLaunchArgument(
