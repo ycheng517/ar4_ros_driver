@@ -63,6 +63,7 @@ def generate_launch_description():
         parameters=[
             update_rate_config_file,
             ParameterFile(joint_controllers_cfg, allow_substs=True),
+            {"tf_prefix": tf_prefix},
         ],
         remappings=[('~/robot_description', 'robot_description')],
         output="screen",

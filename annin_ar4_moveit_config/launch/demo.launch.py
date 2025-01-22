@@ -15,13 +15,11 @@ from launch.substitutions import (
     LaunchConfiguration,
 )
 
-
 def load_yaml(package_name, file_name):
     package_path = get_package_share_directory(package_name)
     absolute_file_path = os.path.join(package_path, file_name)
     with open(absolute_file_path, "r", encoding="utf-8") as file:
         return yaml.safe_load(file)
-
 
 def generate_launch_description():
 
@@ -192,17 +190,17 @@ def generate_launch_description():
     )
 
     # ros2_control using FakeSystem as hardware
-    ros2_controllers_path = os.path.join(
-        get_package_share_directory("annin_ar4_driver"),
-        "config",
-        "controllers.yaml",
-    )
+    ros2_controllers = PathJoinSubstitution([
+        FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"
+    ])
+
     ros2_control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
             robot_description,
-            ParameterFile(ros2_controllers_path, allow_substs=True),
+            ParameterFile(ros2_controllers, allow_substs=True),
+            {"tf_prefix": tf_prefix},
         ],
         output="both",
     )
@@ -242,10 +240,10 @@ def generate_launch_description():
             db_arg,
             ar_model_arg,
             tf_prefix_arg,
-            rviz_node,
             # static_tf,
-            robot_state_publisher,
             run_move_group_node,
+            rviz_node,
+            robot_state_publisher,
             ros2_control_node,
             joint_state_broadcaster_spawner,
             joint_controller_spawner,

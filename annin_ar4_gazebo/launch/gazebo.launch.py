@@ -60,7 +60,7 @@ def generate_launch_description():
     tf_prefix = LaunchConfiguration("tf_prefix")
 
     initial_joint_controllers = PathJoinSubstitution(
-        [FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"]
+        [FindPackageShare("annin_ar4_gazebo"), "config", "controllers.yaml"]
     )
 
     robot_description_content = Command(
