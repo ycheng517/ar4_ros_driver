@@ -185,9 +185,9 @@ def generate_launch_description():
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
-            robot_description,
             ParameterFile(ros2_controllers_path, allow_substs=True),
         ],
+        remappings=[("~/robot_description", "robot_description")],
         output="both",
     )
 
