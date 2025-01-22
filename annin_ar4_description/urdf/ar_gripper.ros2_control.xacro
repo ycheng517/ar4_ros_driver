@@ -5,15 +5,17 @@
     name
     plugin_name
     serial_port
+    tf_prefix
   ">
     <ros2_control name="${name}" type="system">
 
       <hardware>
         <plugin>${plugin_name}</plugin>
         <param name="serial_port">${serial_port}</param>
+        <param name="tf_prefix">${tf_prefix}</param>
       </hardware>
 
-      <joint name="gripper_jaw1_joint">
+      <joint name="${tf_prefix}gripper_jaw1_joint">
         <command_interface name="position" />
         <state_interface name="position">
           <param name="initial_value">0.0</param>
@@ -22,8 +24,8 @@
           <param name="initial_value">0.0</param>
         </state_interface>
       </joint>
-      <joint name="gripper_jaw2_joint">
-        <param name="mimic">gripper_jaw1_joint</param>
+      <joint name="${tf_prefix}gripper_jaw2_joint">
+        <param name="mimic">${tf_prefix}gripper_jaw1_joint</param>
         <param name="multiplier">1</param>
         <state_interface name="position">
           <param name="initial_value">0.0</param>

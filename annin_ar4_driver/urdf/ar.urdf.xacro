@@ -32,12 +32,16 @@
     <xacro:include filename="$(find annin_ar4_description)/urdf/ar_gripper_macro.xacro"/>
     <xacro:include filename="$(find annin_ar4_description)/urdf/ar_gripper.ros2_control.xacro"/>
 
-    <xacro:ar_gripper parent="$(arg tf_prefix)ee_link" />
+    <xacro:ar_gripper
+      tf_prefix="$(arg tf_prefix)"
+      parent="$(arg tf_prefix)ee_link"
+    />
 
     <xacro:ar_gripper_ros2_control
       name="ar_servo_gripper"
       plugin_name="annin_ar4_driver/ARServoGripperHWInterface"
       serial_port="$(arg arduino_serial_port)"
+      tf_prefix="$(arg tf_prefix)"
     />
   </xacro:if>
 
