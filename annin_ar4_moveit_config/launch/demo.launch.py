@@ -202,6 +202,7 @@ def generate_launch_description():
             ParameterFile(ros2_controllers, allow_substs=True),
             {"tf_prefix": tf_prefix},
         ],
+        remappings=[("~/robot_description", "robot_description")],
         output="both",
     )
 
