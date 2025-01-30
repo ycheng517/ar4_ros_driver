@@ -52,9 +52,13 @@ def generate_launch_description():
         description="Model of AR4",
     )
     ar_model_config = LaunchConfiguration("ar_model")
+    tf_prefix_arg = DeclareLaunchArgument("tf_prefix",
+                                         default_value="",
+                                         description="Prefix for AR4 tf_tree")
+    tf_prefix = LaunchConfiguration("tf_prefix")
 
     initial_joint_controllers = PathJoinSubstitution(
-        [FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"]
+        [FindPackageShare("annin_ar4_gazebo"), "config", "controllers.yaml"]
     )
 
     robot_description_content = Command(
@@ -71,6 +75,9 @@ def generate_launch_description():
             " ",
             "ar_model:=",
             ar_model_config,
+            " ",
+            "tf_prefix:=",
+            tf_prefix,
             " ",
             "simulation_controllers:=",
             initial_joint_controllers,
@@ -156,6 +163,7 @@ def generate_launch_description():
     return LaunchDescription(
         [
             ar_model_arg,
+            tf_prefix_arg,
             gazebo_bridge,
             gazebo,
             gazebo_spawn_robot,

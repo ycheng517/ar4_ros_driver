@@ -4,6 +4,7 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
+from launch.conditions import IfCondition
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.parameter_descriptions import ParameterFile
@@ -14,13 +15,11 @@ from launch.substitutions import (
     LaunchConfiguration,
 )
 
-
 def load_yaml(package_name, file_name):
     package_path = get_package_share_directory(package_name)
     absolute_file_path = os.path.join(package_path, file_name)
     with open(absolute_file_path, "r", encoding="utf-8") as file:
         return yaml.safe_load(file)
-
 
 def generate_launch_description():
     # Command-line arguments
@@ -34,6 +33,12 @@ def generate_launch_description():
         description="Model of AR4",
     )
     ar_model_config = LaunchConfiguration("ar_model")
+    tf_prefix_arg = DeclareLaunchArgument(
+        "tf_prefix",
+        default_value="",
+        description="Prefix for AR4 tf_tree"
+    )
+    tf_prefix = LaunchConfiguration("tf_prefix")
 
     robot_description_content = Command(
         [
@@ -49,6 +54,9 @@ def generate_launch_description():
             " ",
             "ar_model:=",
             ar_model_config,
+            " ",
+            "tf_prefix:=",
+            tf_prefix,
         ]
     )
     robot_description = {"robot_description": robot_description_content}
@@ -64,6 +72,9 @@ def generate_launch_description():
             " ",
             "name:=",
             ar_model_config,
+            " ",
+            "prefix:=",
+            tf_prefix,
         ]
     )
     robot_description_semantic = {
@@ -176,16 +187,17 @@ def generate_launch_description():
     )
 
     # ros2_control using FakeSystem as hardware
-    ros2_controllers_path = os.path.join(
-        get_package_share_directory("annin_ar4_driver"),
-        "config",
-        "controllers.yaml",
-    )
+    ros2_controllers = PathJoinSubstitution([
+        FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"
+    ])
+
     ros2_control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
-            ParameterFile(ros2_controllers_path, allow_substs=True),
+            robot_description,
+            ParameterFile(ros2_controllers, allow_substs=True),
+            {"tf_prefix": tf_prefix},
         ],
         remappings=[("~/robot_description", "robot_description")],
         output="both",
@@ -225,10 +237,11 @@ def generate_launch_description():
         [
             db_arg,
             ar_model_arg,
-            rviz_node,
+            tf_prefix_arg,
             # static_tf,
-            robot_state_publisher,
             run_move_group_node,
+            rviz_node,
+            robot_state_publisher,
             ros2_control_node,
             joint_state_broadcaster_spawner,
             joint_controller_spawner,

@@ -6,15 +6,20 @@
   <xacro:include filename="$(find annin_ar4_description)/urdf/ar_gripper.ros2_control.xacro" />
 
   <xacro:arg name="simulation_controllers" default="" />
+  <xacro:arg name="tf_prefix" default="" />
 
   <link name="world" />
-  <xacro:ar_robot 
+  <xacro:ar_robot
+    tf_prefix="$(arg tf_prefix)"
     parent="world"
     robot_parameters_file="$(find annin_ar4_description)/config/$(arg ar_model).yaml"
   >
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:ar_robot>
-  <xacro:ar_gripper parent="ee_link" />
+  <xacro:ar_gripper 
+    tf_prefix="$(arg tf_prefix)"
+    parent="$(arg tf_prefix)ee_link"
+  />
 
   <xacro:ar_ros2_control
     ar_model="$(arg ar_model)"
@@ -24,12 +29,14 @@
     robot_parameters_file="$(find annin_ar4_description)/config/$(arg ar_model).yaml"
     joint_offset_parameters_file="$(find annin_ar4_driver)/config/joint_offsets/$(arg ar_model).yaml"
     driver_parameters_file="$(find annin_ar4_driver)/config/driver.yaml"
+    tf_prefix="$(arg tf_prefix)"
   />
 
   <xacro:ar_gripper_ros2_control
     name="ARGripperGazeboSystem"
     plugin_name="ign_ros2_control/IgnitionSystem"
     serial_port="None"
+    tf_prefix="$(arg tf_prefix)"
   />
 
   <gazebo reference="world" />
