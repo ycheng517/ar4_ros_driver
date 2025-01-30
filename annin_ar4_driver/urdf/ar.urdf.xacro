@@ -3,12 +3,14 @@
   <xacro:arg name="serial_port" default="/dev/ttyACM0"/>
   <xacro:arg name="arduino_serial_port" default="/dev/ttyUSB0"/>
   <xacro:arg name="calibrate" default="True"/>
+  <xacro:arg name="tf_prefix" default="" />
   <xacro:arg name="include_gripper" default="true"/>
   <xacro:include filename="$(find annin_ar4_description)/urdf/ar_macro.xacro"/>
   <xacro:include filename="$(find annin_ar4_description)/urdf/ar.ros2_control.xacro"/>
   
   <link name="world" />
   <xacro:ar_robot
+    tf_prefix="$(arg tf_prefix)"
     parent="world"
     robot_parameters_file="$(find annin_ar4_description)/config/$(arg ar_model).yaml"
   >
@@ -23,18 +25,23 @@
     robot_parameters_file="$(find annin_ar4_description)/config/$(arg ar_model).yaml"
     joint_offset_parameters_file="$(find annin_ar4_driver)/config/joint_offsets/$(arg ar_model).yaml"
     driver_parameters_file="$(find annin_ar4_driver)/config/driver.yaml"
+    tf_prefix="$(arg tf_prefix)"
   />
 
   <xacro:if value="$(arg include_gripper)">
     <xacro:include filename="$(find annin_ar4_description)/urdf/ar_gripper_macro.xacro"/>
     <xacro:include filename="$(find annin_ar4_description)/urdf/ar_gripper.ros2_control.xacro"/>
 
-    <xacro:ar_gripper parent="ee_link" />
+    <xacro:ar_gripper
+      tf_prefix="$(arg tf_prefix)"
+      parent="$(arg tf_prefix)ee_link"
+    />
 
     <xacro:ar_gripper_ros2_control
       name="ar_servo_gripper"
       plugin_name="annin_ar4_driver/ARServoGripperHWInterface"
       serial_port="$(arg arduino_serial_port)"
+      tf_prefix="$(arg tf_prefix)"
     />
   </xacro:if>
 

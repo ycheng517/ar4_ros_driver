@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
   <xacro:macro name="ar_robot" params="
+    tf_prefix
     parent
     *origin
     robot_parameters_file
@@ -8,13 +9,13 @@
 
     <xacro:property name="robot_parameters" value="${xacro.load_yaml(robot_parameters_file)}"/>
 
-    <joint name="base_joint" type="fixed">
+    <joint name="${tf_prefix}base_joint" type="fixed">
       <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
-      <child link="base_link" />
+      <child link="${tf_prefix}base_link" />
     </joint>
 
-    <link name="base_link">
+    <link name="${tf_prefix}base_link">
       <inertial>
         <origin rpy="0 0 0" xyz="-4.6941E-06 0.054174 0.038824"/>
         <mass value="0.7102"/>
@@ -36,7 +37,7 @@
         </geometry>
       </collision>
     </link>
-    <link name="link_1">
+    <link name="${tf_prefix}link_1">
       <inertial>
         <origin rpy="0 0 0" xyz="-0.022706 0.04294 -0.12205"/>
         <mass value="0.88065"/>
@@ -58,10 +59,10 @@
         </geometry>
       </collision>
     </link>
-    <joint name="joint_1" type="revolute">
+    <joint name="${tf_prefix}joint_1" type="revolute">
       <origin rpy="${pi} 0 0" xyz="0 0 0"/>
-      <parent link="base_link"/>
-      <child link="link_1"/>
+      <parent link="${tf_prefix}base_link"/>
+      <child link="${tf_prefix}link_1"/>
       <axis xyz="0 0 1"/>
       <limit
         lower="${robot_parameters['j1_limit_min']}"
@@ -70,7 +71,7 @@
         velocity="1.0472"
       />
     </joint>
-    <link name="link_2">
+    <link name="${tf_prefix}link_2">
       <inertial>
         <origin rpy="0 0 0" xyz="0.064818 -0.11189 -0.038671"/>
         <mass value="0.57738"/>
@@ -92,10 +93,10 @@
         </geometry>
       </collision>
     </link>
-    <joint name="joint_2" type="revolute">
+    <joint name="${tf_prefix}joint_2" type="revolute">
       <origin rpy="1.5708 0 -1.5708" xyz="0 0.0642 -0.16977"/>
-      <parent link="link_1"/>
-      <child link="link_2"/>
+      <parent link="${tf_prefix}link_1"/>
+      <child link="${tf_prefix}link_2"/>
       <axis xyz="0 0 -1"/>
       <limit 
         lower="${robot_parameters['j2_limit_min']}"
@@ -104,7 +105,7 @@
         velocity="1.0472"
       />
     </joint>
-    <link name="link_3">
+    <link name="${tf_prefix}link_3">
       <inertial>
         <origin rpy="0 0 0" xyz="-0.00029765 -0.023661 -0.0019125"/>
         <mass value="0.1787"/>
@@ -126,10 +127,10 @@
         </geometry>
       </collision>
     </link>
-    <joint name="joint_3" type="revolute">
+    <joint name="${tf_prefix}joint_3" type="revolute">
       <origin rpy="0 0 3.1416" xyz="0 -0.305 0.007"/>
-      <parent link="link_2"/>
-      <child link="link_3"/>
+      <parent link="${tf_prefix}link_2"/>
+      <child link="${tf_prefix}link_3"/>
       <axis xyz="0 0 -1"/>
       <limit
         lower="${robot_parameters['j3_limit_min']}"
@@ -138,7 +139,7 @@
         velocity="1.0472"
       />
     </joint>
-    <link name="link_4">
+    <link name="${tf_prefix}link_4">
       <inertial>
         <origin rpy="0 0 0" xyz="-0.0016798 -0.00057319 -0.074404"/>
         <mass value="0.34936"/>
@@ -160,10 +161,10 @@
         </geometry>
       </collision>
     </link>
-    <joint name="joint_4" type="revolute">
+    <joint name="${tf_prefix}joint_4" type="revolute">
       <origin rpy="1.5708 0 -1.5708" xyz="0 0 0.0"/>
-      <parent link="link_3"/>
-      <child link="link_4"/>
+      <parent link="${tf_prefix}link_3"/>
+      <child link="${tf_prefix}link_4"/>
       <axis xyz="0 0 -1"/>
       <limit
         lower="${robot_parameters['j4_limit_min']}"
@@ -172,7 +173,7 @@
         velocity="1.0472"
       />
     </joint>
-    <link name="link_5">
+    <link name="${tf_prefix}link_5">
       <inertial>
         <origin rpy="0 0 0" xyz="0.0015066 -1.3102E-05 -0.012585"/>
         <mass value="0.11562"/>
@@ -194,10 +195,10 @@
         </geometry>
       </collision>
     </link>
-    <joint name="joint_5" type="revolute">
+    <joint name="${tf_prefix}joint_5" type="revolute">
       <origin rpy="${pi} 0 -1.5708" xyz="0 0 -0.22263"/>
-      <parent link="link_4"/>
-      <child link="link_5"/>
+      <parent link="${tf_prefix}link_4"/>
+      <child link="${tf_prefix}link_5"/>
       <axis xyz="1 0 0"/>
       <limit
         lower="${robot_parameters['j5_limit_min']}"
@@ -206,7 +207,7 @@
         velocity="1.0472"
       />
     </joint>
-    <link name="link_6">
+    <link name="${tf_prefix}link_6">
       <inertial>
         <origin rpy="0 0 0" xyz="2.9287E-10 -1.6472E-09 0.0091432"/>
         <mass value="0.013863"/>
@@ -228,10 +229,10 @@
         </geometry>
       </collision>
     </link>
-    <joint name="joint_6" type="revolute">
+    <joint name="${tf_prefix}joint_6" type="revolute">
       <origin rpy="0 0 3.1416" xyz="0.000 0 ${robot_parameters['l6_length']}"/>
-      <parent link="link_5"/>
-      <child link="link_6"/>
+      <parent link="${tf_prefix}link_5"/>
+      <child link="${tf_prefix}link_6"/>
       <axis xyz="0 0 1"/>
       <limit
         lower="${robot_parameters['j6_limit_min']}"
@@ -242,10 +243,10 @@
     </joint>
 
     <!-- center of the end effector mounting surface on link_6 -->
-    <link name="ee_link" />
-    <joint name="ee_joint" type="fixed">
-      <parent link="link_6" />
-      <child link="ee_link" />
+    <link name="${tf_prefix}ee_link" />
+    <joint name="${tf_prefix}ee_joint" type="fixed">
+      <parent link="${tf_prefix}link_6" />
+      <child link="${tf_prefix}ee_link" />
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </joint>
 

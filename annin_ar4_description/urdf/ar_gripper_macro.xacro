@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
-  <xacro:macro name="ar_gripper" params="parent">
+  <xacro:macro name="ar_gripper" params="
+    tf_prefix
+    parent
+  ">
 
-    <joint name="gripper_base_joint" type="fixed">
+    <joint name="${tf_prefix}gripper_base_joint" type="fixed">
       <origin xyz="0.0 0.0 0.0" rpy="-1.5708 0.0 0.0"/>
       <parent link="${parent}"/>
-      <child link="gripper_base_link"/>
+      <child link="${tf_prefix}gripper_base_link"/>
     </joint>
 
-    <link name="gripper_base_link">
+    <link name="${tf_prefix}gripper_base_link">
       <visual>
         <geometry>
           <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_base_link.stl" />
@@ -28,7 +31,7 @@
         <inertia ixx="0.00002375" ixy="0.00000002" ixz="-0.00000017" iyy="0.00004082" iyz="-0.00000029" izz="0.00004254"/>
       </inertial>
     </link>
-    <link name="gripper_jaw1_link">
+    <link name="${tf_prefix}gripper_jaw1_link">
       <visual>
         <geometry>
           <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_jaw1_link.stl" />
@@ -48,7 +51,7 @@
         <inertia ixx="0.00000123" ixy="-0.00000004" ixz="0.00000012" iyy="0.00000115" iyz="0.00000016" izz="0.00000102"/>
       </inertial>
     </link>
-    <link name="gripper_jaw2_link">
+    <link name="${tf_prefix}gripper_jaw2_link">
       <visual>
         <geometry>
           <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_jaw2_link.stl" />
@@ -69,21 +72,21 @@
       </inertial>
     </link>
 
-    <joint name="gripper_jaw1_joint" type="prismatic">
+    <joint name="${tf_prefix}gripper_jaw1_joint" type="prismatic">
       <origin xyz="0.0 -0.036 0" rpy="0.0 0.0 0.0"/>
-      <parent link="gripper_base_link"/>
-      <child link="gripper_jaw1_link"/>
+      <parent link="${tf_prefix}gripper_base_link"/>
+      <child link="${tf_prefix}gripper_jaw1_link"/>
       <axis xyz="1 0 0"/>
       <limit lower="-0.014" upper="0" effort="-1" velocity="1.0"/>
     </joint>
 
-    <joint name="gripper_jaw2_joint" type="prismatic">
+    <joint name="${tf_prefix}gripper_jaw2_joint" type="prismatic">
       <origin xyz="0.0 -0.036 0" rpy="0.0 ${-pi} 0.0"/>
-      <parent link="gripper_base_link"/>
-      <child link="gripper_jaw2_link"/>
+      <parent link="${tf_prefix}gripper_base_link"/>
+      <child link="${tf_prefix}gripper_jaw2_link"/>
       <axis xyz="1 0 0"/>
-      <limit lower="-0.014" upper="0" effort="-1" velocity="1.0"/>
-      <mimic joint="gripper_jaw1_joint" multiplier="1" offset="0"/>
+      <limit lower="-0.014" upper="0" effort="1000" velocity="1.0"/>
+      <mimic joint="${tf_prefix}gripper_jaw1_joint" multiplier="1" offset="0"/>
     </joint>
 
   </xacro:macro>

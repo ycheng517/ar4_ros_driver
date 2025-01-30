@@ -45,24 +45,37 @@ def generate_launch_description():
                                          choices=["mk1", "mk2", "mk3"],
                                          description="Model of AR4")
     ar_model_config = LaunchConfiguration("ar_model")
+    tf_prefix_arg = DeclareLaunchArgument("tf_prefix",
+                                         default_value="",
+                                         description="Prefix for AR4 tf_tree")
+    tf_prefix = LaunchConfiguration("tf_prefix")
 
-    initial_joint_controllers = PathJoinSubstitution([
-        FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"
-    ])
+    initial_joint_controllers = PathJoinSubstitution(
+        [FindPackageShare("annin_ar4_gazebo"), "config", "controllers.yaml"]
+    )
 
-    robot_description_content = Command([
-        PathJoinSubstitution([FindExecutable(name="xacro")]),
-        " ",
-        PathJoinSubstitution([
-            FindPackageShare("annin_ar4_description"), "urdf", "ar_gazebo.urdf.xacro"
-        ]),
-        " ",
-        "ar_model:=",
-        ar_model_config,
-        " ",
-        "simulation_controllers:=",
-        initial_joint_controllers,
-    ])
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("annin_ar4_description"),
+                    "urdf",
+                    "ar_gazebo.urdf.xacro",
+                ]
+            ),
+            " ",
+            "ar_model:=",
+            ar_model_config,
+            " ",
+            "tf_prefix:=",
+            tf_prefix,
+            " ",
+            "simulation_controllers:=",
+            initial_joint_controllers,
+        ]
+    )
     robot_description = {"robot_description": robot_description_content}
 
     robot_state_publisher_node = Node(
@@ -135,13 +148,16 @@ def generate_launch_description():
         output="screen",
     )
 
-    return LaunchDescription([
-        ar_model_arg,
-        gazebo_bridge,
-        gazebo,
-        gazebo_spawn_robot,
-        robot_state_publisher_node,
-        joint_state_broadcaster_spawner,
-        initial_joint_controller_spawner_started,
-        gripper_joint_controller_spawner_started,
-    ])
+    return LaunchDescription(
+        [
+            ar_model_arg,
+            tf_prefix_arg,
+            gazebo_bridge,
+            gazebo,
+            gazebo_spawn_robot,
+            robot_state_publisher_node,
+            joint_state_broadcaster_spawner,
+            initial_joint_controller_spawner_started,
+            gripper_joint_controller_spawner_started,
+        ]
+    )

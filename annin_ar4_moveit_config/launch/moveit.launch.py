@@ -58,6 +58,7 @@ def generate_launch_description():
     include_gripper = LaunchConfiguration("include_gripper")
     rviz_config_file = LaunchConfiguration("rviz_config_file")
     ar_model_config = LaunchConfiguration("ar_model")
+    tf_prefix = LaunchConfiguration("tf_prefix")
 
     declared_arguments = []
     declared_arguments.append(
@@ -67,6 +68,13 @@ def generate_launch_description():
             description="Make MoveIt use simulation time. This is needed "+\
                 "for trajectory planing in simulation.",
         ))
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "tf_prefix",
+            default_value="",
+            description="Prefix for AR4 tf_tree",
+        )
+    )
     declared_arguments.append(
         DeclareLaunchArgument(
             "include_gripper",
@@ -88,33 +96,45 @@ def generate_launch_description():
                               choices=["mk1", "mk2", "mk3"],
                               description="Model of AR4"))
 
-    robot_description_content = Command([
-        PathJoinSubstitution([FindExecutable(name="xacro")]),
-        " ",
-        PathJoinSubstitution(
-            [FindPackageShare("annin_ar4_description"), "urdf", "ar.urdf.xacro"]),
-        " ",
-        "ar_model:=",
-        ar_model_config,
-        " ",
-        "include_gripper:=",
-        include_gripper,
-    ])
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("annin_ar4_description"), "urdf", "ar.urdf.xacro"]
+            ),
+            " ",
+            "ar_model:=",
+            ar_model_config,
+            " ",
+            "tf_prefix:=",
+            tf_prefix,
+            " ",
+            "include_gripper:=",
+            include_gripper,
+        ]
+    )
     robot_description = {"robot_description": robot_description_content}
 
     # MoveIt Configuration
-    robot_description_semantic_content = Command([
-        PathJoinSubstitution([FindExecutable(name="xacro")]),
-        " ",
-        PathJoinSubstitution(
-            [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]),
-        " ",
-        "name:=",
-        ar_model_config,
-        " ",
-        "include_gripper:=",
-        include_gripper,
-    ])
+    robot_description_semantic_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]
+            ),
+            " ",
+            "name:=",
+            ar_model_config,
+            " ",
+            "prefix:=",
+            tf_prefix,
+            " ",
+            "include_gripper:=",
+            include_gripper,
+        ]
+    )
     robot_description_semantic = {
         "robot_description_semantic": robot_description_semantic_content
     }

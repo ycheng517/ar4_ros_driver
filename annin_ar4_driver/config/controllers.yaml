@@ -14,12 +14,12 @@ controller_manager:
 joint_trajectory_controller:
   ros__parameters:
     joints:
-      - joint_1
-      - joint_2
-      - joint_3
-      - joint_4
-      - joint_5
-      - joint_6
+      - $(var tf_prefix)joint_1
+      - $(var tf_prefix)joint_2
+      - $(var tf_prefix)joint_3
+      - $(var tf_prefix)joint_4
+      - $(var tf_prefix)joint_5
+      - $(var tf_prefix)joint_6
     command_interfaces:
       - position
       - velocity
@@ -33,29 +33,29 @@ joint_trajectory_controller:
     constraints:
       stopped_velocity_tolerance: 0.02
       goal_time: 0.0
-      joint_1: { trajectory: 0.2, goal: 0.02 }
-      joint_2: { trajectory: 0.2, goal: 0.02 }
-      joint_3: { trajectory: 0.2, goal: 0.02 }
-      joint_4: { trajectory: 0.2, goal: 0.02 }
-      joint_5: { trajectory: 0.2, goal: 0.02 }
-      joint_6: { trajectory: 0.2, goal: 0.02 }
+      $(var tf_prefix)joint_1: { trajectory: 0.2, goal: 0.02 }
+      $(var tf_prefix)joint_2: { trajectory: 0.2, goal: 0.02 }
+      $(var tf_prefix)joint_3: { trajectory: 0.2, goal: 0.02 }
+      $(var tf_prefix)joint_4: { trajectory: 0.2, goal: 0.02 }
+      $(var tf_prefix)joint_5: { trajectory: 0.2, goal: 0.02 }
+      $(var tf_prefix)joint_6: { trajectory: 0.2, goal: 0.02 }
 
     gains: # Required because we're controlling a velocity interface
-      joint_1: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 } # Smaller 'p' term, since ff term does most of the work
-      joint_2: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 }
-      joint_3: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 }
-      joint_4: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 }
-      joint_5: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 }
-      joint_6: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 }
+      $(var tf_prefix)joint_1: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 } # Smaller 'p' term, since ff term does most of the work
+      $(var tf_prefix)joint_2: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 }
+      $(var tf_prefix)joint_3: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 }
+      $(var tf_prefix)joint_4: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 }
+      $(var tf_prefix)joint_5: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 }
+      $(var tf_prefix)joint_6: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 }
 
     velocity_ff:
-      joint_1: 1.0
-      joint_2: 1.0
-      joint_3: 1.0
-      joint_4: 1.0
-      joint_5: 1.0
-      joint_6: 1.0
+      $(var tf_prefix)joint_1: 1.0
+      $(var tf_prefix)joint_2: 1.0
+      $(var tf_prefix)joint_3: 1.0
+      $(var tf_prefix)joint_4: 1.0
+      $(var tf_prefix)joint_5: 1.0
+      $(var tf_prefix)joint_6: 1.0
 
 gripper_controller:
   ros__parameters:
-    joint: gripper_jaw1_joint
+    joint: $(var tf_prefix)gripper_jaw1_joint
