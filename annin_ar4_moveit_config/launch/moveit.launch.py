@@ -74,7 +74,6 @@ def generate_launch_description():
             "tf_prefix",
             default_value="",
             description="Prefix for AR4 tf_tree",
-            # choices=["True", "False"],
         )
     )
     declared_arguments.append(

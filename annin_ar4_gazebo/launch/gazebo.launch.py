@@ -45,8 +45,6 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    tf_prefix_value = ""
-
     ar_model_arg = DeclareLaunchArgument(
         "ar_model",
         default_value="mk3",
@@ -55,7 +53,7 @@ def generate_launch_description():
     )
     ar_model_config = LaunchConfiguration("ar_model")
     tf_prefix_arg = DeclareLaunchArgument("tf_prefix",
-                                         default_value=tf_prefix_value,
+                                         default_value="",
                                          description="Prefix for AR4 tf_tree")
     tf_prefix = LaunchConfiguration("tf_prefix")
 

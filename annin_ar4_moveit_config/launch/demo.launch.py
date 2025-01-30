@@ -22,9 +22,6 @@ def load_yaml(package_name, file_name):
         return yaml.safe_load(file)
 
 def generate_launch_description():
-
-    tf_prefix_value = ""
-
     # Command-line arguments
     db_arg = DeclareLaunchArgument(
         "db", default_value="False", description="Database flag"
@@ -38,7 +35,7 @@ def generate_launch_description():
     ar_model_config = LaunchConfiguration("ar_model")
     tf_prefix_arg = DeclareLaunchArgument(
         "tf_prefix",
-        default_value=tf_prefix_value,
+        default_value="",
         description="Prefix for AR4 tf_tree"
     )
     tf_prefix = LaunchConfiguration("tf_prefix")
