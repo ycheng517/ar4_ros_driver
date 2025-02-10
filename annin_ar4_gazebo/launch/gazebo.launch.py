@@ -70,14 +70,14 @@ def generate_launch_description():
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
+        namespace="left"
     )
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "joint_state_broadcaster", "-c", "/controller_manager",
-            "--controller-manager-timeout", "60"
+            "joint_state_broadcaster", "-c", "/left/controller_manager",
         ],
     )
 
@@ -86,8 +86,9 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "joint_trajectory_controller", "-c", "/controller_manager",
-            "--controller-manager-timeout", "60"
+            "joint_trajectory_controller", 
+            "--param-file", initial_joint_controllers,
+            "-c", "/left/controller_manager",
         ],
     )
 
@@ -95,8 +96,8 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "gripper_controller", "-c", "/controller_manager",
-            "--controller-manager-timeout", "60"
+            "gripper_controller", "-c", "/left/controller_manager",
+            "--param-file", initial_joint_controllers,
         ],
     )
 
@@ -114,7 +115,8 @@ def generate_launch_description():
         arguments=[
             "/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"
         ],
-        output='screen'
+        output='screen',
+        namespace='left'
     )
 
     gazebo = IncludeLaunchDescription(
@@ -130,9 +132,11 @@ def generate_launch_description():
         package="ros_gz_sim",
         executable="create",
         arguments=[
-            "-name", ar_model_config, "-topic", "robot_description"
+            "-name", ar_model_config, "-topic", "/left/robot_description"
         ],
         output="screen",
+        namespace='left',
+
     )
 
     return LaunchDescription([

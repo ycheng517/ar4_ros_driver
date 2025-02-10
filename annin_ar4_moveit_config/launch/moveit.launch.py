@@ -195,6 +195,7 @@ def generate_launch_description():
             move_group_capabilities,
             {"use_sim_time": use_sim_time},
         ],
+        namespace="left",
     )
 
     # rviz with moveit configuration
@@ -212,7 +213,7 @@ def generate_launch_description():
             robot_description_planning,
             {"use_sim_time": use_sim_time},
         ],
+        namespace="left",
     )
-
     nodes_to_start = [move_group_node, rviz_node]
     return LaunchDescription(declared_arguments + nodes_to_start)
