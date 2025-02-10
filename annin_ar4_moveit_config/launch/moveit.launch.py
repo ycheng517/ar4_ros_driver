@@ -75,7 +75,7 @@ def generate_launch_description():
             choices=["True", "False"],
         ))
     rviz_config_file_default = PathJoinSubstitution(
-        [FindPackageShare("annin_ar4_moveit_config"), "rviz", "moveit.rviz"])
+        [FindPackageShare("annin_ar4_moveit_config"), "rviz", "moveit_left3.rviz"])
     declared_arguments.append(
         DeclareLaunchArgument(
             "rviz_config_file",
@@ -119,12 +119,13 @@ def generate_launch_description():
         "robot_description_semantic": robot_description_semantic_content
     }
 
+    robot_description_kinematics_content = load_yaml(
+        "annin_ar4_moveit_config",
+        os.path.join("config", "kinematics.yaml"),
+    )
     robot_description_kinematics = {
-        "robot_description_kinematics":
-        load_yaml(
-            "annin_ar4_moveit_config",
-            os.path.join("config", "kinematics.yaml"),
-        )
+        "robot_description_kinematics": robot_description_kinematics_content
+
     }
 
     robot_description_planning = {
@@ -206,11 +207,15 @@ def generate_launch_description():
         output="log",
         arguments=["-d", rviz_config_file],
         parameters=[
-            robot_description,
-            robot_description_semantic,
+            {
+                "left": {
+                    "robot_description": robot_description_content,
+                    "robot_description_semantic": robot_description_semantic_content,
+                    "robot_description_kinematics": robot_description_kinematics_content,
+                    "use_sim_time": use_sim_time,
+                }
+            },
             planning_pipeline_config,
-            robot_description_kinematics,
-            robot_description_planning,
             {"use_sim_time": use_sim_time},
         ],
         namespace="left",

@@ -79,6 +79,7 @@ def generate_launch_description():
         arguments=[
             "joint_state_broadcaster", "-c", "/left/controller_manager",
         ],
+        namespace="left"
     )
 
     # There may be other controllers of the joints, but this is the initially-started one
