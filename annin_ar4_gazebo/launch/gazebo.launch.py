@@ -44,7 +44,12 @@ def generate_launch_description():
                                          default_value="mk3",
                                          choices=["mk1", "mk2", "mk3"],
                                          description="Model of AR4")
+    namespace_arg = DeclareLaunchArgument("namespace",
+                                          default_value="/",
+                                          description="Namespace of AR4")
+
     ar_model_config = LaunchConfiguration("ar_model")
+    namespace_config = LaunchConfiguration("namespace")
 
     initial_joint_controllers = PathJoinSubstitution([
         FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"
@@ -60,6 +65,9 @@ def generate_launch_description():
         "ar_model:=",
         ar_model_config,
         " ",
+        "namespace:=",
+        namespace_config,
+        " ",
         "simulation_controllers:=",
         initial_joint_controllers,
     ])
@@ -70,16 +78,16 @@ def generate_launch_description():
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
-        namespace="left"
+        namespace=namespace_config
     )
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "joint_state_broadcaster", "-c", "/left/controller_manager",
+            "joint_state_broadcaster", "-c", PathJoinSubstitution([namespace_config, "controller_manager"]),
         ],
-        namespace="left"
+        namespace=namespace_config
     )
 
     # There may be other controllers of the joints, but this is the initially-started one
@@ -89,7 +97,7 @@ def generate_launch_description():
         arguments=[
             "joint_trajectory_controller", 
             "--param-file", initial_joint_controllers,
-            "-c", "/left/controller_manager",
+            "-c", PathJoinSubstitution([namespace_config, "controller_manager"]),
         ],
     )
 
@@ -97,7 +105,7 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "gripper_controller", "-c", "/left/controller_manager",
+            "gripper_controller", "-c", PathJoinSubstitution([namespace_config, "controller_manager"]),
             "--param-file", initial_joint_controllers,
         ],
     )
@@ -117,7 +125,7 @@ def generate_launch_description():
             "/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"
         ],
         output='screen',
-        namespace='left'
+        namespace=namespace_config
     )
 
     gazebo = IncludeLaunchDescription(
@@ -133,15 +141,15 @@ def generate_launch_description():
         package="ros_gz_sim",
         executable="create",
         arguments=[
-            "-name", ar_model_config, "-topic", "/left/robot_description"
+            "-name", ar_model_config, "-topic", PathJoinSubstitution([namespace_config, "robot_description"])
         ],
         output="screen",
-        namespace='left',
-
+        namespace=namespace_config,
     )
 
     return LaunchDescription([
         ar_model_arg,
+        namespace_arg,
         gazebo_bridge,
         gazebo,
         gazebo_spawn_robot,

@@ -30,12 +30,16 @@
 # Author: Denis Stogl
 
 import os
+import tempfile
 import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import Node
+from launch.actions import OpaqueFunction
 from launch_ros.substitutions import FindPackageShare
 
+from launch import LaunchContext
+from launch.substitution import Substitution
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import (
@@ -53,11 +57,58 @@ def load_yaml(package_name, file_name):
         return yaml.safe_load(file)
 
 
+def get_rviz_node(context: LaunchContext, namespace: Substitution,
+                  rviz_config_file: Substitution,
+                  robot_description_content: dict,
+                  robot_description_semantic_content: dict,
+                  robot_description_kinematics_content: dict,
+                  planning_pipeline_config: dict, use_sim_time: Substitution):
+    """Function to create the RViz node. Injects namespace into the RViz config file."""
+    namespace_val = namespace.perform(context)
+    rviz_config_file_val = rviz_config_file.perform(context)
+    if namespace not in ("/", ""):
+        # Read and modify the RViz config file content
+        with open(rviz_config_file_val, "r") as f:
+            content = f.read()
+        # Replace the Move Group Namespace string with the desired namespace
+        content = content.replace('Move Group Namespace: ""',
+                                  f'Move Group Namespace: {namespace_val}')
+        # Create a temporary file to hold the modified content
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".rviz")
+        temp_file.write(content.encode("utf-8"))
+        temp_file.close()
+        rviz_config_file_val = temp_file.name
+
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        output="log",
+        arguments=["-d", rviz_config_file_val],
+        parameters=[
+            {
+                "robot_description": robot_description_content,
+                "robot_description_semantic":
+                robot_description_semantic_content,
+                "robot_description_kinematics":
+                robot_description_kinematics_content,
+                "use_sim_time": use_sim_time,
+            },
+            planning_pipeline_config,
+            {
+                "use_sim_time": use_sim_time
+            },
+        ],
+        namespace=namespace_val,
+    )
+    return [rviz_node]
+
+
 def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     include_gripper = LaunchConfiguration("include_gripper")
-    rviz_config_file = LaunchConfiguration("rviz_config_file")
     ar_model_config = LaunchConfiguration("ar_model")
+    rviz_config_file = LaunchConfiguration("rviz_config_file")
+    namespace_config = LaunchConfiguration("namespace")
 
     declared_arguments = []
     declared_arguments.append(
@@ -75,7 +126,7 @@ def generate_launch_description():
             choices=["True", "False"],
         ))
     rviz_config_file_default = PathJoinSubstitution(
-        [FindPackageShare("annin_ar4_moveit_config"), "rviz", "moveit_left3.rviz"])
+        [FindPackageShare("annin_ar4_moveit_config"), "rviz", "moveit.rviz"])
     declared_arguments.append(
         DeclareLaunchArgument(
             "rviz_config_file",
@@ -87,12 +138,17 @@ def generate_launch_description():
                               default_value="mk3",
                               choices=["mk1", "mk2", "mk3"],
                               description="Model of AR4"))
+    declared_arguments.append(
+        DeclareLaunchArgument("namespace",
+                              default_value="/",
+                              description="Namespace of AR4"))
 
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
         " ",
-        PathJoinSubstitution(
-            [FindPackageShare("annin_ar4_description"), "urdf", "ar.urdf.xacro"]),
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_description"), "urdf", "ar.urdf.xacro"
+        ]),
         " ",
         "ar_model:=",
         ar_model_config,
@@ -106,8 +162,10 @@ def generate_launch_description():
     robot_description_semantic_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
         " ",
-        PathJoinSubstitution(
-            [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]),
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"), "srdf",
+            "ar.srdf.xacro"
+        ]),
         " ",
         "name:=",
         ar_model_config,
@@ -125,7 +183,6 @@ def generate_launch_description():
     )
     robot_description_kinematics = {
         "robot_description_kinematics": robot_description_kinematics_content
-
     }
 
     robot_description_planning = {
@@ -149,7 +206,8 @@ def generate_launch_description():
     }
 
     # Trajectory Execution Configuration
-    controllers_yaml = load_yaml("annin_ar4_moveit_config", "config/controllers.yaml")
+    controllers_yaml = load_yaml("annin_ar4_moveit_config",
+                                 "config/controllers.yaml")
 
     moveit_controllers = {
         "moveit_simple_controller_manager":
@@ -176,7 +234,8 @@ def generate_launch_description():
 
     # Starts Pilz Industrial Motion Planner MoveGroupSequenceAction and MoveGroupSequenceService servers
     move_group_capabilities = {
-        "capabilities": "pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService"
+        "capabilities":
+        "pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService"
     }
 
     # Start the actual move_group node/action server
@@ -194,31 +253,27 @@ def generate_launch_description():
             moveit_controllers,
             planning_scene_monitor_parameters,
             move_group_capabilities,
-            {"use_sim_time": use_sim_time},
+            {
+                "use_sim_time": use_sim_time
+            },
         ],
-        namespace="left",
+        namespace=namespace_config,
     )
 
     # rviz with moveit configuration
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2_moveit",
-        output="log",
-        arguments=["-d", rviz_config_file],
-        parameters=[
-            {
-                "left": {
-                    "robot_description": robot_description_content,
-                    "robot_description_semantic": robot_description_semantic_content,
-                    "robot_description_kinematics": robot_description_kinematics_content,
-                    "use_sim_time": use_sim_time,
-                }
-            },
-            planning_pipeline_config,
-            {"use_sim_time": use_sim_time},
-        ],
-        namespace="left",
-    )
+    rviz_node = OpaqueFunction(function=get_rviz_node,
+                               kwargs={
+                                   "namespace": namespace_config,
+                                   "rviz_config_file": rviz_config_file,
+                                   "robot_description_content":
+                                   robot_description_content,
+                                   "robot_description_semantic_content":
+                                   robot_description_semantic_content,
+                                   "robot_description_kinematics_content":
+                                   robot_description_kinematics_content,
+                                   "planning_pipeline_config":
+                                   planning_pipeline_config,
+                                   "use_sim_time": use_sim_time,
+                               })
     nodes_to_start = [move_group_node, rviz_node]
     return LaunchDescription(declared_arguments + nodes_to_start)
