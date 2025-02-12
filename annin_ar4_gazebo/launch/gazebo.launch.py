@@ -76,11 +76,15 @@ def generate_launch_description():
     ])
     robot_description = {"robot_description": robot_description_content}
 
-    robot_state_publisher_node = Node(package="robot_state_publisher",
-                                      executable="robot_state_publisher",
-                                      output="both",
-                                      parameters=[robot_description],
-                                      namespace=namespace_config)
+    robot_state_publisher_node = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        namespace=namespace_config,
+        output="both",
+        parameters=[robot_description],
+        remappings=[('/tf', PathJoinSubstitution([namespace_config, 'tf'])),
+                    ('/tf_static',
+                     PathJoinSubstitution([namespace_config, 'tf_static']))])
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
