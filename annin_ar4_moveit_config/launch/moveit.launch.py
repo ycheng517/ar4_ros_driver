@@ -35,10 +35,8 @@ import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import Node
-from launch.actions import OpaqueFunction
 from launch_ros.substitutions import FindPackageShare
 
-from launch import LaunchContext
 from launch.substitution import Substitution
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
@@ -57,50 +55,33 @@ def load_yaml(package_name, file_name):
         return yaml.safe_load(file)
 
 
-def get_rviz_node(context: LaunchContext, namespace: Substitution,
-                  rviz_config_file: Substitution,
-                  robot_description_content: dict,
-                  robot_description_semantic_content: dict,
-                  robot_description_kinematics_content: dict,
-                  planning_pipeline_config: dict, use_sim_time: Substitution):
-    """Function to create the RViz node. Injects namespace into the RViz config file."""
-    namespace_val = namespace.perform(context)
-    rviz_config_file_val = rviz_config_file.perform(context)
-    if namespace not in ("/", ""):
-        # Read and modify the RViz config file content
-        with open(rviz_config_file_val, "r") as f:
+class RvizConfigSubstitution(Substitution):
+    """Substitution to modify the RViz config file to include the namespace."""
+
+    def __init__(self, file_path: Substitution, namespace: Substitution):
+        super().__init__()
+        self._file_path = file_path
+        self._namespace = namespace
+
+    def perform(self, context):
+        # Evaluate the file path and namespace substitutions
+        file_path_val = self._file_path.perform(context)
+        namespace_val = self._namespace.perform(context)
+
+        # If the namespace is "/" or empty, no substitution is necessary.
+        if namespace_val in ["/", ""]:
+            return file_path_val
+
+        with open(file_path_val, "r") as f:
             content = f.read()
-        # Replace the Move Group Namespace string with the desired namespace
+
         content = content.replace('Move Group Namespace: ""',
                                   f'Move Group Namespace: {namespace_val}')
-        # Create a temporary file to hold the modified content
+
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".rviz")
         temp_file.write(content.encode("utf-8"))
         temp_file.close()
-        rviz_config_file_val = temp_file.name
-
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        output="log",
-        arguments=["-d", rviz_config_file_val],
-        parameters=[
-            {
-                "robot_description": robot_description_content,
-                "robot_description_semantic":
-                robot_description_semantic_content,
-                "robot_description_kinematics":
-                robot_description_kinematics_content,
-                "use_sim_time": use_sim_time,
-            },
-            planning_pipeline_config,
-            {
-                "use_sim_time": use_sim_time
-            },
-        ],
-        namespace=namespace_val,
-    )
-    return [rviz_node]
+        return temp_file.name
 
 
 def generate_launch_description():
@@ -261,19 +242,23 @@ def generate_launch_description():
     )
 
     # rviz with moveit configuration
-    rviz_node = OpaqueFunction(function=get_rviz_node,
-                               kwargs={
-                                   "namespace": namespace_config,
-                                   "rviz_config_file": rviz_config_file,
-                                   "robot_description_content":
-                                   robot_description_content,
-                                   "robot_description_semantic_content":
-                                   robot_description_semantic_content,
-                                   "robot_description_kinematics_content":
-                                   robot_description_kinematics_content,
-                                   "planning_pipeline_config":
-                                   planning_pipeline_config,
-                                   "use_sim_time": use_sim_time,
-                               })
+    rviz_config_with_namespace = RvizConfigSubstitution(
+        rviz_config_file, namespace_config)
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        output="log",
+        arguments=["-d", rviz_config_with_namespace],
+        parameters=[
+            robot_description,
+            robot_description_semantic,
+            planning_pipeline_config,
+            robot_description_kinematics,
+            {
+                "use_sim_time": use_sim_time
+            },
+        ],
+        namespace=namespace_config,
+    )
     nodes_to_start = [move_group_node, rviz_node]
     return LaunchDescription(declared_arguments + nodes_to_start)
