@@ -20,9 +20,8 @@ def generate_launch_description():
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
         " ",
-        PathJoinSubstitution([
-            FindPackageShare("annin_ar4_driver"), "urdf", "ar.urdf.xacro"
-        ]),
+        PathJoinSubstitution(
+            [FindPackageShare("annin_ar4_driver"), "urdf", "ar.urdf.xacro"]),
         " ",
         "ar_model:=",
         ar_model_config,
@@ -44,9 +43,8 @@ def generate_launch_description():
     ])
     robot_description = {"robot_description": robot_description_content}
 
-    joint_controllers_cfg = PathJoinSubstitution([
-        FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"
-    ])
+    joint_controllers_cfg = PathJoinSubstitution(
+        [FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"])
 
     update_rate_config_file = PathJoinSubstitution([
         FindPackageShare("annin_ar4_driver"),
@@ -60,7 +58,9 @@ def generate_launch_description():
         parameters=[
             update_rate_config_file,
             ParameterFile(joint_controllers_cfg, allow_substs=True),
-            {"tf_prefix": tf_prefix},
+            {
+                "tf_prefix": tf_prefix
+            },
         ],
         remappings=[('~/robot_description', 'robot_description')],
         output="screen",

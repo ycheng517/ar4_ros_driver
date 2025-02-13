@@ -15,17 +15,19 @@ from launch.substitutions import (
     LaunchConfiguration,
 )
 
+
 def load_yaml(package_name, file_name):
     package_path = get_package_share_directory(package_name)
     absolute_file_path = os.path.join(package_path, file_name)
     with open(absolute_file_path, "r", encoding="utf-8") as file:
         return yaml.safe_load(file)
 
+
 def generate_launch_description():
     # Command-line arguments
-    db_arg = DeclareLaunchArgument(
-        "db", default_value="False", description="Database flag"
-    )
+    db_arg = DeclareLaunchArgument("db",
+                                   default_value="False",
+                                   description="Database flag")
     ar_model_arg = DeclareLaunchArgument(
         "ar_model",
         default_value="mk3",
@@ -33,72 +35,66 @@ def generate_launch_description():
         description="Model of AR4",
     )
     ar_model_config = LaunchConfiguration("ar_model")
-    tf_prefix_arg = DeclareLaunchArgument(
-        "tf_prefix",
-        default_value="",
-        description="Prefix for AR4 tf_tree"
-    )
+    tf_prefix_arg = DeclareLaunchArgument("tf_prefix",
+                                          default_value="",
+                                          description="Prefix for AR4 tf_tree")
     tf_prefix = LaunchConfiguration("tf_prefix")
 
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [
-                    FindPackageShare("annin_ar4_moveit_config"),
-                    "urdf",
-                    "fake_ar.urdf.xacro",
-                ]
-            ),
-            " ",
-            "ar_model:=",
-            ar_model_config,
-            " ",
-            "tf_prefix:=",
-            tf_prefix,
-        ]
-    )
+    robot_description_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"),
+            "urdf",
+            "fake_ar.urdf.xacro",
+        ]),
+        " ",
+        "ar_model:=",
+        ar_model_config,
+        " ",
+        "tf_prefix:=",
+        tf_prefix,
+    ])
     robot_description = {"robot_description": robot_description_content}
 
     # MoveIt Configuration
-    robot_description_semantic_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]
-            ),
-            " ",
-            "name:=",
-            ar_model_config,
-            " ",
-            "prefix:=",
-            tf_prefix,
-        ]
-    )
+    robot_description_semantic_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"), "srdf",
+            "ar.srdf.xacro"
+        ]),
+        " ",
+        "name:=",
+        ar_model_config,
+        " ",
+        "prefix:=",
+        tf_prefix,
+    ])
     robot_description_semantic = {
         "robot_description_semantic": robot_description_semantic_content
     }
 
     robot_description_kinematics = {
-        "robot_description_kinematics": load_yaml(
+        "robot_description_kinematics":
+        load_yaml(
             "annin_ar4_moveit_config",
             os.path.join("config", "kinematics.yaml"),
         )
     }
 
     robot_description_planning = {
-        "robot_description_planning": load_yaml(
+        "robot_description_planning":
+        load_yaml(
             "annin_ar4_moveit_config",
             os.path.join("config", "joint_limits.yaml"),
         )
     }
 
     # Planning Configuration
-    ompl_planning_yaml = load_yaml(
-        "annin_ar4_moveit_config", "config/ompl_planning.yaml"
-    )
+    ompl_planning_yaml = load_yaml("annin_ar4_moveit_config",
+                                   "config/ompl_planning.yaml")
     planning_pipeline_config = {
         "default_planning_pipeline": "ompl",
         "planning_pipelines": ["ompl"],
@@ -106,11 +102,14 @@ def generate_launch_description():
     }
 
     # Trajectory Execution Configuration
-    controllers_yaml = load_yaml("annin_ar4_moveit_config", "config/controllers.yaml")
+    controllers_yaml = load_yaml("annin_ar4_moveit_config",
+                                 "config/controllers.yaml")
 
     moveit_controllers = {
-        "moveit_simple_controller_manager": controllers_yaml,
-        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
+        "moveit_simple_controller_manager":
+        controllers_yaml,
+        "moveit_controller_manager":
+        "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
 
     trajectory_execution = {
@@ -146,8 +145,7 @@ def generate_launch_description():
 
     # RViz
     rviz_base = os.path.join(
-        get_package_share_directory("annin_ar4_moveit_config"), "rviz"
-    )
+        get_package_share_directory("annin_ar4_moveit_config"), "rviz")
     rviz_full_config = os.path.join(rviz_base, "moveit.rviz")
 
     rviz_node = Node(
@@ -187,9 +185,8 @@ def generate_launch_description():
     )
 
     # ros2_control using FakeSystem as hardware
-    ros2_controllers = PathJoinSubstitution([
-        FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"
-    ])
+    ros2_controllers = PathJoinSubstitution(
+        [FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"])
 
     ros2_control_node = Node(
         package="controller_manager",
@@ -197,7 +194,9 @@ def generate_launch_description():
         parameters=[
             robot_description,
             ParameterFile(ros2_controllers, allow_substs=True),
-            {"tf_prefix": tf_prefix},
+            {
+                "tf_prefix": tf_prefix
+            },
         ],
         remappings=[("~/robot_description", "robot_description")],
         output="both",
@@ -233,18 +232,16 @@ def generate_launch_description():
         ],
     )
 
-    return LaunchDescription(
-        [
-            db_arg,
-            ar_model_arg,
-            tf_prefix_arg,
-            # static_tf,
-            run_move_group_node,
-            rviz_node,
-            robot_state_publisher,
-            ros2_control_node,
-            joint_state_broadcaster_spawner,
-            joint_controller_spawner,
-            gripper_controller_spawner,
-        ]
-    )
+    return LaunchDescription([
+        db_arg,
+        ar_model_arg,
+        tf_prefix_arg,
+        # static_tf,
+        run_move_group_node,
+        rviz_node,
+        robot_state_publisher,
+        ros2_control_node,
+        joint_state_broadcaster_spawner,
+        joint_controller_spawner,
+        gripper_controller_spawner,
+    ])
