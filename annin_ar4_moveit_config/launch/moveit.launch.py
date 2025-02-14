@@ -128,7 +128,7 @@ def generate_launch_description():
         "name:=",
         ar_model_config,
         " ",
-        "prefix:=",
+        "tf_prefix:=",
         tf_prefix,
         " ",
         "include_gripper:=",
