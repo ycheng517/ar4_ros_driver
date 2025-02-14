@@ -83,6 +83,14 @@ def generate_launch_description():
         )
     }
 
+    joint_limits = ParameterFile(
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"),
+            "config/joint_limits.yaml"
+        ]),
+        allow_substs=True,
+    )
+
     # Planning Configuration
     ompl_planning_yaml = load_yaml("annin_ar4_moveit_config",
                                    "config/ompl_planning.yaml")
@@ -92,10 +100,18 @@ def generate_launch_description():
         "ompl": ompl_planning_yaml,
     }
 
-    moveit_controllers = {
+    moveit_controller_manager = {
         "moveit_controller_manager":
         "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
+
+    moveit_controllers = ParameterFile(
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"),
+            "config/controllers.yaml"
+        ]),
+        allow_substs=True,
+    )
 
     trajectory_execution = {
         "moveit_manage_controllers": False,
@@ -120,24 +136,11 @@ def generate_launch_description():
             robot_description,
             robot_description_semantic,
             robot_description_kinematics,
-            # robot_joint_limits,
-            ParameterFile(
-                PathJoinSubstitution([
-                    FindPackageShare("annin_ar4_moveit_config"),
-                    "config/joint_limits.yaml"
-                ]),
-                allow_substs=True,
-            ),
+            joint_limits,
             planning_pipeline_config,
             trajectory_execution,
+            moveit_controller_manager,
             moveit_controllers,
-            ParameterFile(
-                PathJoinSubstitution([
-                    FindPackageShare("annin_ar4_moveit_config"),
-                    "config/controllers.yaml"
-                ]),
-                allow_substs=True,
-            ),
             planning_scene_monitor_parameters,
         ],
     )
@@ -170,15 +173,16 @@ def generate_launch_description():
     )
 
     # ros2_control using FakeSystem as hardware
-    ros2_controllers = PathJoinSubstitution(
-        [FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"])
+    ros2_controllers = ParameterFile(PathJoinSubstitution(
+        [FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"]),
+                                     allow_substs=True)
 
     ros2_control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
             robot_description,
-            ParameterFile(ros2_controllers, allow_substs=True),
+            ros2_controllers,
             {
                 "tf_prefix": tf_prefix
             },
