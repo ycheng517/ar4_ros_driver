@@ -42,7 +42,6 @@ from launch.substitutions import (
     PathJoinSubstitution,
     LaunchConfiguration,
 )
-
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
