@@ -34,7 +34,6 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
-from launch.actions import OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitution import Substitution
 from launch.substitutions import (
@@ -45,9 +44,7 @@ from launch.substitutions import (
 )
 
 from launch_ros.actions import Node
-from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
-from launch_ros.utilities import evaluate_parameters
 
 
 class ControllerConfigSubstitution(Substitution):
