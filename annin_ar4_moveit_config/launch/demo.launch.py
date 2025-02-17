@@ -4,7 +4,6 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.conditions import IfCondition
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.parameter_descriptions import ParameterFile
@@ -68,7 +67,7 @@ def generate_launch_description():
         "name:=",
         ar_model_config,
         " ",
-        "prefix:=",
+        "tf_prefix:=",
         tf_prefix,
     ])
     robot_description_semantic = {
@@ -83,13 +82,13 @@ def generate_launch_description():
         )
     }
 
-    robot_description_planning = {
-        "robot_description_planning":
-        load_yaml(
-            "annin_ar4_moveit_config",
-            os.path.join("config", "joint_limits.yaml"),
-        )
-    }
+    joint_limits = ParameterFile(
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"),
+            "config/joint_limits.yaml"
+        ]),
+        allow_substs=True,
+    )
 
     # Planning Configuration
     ompl_planning_yaml = load_yaml("annin_ar4_moveit_config",
@@ -103,16 +102,18 @@ def generate_launch_description():
         "pilz": pilz_planning_yaml,
     }
 
-    # Trajectory Execution Configuration
-    controllers_yaml = load_yaml("annin_ar4_moveit_config",
-                                 "config/controllers.yaml")
-
-    moveit_controllers = {
-        "moveit_simple_controller_manager":
-        controllers_yaml,
+    moveit_controller_manager = {
         "moveit_controller_manager":
         "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
+
+    moveit_controllers = ParameterFile(
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"),
+            "config/controllers.yaml"
+        ]),
+        allow_substs=True,
+    )
 
     trajectory_execution = {
         "moveit_manage_controllers": False,
@@ -143,9 +144,10 @@ def generate_launch_description():
             robot_description,
             robot_description_semantic,
             robot_description_kinematics,
-            robot_description_planning,
+            joint_limits,
             planning_pipeline_config,
             trajectory_execution,
+            moveit_controller_manager,
             moveit_controllers,
             planning_scene_monitor_parameters,
             move_group_capabilities,
@@ -167,23 +169,9 @@ def generate_launch_description():
             robot_description,
             robot_description_semantic,
             robot_description_kinematics,
-            robot_description_planning,
             planning_pipeline_config,
-            trajectory_execution,
-            moveit_controllers,
-            planning_scene_monitor_parameters,
         ],
     )
-
-    # # Static TF
-    # static_tf = Node(
-    #     package="tf2_ros",
-    #     executable="static_transform_publisher",
-    #     name="static_transform_publisher",
-    #     output="log",
-    #     arguments=["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "world", "base_link"],
-    # )
-
     # Publish TF
     robot_state_publisher = Node(
         package="robot_state_publisher",
@@ -194,15 +182,16 @@ def generate_launch_description():
     )
 
     # ros2_control using FakeSystem as hardware
-    ros2_controllers = PathJoinSubstitution(
-        [FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"])
+    ros2_controllers = ParameterFile(PathJoinSubstitution(
+        [FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"]),
+                                     allow_substs=True)
 
     ros2_control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
             robot_description,
-            ParameterFile(ros2_controllers, allow_substs=True),
+            ros2_controllers,
             {
                 "tf_prefix": tf_prefix
             },
@@ -244,7 +233,6 @@ def generate_launch_description():
         db_arg,
         ar_model_arg,
         tf_prefix_arg,
-        # static_tf,
         run_move_group_node,
         rviz_node,
         robot_state_publisher,

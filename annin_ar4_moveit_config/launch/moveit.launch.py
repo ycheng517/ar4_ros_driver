@@ -34,6 +34,7 @@ import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
 
 from launch import LaunchDescription
@@ -65,8 +66,8 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "use_sim_time",
             default_value="False",
-            description="Make MoveIt use simulation time. This is needed "+\
-                "for trajectory planing in simulation.",
+            description="Make MoveIt use simulation time. This is needed " +
+            "for trajectory planing in simulation.",
         ))
     declared_arguments.append(
         DeclareLaunchArgument(
@@ -90,10 +91,12 @@ def generate_launch_description():
             description="Full path to the RViz configuration file to use",
         ))
     declared_arguments.append(
-        DeclareLaunchArgument("ar_model",
-                              default_value="mk3",
-                              choices=["mk1", "mk2", "mk3"],
-                              description="Model of AR4"))
+        DeclareLaunchArgument(
+            "ar_model",
+            default_value="mk3",
+            choices=["mk1", "mk2", "mk3"],
+            description="Model of AR4",
+        ))
 
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -125,7 +128,7 @@ def generate_launch_description():
         "name:=",
         ar_model_config,
         " ",
-        "prefix:=",
+        "tf_prefix:=",
         tf_prefix,
         " ",
         "include_gripper:=",
@@ -143,13 +146,13 @@ def generate_launch_description():
         )
     }
 
-    robot_description_planning = {
-        "robot_description_planning":
-        load_yaml(
-            "annin_ar4_moveit_config",
-            os.path.join("config", "joint_limits.yaml"),
-        )
-    }
+    joint_limits = ParameterFile(
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"),
+            "config/joint_limits.yaml"
+        ]),
+        allow_substs=True,
+    )
 
     # Planning Configuration
     ompl_planning_yaml = load_yaml("annin_ar4_moveit_config",
@@ -164,15 +167,18 @@ def generate_launch_description():
     }
 
     # Trajectory Execution Configuration
-    controllers_yaml = load_yaml("annin_ar4_moveit_config",
-                                 "config/controllers.yaml")
-
-    moveit_controllers = {
-        "moveit_simple_controller_manager":
-        controllers_yaml,
+    moveit_controller_manager = {
         "moveit_controller_manager":
         "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
+
+    moveit_controllers = ParameterFile(
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"),
+            "config/controllers.yaml"
+        ]),
+        allow_substs=True,
+    )
 
     trajectory_execution = {
         "moveit_manage_controllers": False,
@@ -205,9 +211,10 @@ def generate_launch_description():
             robot_description,
             robot_description_semantic,
             robot_description_kinematics,
-            robot_description_planning,
+            joint_limits,
             planning_pipeline_config,
             trajectory_execution,
+            moveit_controller_manager,
             moveit_controllers,
             planning_scene_monitor_parameters,
             move_group_capabilities,
@@ -229,7 +236,6 @@ def generate_launch_description():
             robot_description_semantic,
             planning_pipeline_config,
             robot_description_kinematics,
-            robot_description_planning,
             {
                 "use_sim_time": use_sim_time
             },
