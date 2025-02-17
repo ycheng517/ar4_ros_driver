@@ -99,6 +99,9 @@
     "python.analysis.extraPaths": [
         "/opt/ros/jazzy/lib/python3.10/site-packages"
     ],
+    "[python]": {
+      "editor.defaultFormatter": "eeyore.yapf",
+    },
     "editor.formatOnSave": true,
     "editor.tabSize": 2,
     "files.exclude": {

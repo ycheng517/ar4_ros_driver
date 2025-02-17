@@ -73,8 +73,7 @@ def generate_launch_description():
             "tf_prefix",
             default_value="",
             description="Prefix for AR4 tf_tree",
-        )
-    )
+        ))
     declared_arguments.append(
         DeclareLaunchArgument(
             "include_gripper",
@@ -96,45 +95,42 @@ def generate_launch_description():
                               choices=["mk1", "mk2", "mk3"],
                               description="Model of AR4"))
 
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("annin_ar4_description"), "urdf", "ar.urdf.xacro"]
-            ),
-            " ",
-            "ar_model:=",
-            ar_model_config,
-            " ",
-            "tf_prefix:=",
-            tf_prefix,
-            " ",
-            "include_gripper:=",
-            include_gripper,
-        ]
-    )
+    robot_description_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_description"), "urdf", "ar.urdf.xacro"
+        ]),
+        " ",
+        "ar_model:=",
+        ar_model_config,
+        " ",
+        "tf_prefix:=",
+        tf_prefix,
+        " ",
+        "include_gripper:=",
+        include_gripper,
+    ])
     robot_description = {"robot_description": robot_description_content}
 
     # MoveIt Configuration
-    robot_description_semantic_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]
-            ),
-            " ",
-            "name:=",
-            ar_model_config,
-            " ",
-            "prefix:=",
-            tf_prefix,
-            " ",
-            "include_gripper:=",
-            include_gripper,
-        ]
-    )
+    robot_description_semantic_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"), "srdf",
+            "ar.srdf.xacro"
+        ]),
+        " ",
+        "name:=",
+        ar_model_config,
+        " ",
+        "prefix:=",
+        tf_prefix,
+        " ",
+        "include_gripper:=",
+        include_gripper,
+    ])
     robot_description_semantic = {
         "robot_description_semantic": robot_description_semantic_content
     }
@@ -168,7 +164,8 @@ def generate_launch_description():
     }
 
     # Trajectory Execution Configuration
-    controllers_yaml = load_yaml("annin_ar4_moveit_config", "config/controllers.yaml")
+    controllers_yaml = load_yaml("annin_ar4_moveit_config",
+                                 "config/controllers.yaml")
 
     moveit_controllers = {
         "moveit_simple_controller_manager":
@@ -195,7 +192,8 @@ def generate_launch_description():
 
     # Starts Pilz Industrial Motion Planner MoveGroupSequenceAction and MoveGroupSequenceService servers
     move_group_capabilities = {
-        "capabilities": "pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService"
+        "capabilities":
+        "pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService"
     }
 
     # Start the actual move_group node/action server
@@ -213,7 +211,9 @@ def generate_launch_description():
             moveit_controllers,
             planning_scene_monitor_parameters,
             move_group_capabilities,
-            {"use_sim_time": use_sim_time},
+            {
+                "use_sim_time": use_sim_time
+            },
         ],
     )
 
@@ -230,7 +230,9 @@ def generate_launch_description():
             planning_pipeline_config,
             robot_description_kinematics,
             robot_description_planning,
-            {"use_sim_time": use_sim_time},
+            {
+                "use_sim_time": use_sim_time
+            },
         ],
     )
 
