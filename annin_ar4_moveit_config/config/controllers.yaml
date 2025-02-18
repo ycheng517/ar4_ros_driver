@@ -1,4 +1,4 @@
-move_group:
+/**/move_group:
   ros__parameters:
     moveit_simple_controller_manager:
       controller_names:

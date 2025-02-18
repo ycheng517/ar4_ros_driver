@@ -2,7 +2,7 @@
 # ur_description.
 # You can confirm parameters are loaded despite warning, by:
 # ros2 param get /move_group robot_description_planning.joint_limits.joint_1.max_deceleration
-move_group:
+/**/move_group:
   ros__parameters:
     robot_description_planning:
       joint_limits:
