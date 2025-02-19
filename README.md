@@ -1,31 +1,37 @@
 # AR4 ROS Driver
 
 ROS 2 driver of the AR4 robot arm from [Annin Robotics](https://www.anninrobotics.com).
-Tested with ROS 2 Jazzy on Ubuntu 24.04. Also has branch for Humble 
+Tested with ROS 2 Jazzy on Ubuntu 24.04. Also has branch for Humble
 [here](https://github.com/ycheng517/ar4_ros_driver/tree/humble).
 
 **Supports:**
 
-- AR4 (Original version)
-- AR4 MK2
-- AR4 MK3
+- AR4 MK1 (Original version), MK2, MK3
 - AR4 servo gripper
 
 **Features:**
 
-- Moveit control (GUI and Python interface example)
+- MoveIt control
 - Gazebo simulation
-- Hand-Eye calibration
 
-This is a refresh of [ar3_core](https://github.com/ongdexter/ar3_core).
+## Video Demo
 
-## Video Demo:
+<div align="center">
 
-Motion Planning using RViz and Moveit:
+|                                        Moveit Motion Planning                                         |                                   Startup, Calibration, and Gripper Control                                   |
+| :---------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: |
+| [![AR4 ROS 2 Driver Demo](http://img.youtube.com/vi/XJCrfrW7jXE/0.jpg)](https://youtu.be/XJCrfrW7jXE) | [![Startup, Calibration, Gripper](http://img.youtube.com/vi/PQtXFzqRtHM/0.jpg)](https://youtu.be/PQtXFzqRtHM) |
 
-[![AR4 ROS 2 Driver Demo](http://img.youtube.com/vi/XJCrfrW7jXE/0.jpg)](https://www.youtube.com/watch?v=XJCrfrW7jXE "AR4 ROS 2 Driver Demo")
+</div>
 
-[Startup, Calibration, and Servo Gripper Demo](https://youtu.be/PQtXFzqRtHM)
+## Add-on Features and Capabilities
+
+The following projects showcases additional features and capabilities built on top of this driver:
+
+- [Hand-Eye calibration](https://github.com/ycheng517/ar4_hand_eye_calibration)
+- [Teleoperation using Xbox controller](https://github.com/ycheng517/ar4_ros_driver_examples)
+- [Multi-arm control](https://github.com/ycheng517/ar4_ros_driver_examples)
+- [Voice controlled pick and place](https://github.com/ycheng517/tabletop-handybot)
 
 ## Overview
 
@@ -73,7 +79,7 @@ Motion Planning using RViz and Moveit:
 The Teensy and Arduino Nano sketches provided in [annin_ar4_firmware](./annin_ar4_firmware/)
 are compatible with the default hardware. To flash it, follow the same
 procedure as specified in [AR4 Robot Setup](https://www.youtube.com/watch?v=OL6lXu8VU4s).
-An extra step required is to install [Bounce2](https://github.com/thomasfredericks/Bounce2) 
+An extra step required is to install [Bounce2](https://github.com/thomasfredericks/Bounce2)
 from the Library Manager in Arduino.
 
 ### [Optional] Running in Docker Container
@@ -184,12 +190,6 @@ ros2 launch annin_ar4_moveit_config moveit.launch.py use_sim_time:=true include_
 
 You can now plan in RViz and control the simulated arm.
 
----
-
-### Hand-Eye Calibration
-
-See [ar4_hand_eye_calibration](https://github.com/ycheng517/ar4_hand_eye_calibration)
-
 ## Tuning and Tweaks
 
 ### Tuning Joint Offsets
@@ -204,8 +204,3 @@ Select and modify the YAML file corresponding to your AR model to fine-tune the 
 By default this repo uses velocity-based joint trajectory control. It allows the arm to move a lot faster and the arm movement is also a lot smoother. If for any
 reason you'd like to use the simpler classic position-only control mode, you can
 set `velocity_control_enabled: false` in [driver.yaml](./annin_ar4_driver/config/driver.yaml). Note that you'll need to reduce velocity and acceleration scaling in order for larger motions to succeed.
-
-## Demo Project (and Python Interface Usage)
-
-See: [Tabletop Handybot](https://github.com/ycheng517/tabletop-handybot) for a
-demo of using [PyMoveit2](https://github.com/AndrejOrsula/pymoveit2) to interface with this driver
