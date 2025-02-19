@@ -7,6 +7,7 @@
 
   <xacro:arg name="simulation_controllers" default="" />
   <xacro:arg name="tf_prefix" default="" />
+  <xacro:arg name="namespace" default="" />
 
   <link name="world" />
   <xacro:ar_robot
