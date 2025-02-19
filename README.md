@@ -204,8 +204,3 @@ Select and modify the YAML file corresponding to your AR model to fine-tune the 
 By default this repo uses velocity-based joint trajectory control. It allows the arm to move a lot faster and the arm movement is also a lot smoother. If for any
 reason you'd like to use the simpler classic position-only control mode, you can
 set `velocity_control_enabled: false` in [driver.yaml](./annin_ar4_driver/config/driver.yaml). Note that you'll need to reduce velocity and acceleration scaling in order for larger motions to succeed.
-
-## Demo Project (and Python Interface Usage)
-
-See: [Tabletop Handybot](https://github.com/ycheng517/tabletop-handybot) for a
-demo of using [PyMoveit2](https://github.com/AndrejOrsula/pymoveit2) to interface with this drive
