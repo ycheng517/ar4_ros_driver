@@ -168,6 +168,9 @@ bool TeensyDriver::exchange(std::string outMsg) {
     if (header == "DB") {
       // debug message
       RCLCPP_DEBUG(logger_, "Debug message: %s", inMsg.c_str());
+    } else if (header == "WN") {
+      // warning message
+      RCLCPP_WARN(logger_, "Warning: %s", inMsg.c_str());
     } else {
       if (header == "ST") {
         // init acknowledgement
