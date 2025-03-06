@@ -457,13 +457,14 @@ bool moveLimitedAwayFromLimitSwitch(int* calJoints) {
   return moveAwayFromLimitSwitch(limitedJoints);
 }
 
-"""
-WORKING ON THIS
-"""
+
+//WORKING ON THIS
+
 bool doCalibrationRoutineSequence(String& outputMsg) {
 
   // for testing, later outputMsg will include the sequence from init
-  String sequence = "3012345";
+  String sequence = "1012345";
+  // String sequence = "1345012";
   outputMsg = sequence;
 
   // define sequence storage
@@ -582,9 +583,27 @@ bool doCalibrationRoutineSequence(String& outputMsg) {
       }
 
       readMotorSteps(curMotorSteps);
+
+      // added
+      // int targetSteps[NUM_JOINTS];
+      // for (int i = 0; i < NUM_JOINTS; ++i) {
+      //   if (calJoints[step][i]) {
+      //       // If the joint is part of the current calibration (set to 1), set its target step to the original position
+      //       targetSteps[i] = REST_MOTOR_STEPS[MODEL][i];
+      //   } else {
+      //       // If the joint is not part of the calibration (set to 0), keep its current position
+      //       targetSteps[i] = curMotorSteps[i];
+      //   }
+      // }
+      // added stop
+
       MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
+      // MoveTo(targetSteps, curMotorSteps);
+
       for (int i = 0; i < NUM_JOINTS; ++i) {
-        safeRun(stepperJoints[i]);
+        // if (calJoints[step][i]) { // added
+          safeRun(stepperJoints[i]);
+        // }  // added
       }
     }
 
@@ -785,7 +804,8 @@ void stateTRAJ() {
         Serial.println(msg);
       } else if (function == "JC") {
         String msg;
-        if (!doCalibrationRoutine(msg)) {
+        // if (!doCalibrationRoutine(msg)) {
+        if (!doCalibrationRoutineSequence(msg)) {
           for (int i = 0; i < NUM_JOINTS; ++i) {
             stepperJoints[i].setSpeed(0);
           }
