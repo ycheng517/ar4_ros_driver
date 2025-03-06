@@ -457,6 +457,147 @@ bool moveLimitedAwayFromLimitSwitch(int* calJoints) {
   return moveAwayFromLimitSwitch(limitedJoints);
 }
 
+"""
+WORKING ON THIS
+"""
+bool doCalibrationRoutineSequence(String& outputMsg) {
+
+  // for testing, later outputMsg will include the sequence from init
+  String sequence = "3012345";
+  outputMsg = sequence;
+
+  // define sequence storage
+  int calibSeq[7];
+  // convert outputMsg string to int array
+  for (int i = 0; i < 7; i++) {
+    calibSeq[i] = outputMsg[i] - '0';
+  }
+
+  // implement sequence in calJoints
+  // const int NUM_JOINTS = 6;
+  int calJoints[6][NUM_JOINTS] = {0};
+  int numGroups = 0;
+
+  switch (calibSeq[0])
+  {
+  case 0:
+    numGroups = 1;
+    // std::cout << "Case 0" << std::endl;
+    for (int i = 0; i < NUM_JOINTS; i++) {
+        calJoints[0][calibSeq[i+1]] = 1; 
+    }
+    break;
+  case 1:
+    numGroups = 2;
+    // std::cout << "Case 1" << std::endl;
+    for (int i = 0; i < NUM_JOINTS-3; i++) {
+        // if (i+1 < 7 && i+4 < 7) {
+      calJoints[0][calibSeq[i+1]] = 1;
+      calJoints[1][calibSeq[i+4]] = 1;
+        // } else {
+        //     std::cout << "Invalid index access, i+1 or i+4 out of bounds" << std::endl;
+        //     return 0;
+        // }
+    }
+    break;
+  case 2:
+    numGroups = 3;
+    // std::cout << "Case 2" << std::endl;
+    for (int i = 0; i < NUM_JOINTS-4; i++) {
+        // if (i+1 < 7 && i+3 < 7 && i+5 < 7) {
+      calJoints[0][calibSeq[i+1]] = 1;
+      calJoints[1][calibSeq[i+3]] = 1;
+      calJoints[2][calibSeq[i+5]] = 1;
+        // } else {
+        //     std::cout << "Invalid index access, i+1 or i+4 out of bounds" << std::endl;
+        //     return 0;
+        // }
+    }
+    break;
+  case 3:
+    numGroups = NUM_JOINTS;
+    // std::cout << "Case 3" << std::endl;
+    for (int i = 0; i < NUM_JOINTS; i++) {
+        calJoints[i][calibSeq[i+1]] = 1;
+    }
+    break;
+  default:
+    outputMsg = "ER: Invalid calibration sequence.";
+    return false;  // Early exit if an invalid value is detected
+  }
+
+  // calibrate joints
+  int calSteps[6];
+  // int calSteps[NUM_JOINTS] = {0};
+
+  for (int step = 0; step < numGroups; ++step){
+
+    if (!moveLimitedAwayFromLimitSwitch(calJoints[step])) {
+      outputMsg = "ER: Failed to move away from limit switches at the start.";
+      return false;
+    }
+
+    if (!moveToLimitSwitches(calJoints[step])) {
+      outputMsg = "ER: Failed to move to limit switches.";
+      return false;
+    }
+
+    // record encoder steps
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      if (calJoints[step][i]) {
+        calSteps[i] = encPos[i].read();
+      }
+    }
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      if (calJoints[step][i]) {
+        encPos[i].write(ENC_RANGE_STEPS[i] * ENC_MAX_AT_ANGLE_MIN[i]);
+      }
+    }
+
+    // move away from the limit switches a bit so that if the next command
+    // is in the wrong direction, the limit switches will not be run over
+    // immediately and become damaged.
+    if (!moveAwayFromLimitSwitch(calJoints[step])) {
+      outputMsg = "ER: Failed to move away from limit switches.";
+      return false;
+    }
+
+    // restore original max speed
+    //
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      // if (calJoints[step][i]) {
+      stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
+                                  MOTOR_STEPS_PER_DEG[MODEL][i]);
+      // }
+    }
+
+    // return to original position
+    unsigned long startTime = millis();
+    int curMotorSteps[NUM_JOINTS];
+    readMotorSteps(curMotorSteps);
+    while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
+      if (millis() - startTime > 10000) {
+        outputMsg = "ER: Failed to return to original position.";
+        return false;
+      }
+
+      readMotorSteps(curMotorSteps);
+      MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
+      for (int i = 0; i < NUM_JOINTS; ++i) {
+        safeRun(stepperJoints[i]);
+      }
+    }
+
+  }
+
+  // calibration done, send calibration values
+  // N.B. calibration values aren't used right now
+  outputMsg = String("JC") + "A" + calSteps[0] + "B" + calSteps[1] + "C" +
+              calSteps[2] + "D" + calSteps[3] + "E" + calSteps[4] + "F" +
+              calSteps[5];
+  return true;
+}
+
 bool doCalibrationRoutine(String& outputMsg) {
   // calibrate all joints
   int calJoints[] = {1, 1, 1, 1, 1, 1};
