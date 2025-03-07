@@ -576,7 +576,23 @@ bool doCalibrationRoutineSequence(String& outputMsg) {
     unsigned long startTime = millis();
     int curMotorSteps[NUM_JOINTS];
     readMotorSteps(curMotorSteps);
-    while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
+
+    // added
+    int targetSteps[NUM_JOINTS];
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      if (calJoints[step][i]) {
+          // If the joint is part of the current calibration (set to 1), set its target step to the original position
+          targetSteps[i] = REST_MOTOR_STEPS[MODEL][i];
+      } else {
+          // If the joint is not part of the calibration (set to 0), keep its current position
+          targetSteps[i] = curMotorSteps[i];
+      }
+    }
+    // added stop
+
+
+    // while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
+    while (!AtPosition(targetSteps, curMotorSteps, 5)) { // added
       if (millis() - startTime > 10000) {
         outputMsg = "ER: Failed to return to original position.";
         return false;
@@ -584,29 +600,15 @@ bool doCalibrationRoutineSequence(String& outputMsg) {
 
       readMotorSteps(curMotorSteps);
 
-      // added
-      // int targetSteps[NUM_JOINTS];
-      // for (int i = 0; i < NUM_JOINTS; ++i) {
-      //   if (calJoints[step][i]) {
-      //       // If the joint is part of the current calibration (set to 1), set its target step to the original position
-      //       targetSteps[i] = REST_MOTOR_STEPS[MODEL][i];
-      //   } else {
-      //       // If the joint is not part of the calibration (set to 0), keep its current position
-      //       targetSteps[i] = curMotorSteps[i];
-      //   }
-      // }
-      // added stop
-
-      MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
-      // MoveTo(targetSteps, curMotorSteps);
+      // MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
+      MoveTo(targetSteps, curMotorSteps); // added
 
       for (int i = 0; i < NUM_JOINTS; ++i) {
-        // if (calJoints[step][i]) { // added
+        if (calJoints[step][i]) { // added
           safeRun(stepperJoints[i]);
-        // }  // added
+        }  // added
       }
     }
-
   }
 
   // calibration done, send calibration values
@@ -804,8 +806,8 @@ void stateTRAJ() {
         Serial.println(msg);
       } else if (function == "JC") {
         String msg;
-        // if (!doCalibrationRoutine(msg)) {
-        if (!doCalibrationRoutineSequence(msg)) {
+        if (!doCalibrationRoutine(msg)) {
+        // if (!doCalibrationRoutineSequence(msg)) {
           for (int i = 0; i < NUM_JOINTS; ++i) {
             stepperJoints[i].setSpeed(0);
           }
