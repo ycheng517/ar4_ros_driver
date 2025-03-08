@@ -165,12 +165,6 @@ def generate_launch_description():
         "publish_robot_description_semantic": True,
     }
 
-    # Starts Pilz Industrial Motion Planner MoveGroupSequenceAction and MoveGroupSequenceService servers
-    move_group_capabilities = {
-        "capabilities":
-        "pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService"
-    }
-
     # Start the actual move_group node/action server
     move_group_node = Node(
         package="moveit_ros_move_group",
@@ -186,7 +180,6 @@ def generate_launch_description():
             moveit_controller_manager,
             moveit_controllers,
             planning_scene_monitor_parameters,
-            move_group_capabilities,
             {
                 "use_sim_time": use_sim_time
             },
@@ -197,7 +190,6 @@ def generate_launch_description():
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
-        name="rviz2_moveit",
         output="log",
         arguments=["-d", rviz_config_file],
         parameters=[
