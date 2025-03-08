@@ -87,7 +87,15 @@ char JOINT_NAMES[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 
 bool estop_pressed = false;
 
-void estopPressed() { estop_pressed = true; }
+void estopPressed() {
+  // Check ESTOP 3 times to avoid false positives due to electrical noise
+  for (int i = 0; i < 3; i++) {
+    if (digitalRead(ESTOP_PIN) != LOW) {
+      return;  // Not really pressed
+    }
+  }
+  estop_pressed = true;
+}
 
 void resetEstop() {
   // if ESTOP button is pressed still, do not reset the flag!
