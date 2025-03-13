@@ -567,8 +567,11 @@ bool doCalibrationRoutineSequence(String& outputMsg) {
 
     while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
       if (millis() - startTime > 12000) {
-        outputMsg = "ER: Failed to return to original position.";
-        return false;
+        // outputMsg = "ER: Failed to return to original position.";
+        // return false;
+        Serial.println(
+          "WN: Failed to return to original position post calibration.");
+        break;
       }
 
       readMotorSteps(curMotorSteps);
