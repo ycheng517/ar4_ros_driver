@@ -74,7 +74,7 @@ def generate_launch_description():
             "-c",
             "/controller_manager",
             "--controller-manager-timeout",
-            "60",
+            "130", # 60
         ],
     )
 
@@ -106,7 +106,7 @@ def generate_launch_description():
             "-c",
             "/controller_manager",
             "--controller-manager-timeout",
-            "60",
+            "130", # 60
         ],
     )
 

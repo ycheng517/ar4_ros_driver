@@ -42,8 +42,6 @@ bool TeensyDriver::init(std::string ar_model, std::string port, int baudrate,
   RCLCPP_INFO(logger_, "Successfully initialised driver on port %s",
               port.c_str());
 
-  // read calibration sequence
-
   // initialise joint and encoder calibration
   num_joints_ = num_joints;
   joint_positions_deg_.resize(num_joints_);
@@ -123,8 +121,11 @@ void TeensyDriver::update(std::vector<double>& pos_commands,
   RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
 }
 
-bool TeensyDriver::calibrateJoints() {
-  std::string outMsg = "JC\n";
+// bool TeensyDriver::calibrateJoints() {
+bool TeensyDriver::calibrateJoints(std::string calib_sequence) {
+  std::string outMsg = "JC" + calib_sequence + "\n";
+  RCLCPP_INFO(logger_, "Sending calibration command: %s",
+    outMsg.c_str());
   return sendCommand(outMsg);
 }
 

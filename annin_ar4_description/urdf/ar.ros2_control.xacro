@@ -28,6 +28,8 @@
         <param name="ar_model">${ar_model}</param>
         <param name="serial_port">${serial_port}</param>
         <param name="calibrate">${calibrate}</param>
+        <!-- <param name="calib_sequence">${calib_sequence}</param> -->
+        <param name="calib_sequence">0012345</param>
         <param name="velocity_control_enabled">${driver_parameters['velocity_control_enabled']}</param>
         <param name="tf_prefix">${tf_prefix}</param>
       </hardware>

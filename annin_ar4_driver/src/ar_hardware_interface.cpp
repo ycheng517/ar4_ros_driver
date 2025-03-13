@@ -31,10 +31,13 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
 
   // calibrate joints if needed
   bool calibrate = info_.hardware_parameters.at("calibrate") == "True";
+  std::string calib_sequence = info_.hardware_parameters.at("calib_sequence");
   if (calibrate) {
     // run calibration
     RCLCPP_INFO(logger_, "Running joint calibration...");
-    if (!driver_.calibrateJoints()) {
+    RCLCPP_INFO(logger_, "Calibration sequence: %s", calib_sequence.c_str());
+    // if (!driver_.calibrateJoints()) {
+    if (!driver_.calibrateJoints(calib_sequence)) {
       RCLCPP_INFO(logger_, "calibration failed.");
       return hardware_interface::CallbackReturn::ERROR;
     }

@@ -457,15 +457,13 @@ bool moveLimitedAwayFromLimitSwitch(int* calJoints) {
   return moveAwayFromLimitSwitch(limitedJoints);
 }
 
-
 //WORKING ON THIS
-
 bool doCalibrationRoutineSequence(String& outputMsg) {
 
-  // for testing, later outputMsg will include the sequence from init
-  String sequence = "1012345";
-  // String sequence = "1345012";
-  outputMsg = sequence;
+  if (outputMsg.length() != 7) {
+    outputMsg = "ER: Invalid sequence length.";
+    return false;
+  }
 
   // define sequence storage
   int calibSeq[7];
@@ -475,7 +473,6 @@ bool doCalibrationRoutineSequence(String& outputMsg) {
   }
 
   // implement sequence in calJoints
-  // const int NUM_JOINTS = 6;
   int calJoints[6][NUM_JOINTS] = {0};
   int numGroups = 0;
 
@@ -483,41 +480,27 @@ bool doCalibrationRoutineSequence(String& outputMsg) {
   {
   case 0:
     numGroups = 1;
-    // std::cout << "Case 0" << std::endl;
     for (int i = 0; i < NUM_JOINTS; i++) {
         calJoints[0][calibSeq[i+1]] = 1; 
     }
     break;
   case 1:
     numGroups = 2;
-    // std::cout << "Case 1" << std::endl;
     for (int i = 0; i < NUM_JOINTS-3; i++) {
-        // if (i+1 < 7 && i+4 < 7) {
       calJoints[0][calibSeq[i+1]] = 1;
       calJoints[1][calibSeq[i+4]] = 1;
-        // } else {
-        //     std::cout << "Invalid index access, i+1 or i+4 out of bounds" << std::endl;
-        //     return 0;
-        // }
     }
     break;
   case 2:
     numGroups = 3;
-    // std::cout << "Case 2" << std::endl;
     for (int i = 0; i < NUM_JOINTS-4; i++) {
-        // if (i+1 < 7 && i+3 < 7 && i+5 < 7) {
       calJoints[0][calibSeq[i+1]] = 1;
       calJoints[1][calibSeq[i+3]] = 1;
       calJoints[2][calibSeq[i+5]] = 1;
-        // } else {
-        //     std::cout << "Invalid index access, i+1 or i+4 out of bounds" << std::endl;
-        //     return 0;
-        // }
     }
     break;
   case 3:
     numGroups = NUM_JOINTS;
-    // std::cout << "Case 3" << std::endl;
     for (int i = 0; i < NUM_JOINTS; i++) {
         calJoints[i][calibSeq[i+1]] = 1;
     }
@@ -564,12 +547,9 @@ bool doCalibrationRoutineSequence(String& outputMsg) {
     }
 
     // restore original max speed
-    //
     for (int i = 0; i < NUM_JOINTS; ++i) {
-      // if (calJoints[step][i]) {
       stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
                                   MOTOR_STEPS_PER_DEG[MODEL][i]);
-      // }
     }
 
     // return to original position
@@ -577,36 +557,25 @@ bool doCalibrationRoutineSequence(String& outputMsg) {
     int curMotorSteps[NUM_JOINTS];
     readMotorSteps(curMotorSteps);
 
-    // added
-    int targetSteps[NUM_JOINTS];
-    for (int i = 0; i < NUM_JOINTS; ++i) {
-      if (calJoints[step][i]) {
-          // If the joint is part of the current calibration (set to 1), set its target step to the original position
-          targetSteps[i] = REST_MOTOR_STEPS[MODEL][i];
-      } else {
-          // If the joint is not part of the calibration (set to 0), keep its current position
-          targetSteps[i] = curMotorSteps[i];
-      }
-    }
-    // added stop
-
-
-    // while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
-    while (!AtPosition(targetSteps, curMotorSteps, 5)) { // added
-      if (millis() - startTime > 10000) {
+    while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
+      if (millis() - startTime > 12000) {
         outputMsg = "ER: Failed to return to original position.";
         return false;
       }
 
       readMotorSteps(curMotorSteps);
+      // added
+      for (int i = 0; i < NUM_JOINTS; ++i) {
+        if (!calJoints[step][i]) { 
+          curMotorSteps[i] = REST_MOTOR_STEPS[MODEL][i];
+        }
+      }
+      // added stop
 
-      // MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
-      MoveTo(targetSteps, curMotorSteps); // added
+      MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
 
       for (int i = 0; i < NUM_JOINTS; ++i) {
-        if (calJoints[step][i]) { // added
-          safeRun(stepperJoints[i]);
-        }  // added
+        safeRun(stepperJoints[i]);
       }
     }
   }
@@ -806,8 +775,9 @@ void stateTRAJ() {
         Serial.println(msg);
       } else if (function == "JC") {
         String msg;
-        if (!doCalibrationRoutine(msg)) {
-        // if (!doCalibrationRoutineSequence(msg)) {
+        msg = inData.substring(2, 9); // added
+        // if (!doCalibrationRoutine(msg)) {
+        if (!doCalibrationRoutineSequence(msg)) {
           for (int i = 0; i < NUM_JOINTS; ++i) {
             stepperJoints[i].setSpeed(0);
           }
