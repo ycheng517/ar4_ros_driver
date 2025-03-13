@@ -87,7 +87,15 @@ char JOINT_NAMES[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 
 bool estop_pressed = false;
 
-void estopPressed() { estop_pressed = true; }
+void estopPressed() {
+  // Check ESTOP 3 times to avoid false positives due to electrical noise
+  for (int i = 0; i < 3; i++) {
+    if (digitalRead(ESTOP_PIN) != LOW) {
+      return;  // Not really pressed
+    }
+  }
+  estop_pressed = true;
+}
 
 void resetEstop() {
   // if ESTOP button is pressed still, do not reset the flag!
@@ -619,7 +627,6 @@ bool doCalibrationRoutine(String& outputMsg) {
   }
 
   // restore original max speed
-  //
   for (int i = 0; i < NUM_JOINTS; ++i) {
     stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
                                  MOTOR_STEPS_PER_DEG[MODEL][i]);
@@ -631,8 +638,10 @@ bool doCalibrationRoutine(String& outputMsg) {
   readMotorSteps(curMotorSteps);
   while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
     if (millis() - startTime > 10000) {
-      outputMsg = "ER: Failed to return to original position.";
-      return false;
+      // print warning message
+      Serial.println(
+          "WN: Failed to return to original position post calibration.");
+      break;
     }
 
     readMotorSteps(curMotorSteps);

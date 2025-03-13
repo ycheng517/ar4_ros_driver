@@ -139,7 +139,7 @@ hardware_interface::return_type ARHardwareInterface::write(
     std::string logWarn =
         "Hardware in EStop state. To reset the EStop "
         "reactivate the hardware component using 'ros2 "
-        "run annin_ar4_driver reset_estop.sh'.";
+        "run annin_ar4_driver reset_estop.sh <ar_model>'.";
     RCLCPP_WARN(logger_, logWarn.c_str());
 
     return hardware_interface::return_type::ERROR;
