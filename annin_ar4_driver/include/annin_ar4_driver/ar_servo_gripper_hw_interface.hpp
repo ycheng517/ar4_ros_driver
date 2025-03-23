@@ -46,12 +46,12 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
   double position_command_ = 0.0;
 
   int linear_to_angular_pos(double linear_pos) {
-    return static_cast<int>(asin(-linear_pos / servo_arm_length_) * 180 / M_PI +
+    return static_cast<int>(asin(linear_pos / servo_arm_length_) * 180 / M_PI +
                             zero_deg_offset_);
   };
 
   double angular_to_linear_pos(int angular_pos) {
-    return -servo_arm_length_ *
+    return servo_arm_length_ *
            sin((angular_pos - zero_deg_offset_) * M_PI / 180);
   };
 };
