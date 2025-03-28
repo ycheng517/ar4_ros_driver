@@ -471,17 +471,17 @@ bool moveLimitedAwayFromLimitSwitch(int* calJoints) {
 }
 
 // WORKING ON THIS
-bool doCalibrationRoutineSequence(String& outputMsg) {
-  if (outputMsg.length() != 7) {
+bool doCalibrationRoutineSequence(String& outputMsg, String& inputMsg) {
+  if (inputMsg.length() != 7) {
     outputMsg = "ER: Invalid sequence length.";
     return false;
   }
 
   // define sequence storage
   int calibSeq[7];
-  // convert outputMsg string to int array
+  // convert inputMsg string to int array
   for (int i = 0; i < 7; i++) {
-    calibSeq[i] = outputMsg[i] - '0';
+    calibSeq[i] = inputMsg[i] - '0';
   }
 
   // implement sequence in calJoints
@@ -523,7 +523,6 @@ bool doCalibrationRoutineSequence(String& outputMsg) {
 
   // calibrate joints
   int calSteps[6];
-  // int calSteps[NUM_JOINTS] = {0};
 
   for (int step = 0; step < numGroups; ++step) {
     if (!moveLimitedAwayFromLimitSwitch(calJoints[step])) {
@@ -577,14 +576,11 @@ bool doCalibrationRoutineSequence(String& outputMsg) {
       }
 
       readMotorSteps(curMotorSteps);
-      // added
       for (int i = 0; i < NUM_JOINTS; ++i) {
         if (!calJoints[step][i]) {
           curMotorSteps[i] = REST_MOTOR_STEPS[MODEL][i];
         }
       }
-      // added stop
-
       MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
 
       for (int i = 0; i < NUM_JOINTS; ++i) {
@@ -788,10 +784,10 @@ void stateTRAJ() {
         String msg = String("JV") + JointVelToString(lastVelocity);
         Serial.println(msg);
       } else if (function == "JC") {
-        String msg;
-        msg = inData.substring(2, 9);  // added
+        String msg, inputMsg;
+        inputMsg = inData.substring(2, 9);  // added
         // if (!doCalibrationRoutine(msg)) {
-        if (!doCalibrationRoutineSequence(msg)) {
+        if (!doCalibrationRoutineSequence(msg, inputMsg)) {
           for (int i = 0; i < NUM_JOINTS; ++i) {
             stepperJoints[i].setSpeed(0);
           }
