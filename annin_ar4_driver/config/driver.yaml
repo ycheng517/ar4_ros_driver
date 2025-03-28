@@ -1,1 +1,16 @@
+# Calibration sequence configuration
+# - IMPORTANT: must be exactly 7 characters long: one for the type and six for joint order.
+# - calib_sequence[0] (0-3): Defines the calibration type
+#   - 0 : Calibrate all joints at the same time (standard behaviour)
+#   - 1 : Calibrate joints in the provided order, in two steps of 3
+#   - 2 : Calibrate joints in the provided order, in three steps of 2
+#   - 3 : Calibrate each joint separately in the provided order
+# - calib_sequence[1:6]: Defines the order of joints (values 0-5 correspond to joint_1 - joint_6)
+#   - Example: 'x012345' means first calibrate joint 0, then 1, and so on.
+# - Tested safe sequence combinations:
+#   - Any combination when type is set to '0' or '3'
+#   - type '1' and '2', when the joint order consists of adjacent joints
+#     - Example: '012','345' for type '1'; '01','23','45' for type '2'
+calib_sequence: '0012345'
+
 velocity_control_enabled: true
