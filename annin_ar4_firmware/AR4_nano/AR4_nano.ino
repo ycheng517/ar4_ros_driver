@@ -53,7 +53,6 @@ Servo servo3;
 Servo servo4;
 Servo servo5;
 Servo servo6;
-Servo servo7;
 
 const int Input2 = 2;
 const int Input3 = 3;
@@ -61,6 +60,7 @@ const int Input4 = 4;
 const int Input5 = 5;
 const int Input6 = 6;
 const int Input7 = 7;
+const int CurrentSensorPin = A7;  // Change to use A7 for current sensing
 
 const int Output8 = 8;
 const int Output9 = 9;
@@ -80,7 +80,7 @@ void setup() {
   pinMode(A4, OUTPUT);
   pinMode(A5, OUTPUT);
   pinMode(A6, OUTPUT);
-  pinMode(A7, OUTPUT);
+  pinMode(CurrentSensorPin, INPUT);  // Set current sensor pin as input
 
   pinMode(Input2, INPUT_PULLUP);
   pinMode(Input3, INPUT_PULLUP);
@@ -103,11 +103,19 @@ void setup() {
   servo4.attach(A4);
   servo5.attach(A5);
   servo6.attach(A6);
-  servo7.attach(A7);
 
   // Make servo0 (the servo gripper) go to an arbitrary initial position,
   // otherwise it goes to some unknow position beyond the acceptable range
   servo0.write(30);
+}
+
+float readCurrent() {
+  int sensorValue = analogRead(CurrentSensorPin);
+  // Convert analog reading to current
+  // For ACS712 5A version: sensitivity is 185mV/A
+  float voltage = sensorValue * (5.0 / 1024.0);
+  float current = (voltage - 2.5) / 0.185;  // 2.5V is the offset at 0A
+  return current;
 }
 
 void loop() {
@@ -150,9 +158,6 @@ void loop() {
         if (servoNum == 6) {
           servo6.write(servoPOS);
         }
-        if (servoNum == 7) {
-          servo7.write(servoPOS);
-        }
         Serial.println("Done");
       }
 
@@ -180,9 +185,6 @@ void loop() {
         }
         if (servoNum == 6) {
           Serial.println(servo6.read());
-        }
-        if (servoNum == 7) {
-          Serial.println(servo7.read());
         }
       }
 
@@ -234,6 +236,13 @@ void loop() {
         }
         Serial.println("Done");
       }
+
+      //-----COMMAND TO READ CURRENT SENSOR-----
+      if (function == "CR") {
+        float current = readCurrent();
+        Serial.println(current);
+      }
+
       //-----COMMAND ECHO TEST MESSAGE-----
       if (function == "TM") {
         String echo = inData.substring(2);
