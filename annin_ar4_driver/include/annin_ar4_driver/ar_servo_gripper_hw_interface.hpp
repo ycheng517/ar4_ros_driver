@@ -4,6 +4,7 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <chrono>
+#include <deque>
 #include <hardware_interface/system_interface.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <thread>
@@ -49,13 +50,20 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
   // Current monitoring
   double max_current_threshold_ = 2.0;  // Amps - adjust based on servo specs
   bool overheating_ = false;
-  bool high_current_detected_ = false;
-  rclcpp::Time high_current_start_time_;
-  double high_current_debounce_time_ = 2.0;  // seconds to confirm overheating
+  double current_tracking_window_ = 2.0;  // seconds window for monitoring
+
+  // Current monitoring with sliding window
+  struct CurrentSample {
+    rclcpp::Time timestamp;
+    bool is_high_current;
+  };
+  std::deque<CurrentSample> current_samples_;
+  double high_current_percentage_threshold_ = 0.75;
 
   // Adaptive current limiting
-  double adapt_position_step_ = 0.0005;  // Step size for gradual movement
+  double adapt_position_step_ = 0.0001;  // Step size for gradual movement
   double curr_adapt_amount_ = 0.0;       // Amount to adapt position
+  double overheating_cmd_pos_ = 0.0;     // Commanded position when overheating
 
   int linear_pos_to_servo_angle(double linear_pos) {
     double normalized_pos =
