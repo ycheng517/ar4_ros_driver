@@ -416,7 +416,7 @@ bool moveToLimitSwitches(int* calJoints) {
       return false;
     }
   }
-  delay(2000);
+  delay(1000);
   return true;
 }
 
@@ -458,16 +458,86 @@ bool moveLimitedAwayFromLimitSwitch(int* calJoints) {
   // move the ones that already hit a limit away from it before start of
   // calibration
   int limitedJoints[NUM_JOINTS] = {0};
+  bool hasLimitedJoints = false;
   updateAllLimitSwitches();
   for (int i = 0; i < NUM_JOINTS; i++) {
     limitedJoints[i] = (calJoints[i] && limitSwitches[i].isPressed());
+    hasLimitedJoints = hasLimitedJoints || limitedJoints[i];
   }
-  return moveAwayFromLimitSwitch(limitedJoints);
+  if (hasLimitedJoints) {
+    return moveAwayFromLimitSwitch(limitedJoints);
+  }
+  return true;
 }
 
-bool doCalibrationRoutine(String& outputMsg) {
-  // calibrate all joints
-  int calJoints[] = {1, 1, 1, 1, 1, 1};
+bool doCalibrationRoutineSequence(String& outputMsg, String& inputMsg) {
+  if (inputMsg.length() != 7) {
+    outputMsg = "ER: Invalid sequence length.";
+    return false;
+  }
+
+  // define sequence storage
+  int calibSeq[7];
+  // convert inputMsg string to int array
+  for (int i = 0; i < 7; i++) {
+    calibSeq[i] = inputMsg[i] - '0';
+  }
+
+  // implement sequence in calJoints
+  int calJoints[6][NUM_JOINTS] = {0};
+  int numGroups = 0;
+
+  switch (calibSeq[0]) {
+    case 0:
+      numGroups = 1;
+      for (int i = 0; i < NUM_JOINTS; i++) {
+        calJoints[0][calibSeq[i + 1]] = 1;
+      }
+      break;
+    case 1:
+      numGroups = 2;
+      for (int i = 0; i < NUM_JOINTS - 3; i++) {
+        calJoints[0][calibSeq[i + 1]] = 1;
+        calJoints[1][calibSeq[i + 4]] = 1;
+      }
+      break;
+    case 2:
+      numGroups = 3;
+      for (int i = 0; i < NUM_JOINTS - 4; i++) {
+        calJoints[0][calibSeq[i + 1]] = 1;
+        calJoints[1][calibSeq[i + 3]] = 1;
+        calJoints[2][calibSeq[i + 5]] = 1;
+      }
+      break;
+    case 3:
+      numGroups = NUM_JOINTS;
+      for (int i = 0; i < NUM_JOINTS; i++) {
+        calJoints[i][calibSeq[i + 1]] = 1;
+      }
+      break;
+    default:
+      outputMsg = "ER: Invalid calibration sequence.";
+      return false;  // Early exit if an invalid value is detected
+  }
+
+  // calibrate joints
+  int calSteps[6];
+  for (int step = 0; step < numGroups; ++step) {
+    if (!doCalibrationRoutine(outputMsg, calJoints[step], calSteps)) {
+      return false;
+    }
+  }
+
+  // calibration done, send calibration values
+  // N.B. calibration values aren't used right now
+  outputMsg = String("JC") + "A" + calSteps[0] + "B" + calSteps[1] + "C" +
+              calSteps[2] + "D" + calSteps[3] + "E" + calSteps[4] + "F" +
+              calSteps[5];
+  return true;
+}
+
+bool doCalibrationRoutine(String& outputMsg, int calJoints[NUM_JOINTS],
+                          int calSteps[]) {
   if (!moveLimitedAwayFromLimitSwitch(calJoints)) {
     outputMsg = "ER: Failed to move away from limit switches at the start.";
     return false;
@@ -479,12 +549,15 @@ bool doCalibrationRoutine(String& outputMsg) {
   }
 
   // record encoder steps
-  int calSteps[6];
   for (int i = 0; i < NUM_JOINTS; ++i) {
-    calSteps[i] = encPos[i].read();
+    if (calJoints[i]) {
+      calSteps[i] = encPos[i].read();
+    }
   }
   for (int i = 0; i < NUM_JOINTS; ++i) {
-    encPos[i].write(ENC_RANGE_STEPS[i] * ENC_MAX_AT_ANGLE_MIN[i]);
+    if (calJoints[i]) {
+      encPos[i].write(ENC_RANGE_STEPS[i] * ENC_MAX_AT_ANGLE_MIN[i]);
+    }
   }
 
   // move away from the limit switches a bit so that if the next command
@@ -505,26 +578,28 @@ bool doCalibrationRoutine(String& outputMsg) {
   unsigned long startTime = millis();
   int curMotorSteps[NUM_JOINTS];
   readMotorSteps(curMotorSteps);
+
   while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
-    if (millis() - startTime > 10000) {
-      // print warning message
+    if (millis() - startTime > 12000) {
+      // Note: this occasionally happens but doesn't affect calibration result
       Serial.println(
           "WN: Failed to return to original position post calibration.");
       break;
     }
 
     readMotorSteps(curMotorSteps);
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      if (!calJoints[i]) {
+        curMotorSteps[i] = REST_MOTOR_STEPS[MODEL][i];
+      }
+    }
     MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
+
     for (int i = 0; i < NUM_JOINTS; ++i) {
       safeRun(stepperJoints[i]);
     }
   }
 
-  // calibration done, send calibration values
-  // N.B. calibration values aren't used right now
-  outputMsg = String("JC") + "A" + calSteps[0] + "B" + calSteps[1] + "C" +
-              calSteps[2] + "D" + calSteps[3] + "E" + calSteps[4] + "F" +
-              calSteps[5];
   return true;
 }
 
@@ -652,8 +727,9 @@ void stateTRAJ() {
         String msg = String("JV") + JointVelToString(lastVelocity);
         Serial.println(msg);
       } else if (function == "JC") {
-        String msg;
-        if (!doCalibrationRoutine(msg)) {
+        String msg, inputMsg;
+        inputMsg = inData.substring(2, 9);
+        if (!doCalibrationRoutineSequence(msg, inputMsg)) {
           for (int i = 0; i < NUM_JOINTS; ++i) {
             stepperJoints[i].setSpeed(0);
           }
