@@ -522,9 +522,8 @@ bool doCalibrationRoutineSequence(String& outputMsg, String& inputMsg) {
 
   // calibrate joints
   int calSteps[6];
-
   for (int step = 0; step < numGroups; ++step) {
-    if(!doCalibrationRoutine(outputMsg, calJoints, step, calSteps)) {
+    if (!doCalibrationRoutine(outputMsg, calJoints[step], calSteps)) {
       return false;
     }
   }
@@ -537,26 +536,26 @@ bool doCalibrationRoutineSequence(String& outputMsg, String& inputMsg) {
   return true;
 }
 
-bool doCalibrationRoutine(String& outputMsg, int calJoints[][NUM_JOINTS], int step, int calSteps[]) {
-
-  if (!moveLimitedAwayFromLimitSwitch(calJoints[step])) {
+bool doCalibrationRoutine(String& outputMsg, int calJoints[NUM_JOINTS],
+                          int calSteps[]) {
+  if (!moveLimitedAwayFromLimitSwitch(calJoints)) {
     outputMsg = "ER: Failed to move away from limit switches at the start.";
     return false;
   }
 
-  if (!moveToLimitSwitches(calJoints[step])) {
+  if (!moveToLimitSwitches(calJoints)) {
     outputMsg = "ER: Failed to move to limit switches.";
     return false;
   }
 
   // record encoder steps
   for (int i = 0; i < NUM_JOINTS; ++i) {
-    if (calJoints[step][i]) {
+    if (calJoints[i]) {
       calSteps[i] = encPos[i].read();
     }
   }
   for (int i = 0; i < NUM_JOINTS; ++i) {
-    if (calJoints[step][i]) {
+    if (calJoints[i]) {
       encPos[i].write(ENC_RANGE_STEPS[i] * ENC_MAX_AT_ANGLE_MIN[i]);
     }
   }
@@ -564,7 +563,7 @@ bool doCalibrationRoutine(String& outputMsg, int calJoints[][NUM_JOINTS], int st
   // move away from the limit switches a bit so that if the next command
   // is in the wrong direction, the limit switches will not be run over
   // immediately and become damaged.
-  if (!moveAwayFromLimitSwitch(calJoints[step])) {
+  if (!moveAwayFromLimitSwitch(calJoints)) {
     outputMsg = "ER: Failed to move away from limit switches.";
     return false;
   }
@@ -582,8 +581,7 @@ bool doCalibrationRoutine(String& outputMsg, int calJoints[][NUM_JOINTS], int st
 
   while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
     if (millis() - startTime > 12000) {
-      // outputMsg = "ER: Failed to return to original position.";
-      // return false;
+      // Note: this occasionally happens but doesn't affect calibration result
       Serial.println(
           "WN: Failed to return to original position post calibration.");
       break;
@@ -591,7 +589,7 @@ bool doCalibrationRoutine(String& outputMsg, int calJoints[][NUM_JOINTS], int st
 
     readMotorSteps(curMotorSteps);
     for (int i = 0; i < NUM_JOINTS; ++i) {
-      if (!calJoints[step][i]) {
+      if (!calJoints[i]) {
         curMotorSteps[i] = REST_MOTOR_STEPS[MODEL][i];
       }
     }
