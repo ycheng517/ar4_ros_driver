@@ -77,7 +77,7 @@
       <parent link="${tf_prefix}gripper_base_link"/>
       <child link="${tf_prefix}gripper_jaw1_link"/>
       <axis xyz="-1 0 0"/>
-      <limit lower="0" upper="0.014" effort="-1" velocity="1.0"/>
+      <limit lower="0" upper="1" effort="-1" velocity="1.0"/>
     </joint>
 
     <joint name="${tf_prefix}gripper_jaw2_joint" type="prismatic">
@@ -85,7 +85,7 @@
       <parent link="${tf_prefix}gripper_base_link"/>
       <child link="${tf_prefix}gripper_jaw2_link"/>
       <axis xyz="-1 0 0"/>
-      <limit lower="0" upper="0.014" effort="1000" velocity="1.0"/>
+      <limit lower="0" upper="1" effort="1000" velocity="1.0"/>
       <mimic joint="${tf_prefix}gripper_jaw1_joint" multiplier="1" offset="0"/>
     </joint>
 

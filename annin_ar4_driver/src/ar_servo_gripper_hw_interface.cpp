@@ -55,7 +55,7 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_activate(
   if (!success) {
     return hardware_interface::CallbackReturn::ERROR;
   }
-  position_ = angular_to_linear_pos(pos_deg);
+  position_ = servo_angle_to_normalized_pos(pos_deg);
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -93,7 +93,7 @@ hardware_interface::return_type ARServoGripperHWInterface::read(
     RCLCPP_ERROR(logger_, "Failed to read position from servo");
     return hardware_interface::return_type::ERROR;
   }
-  position_ = angular_to_linear_pos(pos_deg);
+  position_ = servo_angle_to_normalized_pos(pos_deg);
 
   // Read current from the driver
   success = driver_.getCurrent(current_);
@@ -149,7 +149,7 @@ hardware_interface::return_type ARServoGripperHWInterface::write(
                          position_command, current_);
   }
 
-  int pos_deg = linear_to_angular_pos(position_command);
+  int pos_deg = normalized_pos_to_servo_angle(position_command);
   std::string logInfo = "Gripper Cmd: " + std::to_string(position_command);
   RCLCPP_INFO_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   bool success = driver_.writePosition(pos_deg);
