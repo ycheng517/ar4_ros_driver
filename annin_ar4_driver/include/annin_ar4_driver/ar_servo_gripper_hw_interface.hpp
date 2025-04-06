@@ -57,15 +57,21 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
   double adapt_position_step_ = 0.0005;  // Step size for gradual movement
   double curr_adapt_amount_ = 0.0;       // Amount to adapt position
 
-  int normalized_pos_to_servo_angle(double normalized_pos) {
+  int linear_pos_to_servo_angle(double linear_pos) {
+    double normalized_pos =
+        (linear_pos - closed_position_) /
+        static_cast<double>(open_position_ - closed_position_);
     return static_cast<int>(min_servo_angle_ +
                             normalized_pos *
                                 (max_servo_angle_ - min_servo_angle_));
   };
 
-  double servo_angle_to_normalized_pos(int angular_pos) {
-    return (angular_pos - min_servo_angle_) /
-           static_cast<double>(max_servo_angle_ - min_servo_angle_);
+  double servo_angle_to_linear_pos(int angular_pos) {
+    double normalized_pos =
+        (angular_pos - min_servo_angle_) /
+        static_cast<double>(max_servo_angle_ - min_servo_angle_);
+    return normalized_pos * (open_position_ - closed_position_) +
+           closed_position_;
   };
 
   double adaptGripperPosition(double position_command);
