@@ -34,7 +34,14 @@ hardware_interface::CallbackReturn ARHardwareInterface::on_init(
   if (calibrate) {
     // run calibration
     RCLCPP_INFO(logger_, "Running joint calibration...");
-    if (!driver_.calibrateJoints()) {
+    std::string calib_sequence = info_.hardware_parameters.at("calib_sequence");
+    if (calib_sequence.length() != 7) {
+      RCLCPP_ERROR(logger_, "Invalid calib_sequence length: %zu. Expected: 7",
+                   calib_sequence.length());
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    if (!driver_.calibrateJoints(calib_sequence)) {
       RCLCPP_INFO(logger_, "calibration failed.");
       return hardware_interface::CallbackReturn::ERROR;
     }
