@@ -108,16 +108,15 @@ void setup() {
   // Make servo0 (the servo gripper) go to an arbitrary initial position,
   // otherwise it goes to some unknow position beyond the acceptable range
   servo0.write(30);
-  
 }
 
 void loop() {
   // start loop
   while (Serial.available() > 0) {
-    char recieved = Serial.read();
-    inData += recieved;
-    // Process message when new line character is recieved
-    if (recieved == '\n') {
+    char received = Serial.read();
+    inData += received;
+    // Process message when new line character is received
+    if (received == '\n') {
       String function = inData.substring(0, 2);
 
       if (function == "ST") {
