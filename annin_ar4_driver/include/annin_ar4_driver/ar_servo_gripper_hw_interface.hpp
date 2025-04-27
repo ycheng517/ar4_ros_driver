@@ -4,12 +4,13 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <chrono>
-#include <deque>
 #include <hardware_interface/system_interface.hpp>
+#include <memory>
 #include <rclcpp/rclcpp.hpp>
 #include <thread>
 
 #include "annin_ar4_driver/arduino_nano_driver.hpp"
+#include "annin_ar4_driver/gripper_thermal_protection.hpp"
 
 using namespace hardware_interface;
 
@@ -47,23 +48,9 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
   double current_ = 0.0;
   double position_command_ = 0.0;
 
-  // Current monitoring
-  double max_current_threshold_ = 2.0;  // Amps - adjust based on servo specs
-  bool overheating_ = false;
-  double current_tracking_window_ = 2.0;  // seconds window for monitoring
-
-  // Current monitoring with sliding window
-  struct CurrentSample {
-    rclcpp::Time timestamp;
-    bool is_high_current;
-  };
-  std::deque<CurrentSample> current_samples_;
-  double high_current_percentage_threshold_ = 0.75;
-
-  // Adaptive current limiting
-  double adapt_position_step_ = 0.0001;  // Step size for gradual movement
-  double curr_adapt_amount_ = 0.0;       // Amount to adapt position
-  double overheating_cmd_pos_ = 0.0;     // Commanded position when overheating
+  // Thermal protection (optional)
+  std::unique_ptr<GripperThermalProtection> thermal_protection_;
+  bool use_thermal_protection_ = true;
 
   int linear_pos_to_servo_angle(double linear_pos) {
     double normalized_pos =
@@ -81,8 +68,6 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
     return normalized_pos * (open_position_ - closed_position_) +
            closed_position_;
   };
-
-  double adaptGripperPosition(double position_command);
 };
 
 }  // namespace annin_ar4_driver
