@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <annin_ar4_driver/ar_servo_gripper_hw_interface.hpp>
 #include <sstream>
+#include "annin_ar4_driver/gripper_over_current_protection.hpp"
 
 namespace annin_ar4_driver {
 
@@ -37,19 +38,17 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
 
   // Configure thermal protection (if enabled)
   if (info_.hardware_parameters.count("use_thermal_protection") > 0) {
-    use_thermal_protection_ =
+    use_overcurrent_protection_ =
         (info_.hardware_parameters.at("use_thermal_protection") == "true");
   }
 
-  if (use_thermal_protection_) {
-    RCLCPP_INFO(logger_, "Thermal protection enabled for gripper");
-    thermal_protection_ =
-        std::make_unique<GripperThermalProtection>(logger_, clock_);
+  if (use_overcurrent_protection_) {
+    RCLCPP_INFO(logger_, "Overcurrent protection enabled for gripper");
+    overcurrent_protection_ =
+        std::make_unique<GripperOverCurrentProtection>(logger_, clock_);
 
     // Configure directly from hardware parameters
-    thermal_protection_->configureFromParams(info_.hardware_parameters);
-  } else {
-    RCLCPP_INFO(logger_, "Thermal protection disabled for gripper");
+    overcurrent_protection_->configureFromParams(info_.hardware_parameters);
   }
 
   std::string serial_port = info_.hardware_parameters.at("serial_port");
@@ -123,9 +122,9 @@ hardware_interface::return_type ARServoGripperHWInterface::read(
                         ", Current: " + std::to_string(current_);
   RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
 
-  // Process current sample for thermal protection if enabled
-  if (use_thermal_protection_ && thermal_protection_) {
-    thermal_protection_->addCurrentSample(time, current_);
+  // Process current sample for overcurrent protection if enabled
+  if (use_overcurrent_protection_ && overcurrent_protection_) {
+    overcurrent_protection_->addCurrentSample(time, current_);
   }
 
   return hardware_interface::return_type::OK;
@@ -135,10 +134,9 @@ hardware_interface::return_type ARServoGripperHWInterface::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   double position_command = position_command_;
 
-  // Apply thermal protection if enabled
-  if (use_thermal_protection_ && thermal_protection_) {
-    position_command = thermal_protection_->adaptGripperPosition(
-        position_command, closed_position_, open_position_);
+  // Apply overcurrent protection if enabled
+  if (use_overcurrent_protection_ && overcurrent_protection_) {
+    position_command = overcurrent_protection_->adaptGripperPosition(position_command, closed_position_, open_position_);
   }
 
   int pos_deg = linear_pos_to_servo_angle(position_command);

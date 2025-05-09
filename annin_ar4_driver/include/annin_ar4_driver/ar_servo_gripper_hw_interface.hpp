@@ -10,7 +10,7 @@
 #include <thread>
 
 #include "annin_ar4_driver/arduino_nano_driver.hpp"
-#include "annin_ar4_driver/gripper_thermal_protection.hpp"
+#include "annin_ar4_driver/gripper_over_current_protection.hpp"
 
 using namespace hardware_interface;
 
@@ -48,9 +48,9 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
   double current_ = 0.0;
   double position_command_ = 0.0;
 
-  // Thermal protection (optional)
-  std::unique_ptr<GripperThermalProtection> thermal_protection_;
-  bool use_thermal_protection_ = true;
+  // Overcurrent protection (optional)
+  std::unique_ptr<GripperOverCurrentProtection> overcurrent_protection_;
+  bool use_overcurrent_protection_ = true;
 
   int linear_pos_to_servo_angle(double linear_pos) {
     double normalized_pos =

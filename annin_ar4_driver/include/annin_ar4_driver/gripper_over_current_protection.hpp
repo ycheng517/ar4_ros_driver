@@ -7,9 +7,9 @@
 
 namespace annin_ar4_driver {
 
-class GripperThermalProtection {
+class GripperOverCurrentProtection {
  public:
-  GripperThermalProtection(const rclcpp::Logger& logger,
+  GripperOverCurrentProtection(const rclcpp::Logger& logger,
                            const rclcpp::Clock& clock);
 
   // New method to configure from hardware parameters
@@ -30,7 +30,7 @@ class GripperThermalProtection {
   };
 
   std::deque<CurrentSample> current_samples_;
-  bool overheating_ = false;
+  bool overcurrent_ = false;
   double current_tracking_window_ = 2.0;  // seconds window for monitoring
   double max_current_threshold_ = 2.0;    // Amps
   double high_current_percentage_threshold_ = 0.75;
@@ -38,7 +38,7 @@ class GripperThermalProtection {
   // Adaptive current limiting
   double adapt_position_step_ = 0.0001;  // Step size for gradual movement
   double curr_adapt_amount_ = 0.0;       // Amount to adapt position
-  double overheating_cmd_pos_ = 0.0;     // Commanded position when overheating
+  double overcurrent_cmd_pos_ = 0.0;     // Commanded position when overcurrent
 
   // Current monitoring state
   double current_ = 0.0;
