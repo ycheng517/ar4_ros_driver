@@ -1,14 +1,14 @@
-#include "annin_ar4_driver/gripper_thermal_protection.hpp"
+#include "annin_ar4_driver/gripper_over_current_protection.hpp"
 
 #include <algorithm>
 
 namespace annin_ar4_driver {
 
-GripperThermalProtection::GripperThermalProtection(const rclcpp::Logger& logger,
+GripperOverCurrentProtection::GripperOverCurrentProtection(const rclcpp::Logger& logger,
                                                    const rclcpp::Clock& clock)
     : logger_(logger), clock_(clock) {}
 
-void GripperThermalProtection::configureFromParams(
+void GripperOverCurrentProtection::configureFromParams(
     const std::unordered_map<std::string, std::string>& hardware_params) {
   // Set default values
 
@@ -63,7 +63,7 @@ void GripperThermalProtection::configureFromParams(
   }
 }
 
-void GripperThermalProtection::addCurrentSample(const rclcpp::Time& time,
+void GripperOverCurrentProtection::addCurrentSample(const rclcpp::Time& time,
                                                 double current) {
   if (!enabled_) {
     return;
@@ -100,19 +100,18 @@ void GripperThermalProtection::addCurrentSample(const rclcpp::Time& time,
 
   // Check if high current percentage exceeds threshold
   if (high_current_percentage > high_current_percentage_threshold_) {
-    if (!overheating_) {
+    if (!overcurrent_) {
       RCLCPP_WARN(logger_,
                   "Servo current exceeded threshold for %.1f%% of time in "
                   "%.1f second window",
                   high_current_percentage * 100.0, current_tracking_window_);
-      overheating_ = true;
+      overcurrent_ = true;
       curr_adapt_amount_ = 0.0;
-      overheating_cmd_pos_ =
-          overheating_cmd_pos_;  // Will be set by adaptGripperPosition
+      overcurrent_cmd_pos_ = overcurrent_cmd_pos_;  // Will be set by adaptGripperPosition
     }
   }
-  // If current levels are normalized, reset overheating flag
-  else if (overheating_ && high_current_percentage <=
+  // If current levels are normalized, reset overcurrent flag
+  else if (overcurrent_ && high_current_percentage <=
                                high_current_percentage_threshold_ * 0.8) {
     RCLCPP_INFO(
         logger_,
@@ -122,21 +121,21 @@ void GripperThermalProtection::addCurrentSample(const rclcpp::Time& time,
   }
 }
 
-double GripperThermalProtection::adaptGripperPosition(double position_command,
+double GripperOverCurrentProtection::adaptGripperPosition(double position_command,
                                                       double min_position,
                                                       double max_position) {
   if (!enabled_) {
     return position_command;
   }
 
-  if (overheating_) {
+  if (overcurrent_) {
     curr_adapt_amount_ += adapt_position_step_;
     overheating_cmd_pos_ = position_command;
   }
 
   double new_pos = position_command;
-  if (overheating_ || position_command <= overheating_cmd_pos_) {
-    new_pos = overheating_cmd_pos_ + curr_adapt_amount_;
+  if (overcurrent_ || position_command <= overcurrent_cmd_pos_) {
+    new_pos = overcurrent_cmd_pos_ + curr_adapt_amount_;
 
     // Clamp new position to joint limits
     new_pos = std::clamp(new_pos, min_position, max_position);
