@@ -8,12 +8,8 @@ GripperOverCurrentProtection::GripperOverCurrentProtection(const rclcpp::Logger&
                                                    const rclcpp::Clock& clock)
     : logger_(logger), clock_(clock) {}
 
-void GripperOverCurrentProtection::addCurrentSample(const rclcpp::Time& time,
+void GripperOverCurrentProtection::AddCurrentSample(const rclcpp::Time& time,
                                                 double current) {
-  if (!enabled_) {
-    return;
-  }
-
   current_ = current;
 
   // Add the current sample to the sliding window
@@ -39,40 +35,38 @@ void GripperOverCurrentProtection::addCurrentSample(const rclcpp::Time& time,
       high_current_count++;
     }
   }
-
   double high_current_percentage =
       static_cast<double>(high_current_count) / current_samples_.size();
 
   // Check if high current percentage exceeds threshold
   if (high_current_percentage > high_current_percentage_threshold_) {
     if (!overcurrent_) {
-      RCLCPP_WARN(logger_,
-                  "Servo current exceeded threshold for %.1f%% of time in "
-                  "%.1f second window",
-                  high_current_percentage * 100.0, current_tracking_window_);
-      overcurrent_ = true;
       curr_adapt_amount_ = 0.0;
-      overcurrent_cmd_pos_ = overcurrent_cmd_pos_;  // Will be set by adaptGripperPosition
+      overcurrent_ = true;
     }
   }
-  // If current levels are normalized, reset overcurrent flag
-  else if (overcurrent_ && high_current_percentage <=
-                               high_current_percentage_threshold_ * 0.8) {
-    RCLCPP_INFO(
-        logger_,
-        "Current levels normalized: %.1f%% of measurements below threshold",
-        high_current_percentage * 100.0);
-    overcurrent_ = false;
+
+  if (overcurrent_) {
+    // If current levels are normalized, reset overcurrent flag
+    if (high_current_percentage <=
+      high_current_percentage_threshold_ * 0.8) {
+        RCLCPP_INFO(
+            logger_,
+            "Current levels normalized: %.1f%% of measurements below threshold",
+            high_current_percentage * 100.0);
+        overcurrent_ = false;
+    } else {
+      RCLCPP_WARN_THROTTLE(logger_, clock_, 1000,
+        "Gripper current (%.3f A) exceeded %f A for %.1f%% of time in "
+        "the last %.1f seconds",
+        current_, max_current_threshold_, high_current_percentage * 100.0, current_tracking_window_);
+    }
   }
 }
 
-double GripperOverCurrentProtection::adaptGripperPosition(double position_command,
+double GripperOverCurrentProtection::AdaptGripperPosition(double position_command,
                                                       double min_position,
                                                       double max_position) {
-  if (!enabled_) {
-    return position_command;
-  }
-
   if (overcurrent_) {
     curr_adapt_amount_ += overcurrent_position_increment_;
     overcurrent_cmd_pos_ = position_command;
@@ -87,9 +81,9 @@ double GripperOverCurrentProtection::adaptGripperPosition(double position_comman
   }
 
   if (new_pos != position_command) {
-    RCLCPP_WARN_THROTTLE(logger_, clock_, 500,
+    RCLCPP_WARN_THROTTLE(logger_, clock_, 1000,
                          "Adapted gripper position from %.4f to %.4f to reduce "
-                         "current (%.3f A)",
+                         "current (now %.3f A)",
                          position_command, new_pos, current_);
   }
   return new_pos;

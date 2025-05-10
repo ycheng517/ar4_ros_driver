@@ -12,11 +12,9 @@ class GripperOverCurrentProtection {
   GripperOverCurrentProtection(const rclcpp::Logger& logger,
                            const rclcpp::Clock& clock);
 
-  void addCurrentSample(const rclcpp::Time& time, double current);
-  double adaptGripperPosition(double position_command, double min_position,
+  void AddCurrentSample(const rclcpp::Time& time, double current);
+  double AdaptGripperPosition(double position_command, double min_position,
                               double max_position);
-  bool isEnabled() const { return enabled_; }
-  void setEnabled(bool enabled) { enabled_ = enabled; }
 
  private:
   // Current monitoring
@@ -38,7 +36,6 @@ class GripperOverCurrentProtection {
 
   // Current monitoring state
   double current_ = 0.0;
-  bool enabled_ = true;
 
   // Logging
   rclcpp::Logger logger_;
