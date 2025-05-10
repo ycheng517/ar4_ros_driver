@@ -44,6 +44,30 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
         std::make_unique<GripperOverCurrentProtection>(logger_, clock_);
   }
 
+  // Load servo angle parameters
+  if (info_.hardware_parameters.count("closed_servo_angle") > 0) {
+    closed_servo_angle_ = std::stoi(info_.hardware_parameters.at("closed_servo_angle"));
+    RCLCPP_INFO(logger_, "Loaded closed_servo_angle: %d", closed_servo_angle_);
+  } else {
+    RCLCPP_ERROR(logger_, "Required parameter 'closed_servo_angle' not found");
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
+  if (info_.hardware_parameters.count("open_servo_angle") > 0) {
+    open_servo_angle_ = std::stoi(info_.hardware_parameters.at("open_servo_angle"));
+    RCLCPP_INFO(logger_, "Loaded open_servo_angle: %d", open_servo_angle_);
+  } else {
+    RCLCPP_ERROR(logger_, "Required parameter 'open_servo_angle' not found");
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
+  // Validate servo angle range
+  if (closed_servo_angle_ >= open_servo_angle_) {
+    RCLCPP_ERROR(logger_, "Invalid servo angle range: min (%d) must be less than max (%d)",
+                 closed_servo_angle_, open_servo_angle_);
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
   std::string serial_port = info_.hardware_parameters.at("serial_port");
   int baud_rate = 9600;
   bool success = driver_.init(serial_port, baud_rate);
