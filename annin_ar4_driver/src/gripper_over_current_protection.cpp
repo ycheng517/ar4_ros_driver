@@ -62,7 +62,7 @@ void GripperOverCurrentProtection::addCurrentSample(const rclcpp::Time& time,
         logger_,
         "Current levels normalized: %.1f%% of measurements below threshold",
         high_current_percentage * 100.0);
-    overheating_ = false;
+    overcurrent_ = false;
   }
 }
 
@@ -75,7 +75,7 @@ double GripperOverCurrentProtection::adaptGripperPosition(double position_comman
 
   if (overcurrent_) {
     curr_adapt_amount_ += overcurrent_position_increment_;
-    overheating_cmd_pos_ = position_command;
+    overcurrent_cmd_pos_ = position_command;
   }
 
   double new_pos = position_command;
