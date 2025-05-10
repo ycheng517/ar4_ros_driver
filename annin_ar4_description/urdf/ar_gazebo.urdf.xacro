@@ -37,6 +37,7 @@
     name="ARGripperGazeboSystem"
     plugin_name="gz_ros2_control/GazeboSimSystem"
     serial_port="None"
+    driver_parameters_file="$(find annin_ar4_driver)/config/gripper_driver.yaml"
     tf_prefix="$(arg tf_prefix)"
   />
 

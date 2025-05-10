@@ -8,61 +8,6 @@ GripperOverCurrentProtection::GripperOverCurrentProtection(const rclcpp::Logger&
                                                    const rclcpp::Clock& clock)
     : logger_(logger), clock_(clock) {}
 
-void GripperOverCurrentProtection::configureFromParams(
-    const std::unordered_map<std::string, std::string>& hardware_params) {
-  // Set default values
-
-  // Override defaults with parameters if provided
-  if (hardware_params.count("max_current_threshold") > 0) {
-    try {
-      max_current_threshold_ =
-          std::stod(hardware_params.at("max_current_threshold"));
-      RCLCPP_INFO(logger_, "Using max_current_threshold: %.2f A",
-                  max_current_threshold_);
-    } catch (const std::exception& e) {
-      RCLCPP_WARN(logger_, "Invalid max_current_threshold parameter: %s",
-                  e.what());
-    }
-  }
-
-  if (hardware_params.count("high_current_percentage_threshold") > 0) {
-    try {
-      high_current_percentage_threshold_ =
-          std::stod(hardware_params.at("high_current_percentage_threshold"));
-      RCLCPP_INFO(logger_, "Using high_current_percentage_threshold: %.2f",
-                  high_current_percentage_threshold_);
-    } catch (const std::exception& e) {
-      RCLCPP_WARN(logger_,
-                  "Invalid high_current_percentage_threshold parameter: %s",
-                  e.what());
-    }
-  }
-
-  if (hardware_params.count("current_tracking_window") > 0) {
-    try {
-      current_tracking_window_ =
-          std::stod(hardware_params.at("current_tracking_window"));
-      RCLCPP_INFO(logger_, "Using current_tracking_window: %.2f seconds",
-                  current_tracking_window_);
-    } catch (const std::exception& e) {
-      RCLCPP_WARN(logger_, "Invalid current_tracking_window parameter: %s",
-                  e.what());
-    }
-  }
-
-  if (hardware_params.count("adapt_position_step") > 0) {
-    try {
-      adapt_position_step_ =
-          std::stod(hardware_params.at("adapt_position_step"));
-      RCLCPP_INFO(logger_, "Using adapt_position_step: %.6f",
-                  adapt_position_step_);
-    } catch (const std::exception& e) {
-      RCLCPP_WARN(logger_, "Invalid adapt_position_step parameter: %s",
-                  e.what());
-    }
-  }
-}
-
 void GripperOverCurrentProtection::addCurrentSample(const rclcpp::Time& time,
                                                 double current) {
   if (!enabled_) {
@@ -129,7 +74,7 @@ double GripperOverCurrentProtection::adaptGripperPosition(double position_comman
   }
 
   if (overcurrent_) {
-    curr_adapt_amount_ += adapt_position_step_;
+    curr_adapt_amount_ += overcurrent_position_increment_;
     overheating_cmd_pos_ = position_command;
   }
 

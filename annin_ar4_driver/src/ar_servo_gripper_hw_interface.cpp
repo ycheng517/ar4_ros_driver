@@ -36,19 +36,12 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  // Configure thermal protection (if enabled)
-  if (info_.hardware_parameters.count("use_thermal_protection") > 0) {
-    use_overcurrent_protection_ =
-        (info_.hardware_parameters.at("use_thermal_protection") == "true");
-  }
-
-  if (use_overcurrent_protection_) {
+  // Configure overcurrent protection (if enabled)
+  if (info_.hardware_parameters.count("use_overcurrent_protection") > 0 &&
+      info_.hardware_parameters.at("use_overcurrent_protection") == "true") {
     RCLCPP_INFO(logger_, "Overcurrent protection enabled for gripper");
     overcurrent_protection_ =
         std::make_unique<GripperOverCurrentProtection>(logger_, clock_);
-
-    // Configure directly from hardware parameters
-    overcurrent_protection_->configureFromParams(info_.hardware_parameters);
   }
 
   std::string serial_port = info_.hardware_parameters.at("serial_port");
@@ -122,8 +115,8 @@ hardware_interface::return_type ARServoGripperHWInterface::read(
                         ", Current: " + std::to_string(current_);
   RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
 
-  // Process current sample for overcurrent protection if enabled
-  if (use_overcurrent_protection_ && overcurrent_protection_) {
+  // Process current sample for overcurrent protection
+  if (overcurrent_protection_) {
     overcurrent_protection_->addCurrentSample(time, current_);
   }
 
@@ -134,8 +127,8 @@ hardware_interface::return_type ARServoGripperHWInterface::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   double position_command = position_command_;
 
-  // Apply overcurrent protection if enabled
-  if (use_overcurrent_protection_ && overcurrent_protection_) {
+  // Apply overcurrent protection
+  if (overcurrent_protection_) {
     position_command = overcurrent_protection_->adaptGripperPosition(position_command, closed_position_, open_position_);
   }
 
