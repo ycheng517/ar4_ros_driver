@@ -37,10 +37,11 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
  private:
   rclcpp::Logger logger_ = rclcpp::get_logger("ar_servo_gripper_hw_interface");
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
-  int min_servo_angle_ = 55;   // closed position
-  int max_servo_angle_ = 125;  // open position
+  int closed_servo_angle_ = 0;  // will be loaded from parameters
+  int open_servo_angle_ = 0;   // will be loaded from parameters
 
   ArduinoNanoDriver driver_;
+  // closed and open positions in physical space
   double closed_position_;
   double open_position_;
   double position_ = 0.0;
@@ -55,15 +56,15 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
     double normalized_pos =
         (linear_pos - closed_position_) /
         static_cast<double>(open_position_ - closed_position_);
-    return static_cast<int>(min_servo_angle_ +
+    return static_cast<int>(closed_servo_angle_ +
                             normalized_pos *
-                                (max_servo_angle_ - min_servo_angle_));
+                                (open_servo_angle_ - closed_servo_angle_));
   };
 
   double servo_angle_to_linear_pos(int angular_pos) {
     double normalized_pos =
-        (angular_pos - min_servo_angle_) /
-        static_cast<double>(max_servo_angle_ - min_servo_angle_);
+        (angular_pos - closed_servo_angle_) /
+        static_cast<double>(open_servo_angle_ - closed_servo_angle_);
     return normalized_pos * (open_position_ - closed_position_) +
            closed_position_;
   };
