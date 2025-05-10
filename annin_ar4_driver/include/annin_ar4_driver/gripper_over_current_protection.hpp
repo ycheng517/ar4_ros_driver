@@ -12,10 +12,6 @@ class GripperOverCurrentProtection {
   GripperOverCurrentProtection(const rclcpp::Logger& logger,
                            const rclcpp::Clock& clock);
 
-  // New method to configure from hardware parameters
-  void configureFromParams(
-      const std::unordered_map<std::string, std::string>& hardware_params);
-
   void addCurrentSample(const rclcpp::Time& time, double current);
   double adaptGripperPosition(double position_command, double min_position,
                               double max_position);
@@ -36,7 +32,7 @@ class GripperOverCurrentProtection {
   double high_current_percentage_threshold_ = 0.75;
 
   // Adaptive current limiting
-  double adapt_position_step_ = 0.0001;  // Step size for gradual movement
+  double overcurrent_position_increment_ = 0.0001;  // Position increment during overcurrent recovery
   double curr_adapt_amount_ = 0.0;       // Amount to adapt position
   double overcurrent_cmd_pos_ = 0.0;     // Commanded position when overcurrent
 

@@ -50,7 +50,6 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
 
   // Overcurrent protection (optional)
   std::unique_ptr<GripperOverCurrentProtection> overcurrent_protection_;
-  bool use_overcurrent_protection_ = true;
 
   int linear_pos_to_servo_angle(double linear_pos) {
     double normalized_pos =
