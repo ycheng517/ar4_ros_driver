@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <annin_ar4_driver/ar_servo_gripper_hw_interface.hpp>
 #include <sstream>
+
 #include "annin_ar4_driver/gripper_over_current_protection.hpp"
 
 namespace annin_ar4_driver {
@@ -37,16 +38,22 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
   }
 
   // Configure overcurrent protection (if enabled)
-  if (info_.hardware_parameters.count("use_overcurrent_protection") > 0 &&
-      info_.hardware_parameters.at("use_overcurrent_protection") == "true") {
-    RCLCPP_INFO(logger_, "Overcurrent protection enabled for gripper");
-    overcurrent_protection_ =
-        std::make_unique<GripperOverCurrentProtection>(logger_, clock_);
+  if (info_.hardware_parameters.count("use_overcurrent_protection") > 0) {
+    std::string overcurrent_protection =
+        info_.hardware_parameters.at("use_overcurrent_protection");
+    std::transform(overcurrent_protection.begin(), overcurrent_protection.end(),
+                   overcurrent_protection.begin(), ::tolower);
+    if (overcurrent_protection == "true") {
+      RCLCPP_INFO(logger_, "Overcurrent protection enabled for gripper");
+      overcurrent_protection_ =
+          std::make_unique<GripperOverCurrentProtection>(logger_, clock_);
+    }
   }
 
   // Load servo angle parameters
   if (info_.hardware_parameters.count("closed_servo_angle") > 0) {
-    closed_servo_angle_ = std::stoi(info_.hardware_parameters.at("closed_servo_angle"));
+    closed_servo_angle_ =
+        std::stoi(info_.hardware_parameters.at("closed_servo_angle"));
     RCLCPP_INFO(logger_, "Loaded closed_servo_angle: %d", closed_servo_angle_);
   } else {
     RCLCPP_ERROR(logger_, "Required parameter 'closed_servo_angle' not found");
@@ -54,7 +61,8 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
   }
 
   if (info_.hardware_parameters.count("open_servo_angle") > 0) {
-    open_servo_angle_ = std::stoi(info_.hardware_parameters.at("open_servo_angle"));
+    open_servo_angle_ =
+        std::stoi(info_.hardware_parameters.at("open_servo_angle"));
     RCLCPP_INFO(logger_, "Loaded open_servo_angle: %d", open_servo_angle_);
   } else {
     RCLCPP_ERROR(logger_, "Required parameter 'open_servo_angle' not found");
@@ -63,8 +71,10 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
 
   // Validate servo angle range
   if (closed_servo_angle_ >= open_servo_angle_) {
-    RCLCPP_ERROR(logger_, "Invalid servo angle range: min (%d) must be less than max (%d)",
-                 closed_servo_angle_, open_servo_angle_);
+    RCLCPP_ERROR(
+        logger_,
+        "Invalid servo angle range: min (%d) must be less than max (%d)",
+        closed_servo_angle_, open_servo_angle_);
     return hardware_interface::CallbackReturn::ERROR;
   }
 
@@ -141,7 +151,7 @@ hardware_interface::return_type ARServoGripperHWInterface::read(
 
   // Process current sample for overcurrent protection
   if (overcurrent_protection_) {
-    overcurrent_protection_->addCurrentSample(time, current_);
+    overcurrent_protection_->AddCurrentSample(time, current_);
   }
 
   return hardware_interface::return_type::OK;
@@ -153,7 +163,8 @@ hardware_interface::return_type ARServoGripperHWInterface::write(
 
   // Apply overcurrent protection
   if (overcurrent_protection_) {
-    position_command = overcurrent_protection_->adaptGripperPosition(position_command, closed_position_, open_position_);
+    position_command = overcurrent_protection_->AdaptGripperPosition(
+        position_command, closed_position_, open_position_);
   }
 
   int pos_deg = linear_pos_to_servo_angle(position_command);
