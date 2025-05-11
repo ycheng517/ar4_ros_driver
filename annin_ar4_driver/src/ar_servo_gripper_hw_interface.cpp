@@ -17,8 +17,7 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
 
   info_ = info;
 
-  // Extract position limits from gripper_jaw1_joint info
-  RCLCPP_INFO(logger_, "Extracting joint limits...");
+  // Extract position limits from robot description
   if (!info_.limits.empty()) {
     for (const auto& limit_pair : info_.limits) {
       if (limit_pair.first == "gripper_jaw1_joint") {
@@ -137,23 +136,22 @@ hardware_interface::return_type ARServoGripperHWInterface::read(
     return hardware_interface::return_type::ERROR;
   }
   position_ = servo_angle_to_linear_pos(pos_deg);
-
-  // Read current from the driver
-  success = driver_.getCurrent(current_);
-  if (!success) {
-    RCLCPP_ERROR(logger_, "Failed to read current from servo");
-    return hardware_interface::return_type::ERROR;
-  }
-
-  std::string logInfo = "Gripper Pos: " + std::to_string(position_) +
-                        ", Current: " + std::to_string(current_);
-  RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
+  std::string logInfo = "Gripper Pos: " + std::to_string(position_);
 
   // Process current sample for overcurrent protection
   if (overcurrent_protection_) {
+    // Read current from the driver
+    success = driver_.getCurrent(current_);
+    if (!success) {
+      RCLCPP_ERROR(logger_, "Failed to read current from servo");
+      return hardware_interface::return_type::ERROR;
+    }
+
+    logInfo += " | Current: " + std::to_string(current_);
     overcurrent_protection_->AddCurrentSample(time, current_);
   }
 
+  RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
   return hardware_interface::return_type::OK;
 }
 
