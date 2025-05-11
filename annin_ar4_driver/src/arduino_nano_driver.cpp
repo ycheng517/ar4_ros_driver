@@ -1,6 +1,6 @@
 #include "annin_ar4_driver/arduino_nano_driver.hpp"
 
-#define FW_VERSION "0.0.1"
+#define FW_VERSION "0.1.0"
 
 namespace annin_ar4_driver {
 

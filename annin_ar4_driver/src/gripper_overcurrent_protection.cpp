@@ -81,10 +81,11 @@ double GripperOverCurrentProtection::AdjustGripperPosition(
   }
 
   if (new_pos != position_command) {
-    RCLCPP_WARN_THROTTLE(logger_, clock_, 1000,
-                         "Adapted gripper position from %.4f to %.4f to reduce "
-                         "current (now %.3f A)",
-                         position_command, new_pos, current_);
+    RCLCPP_WARN_THROTTLE(
+        logger_, clock_, 1000,
+        "Adjusted gripper position from %.4f to %.4f to reduce "
+        "current (now %.3f A)",
+        position_command, new_pos, current_);
   }
   return new_pos;
 }

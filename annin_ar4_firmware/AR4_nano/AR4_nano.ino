@@ -39,7 +39,7 @@
 #include <Servo.h>
 
 // Firmware version
-const char* VERSION = "0.0.1";
+const char* VERSION = "0.1.0";
 
 String inData;
 

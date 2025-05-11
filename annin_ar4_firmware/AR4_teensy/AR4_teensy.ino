@@ -7,7 +7,7 @@
 #include <map>
 
 // Firmware version
-const char* VERSION = "2.0.0";
+const char* VERSION = "2.1.0";
 
 // Model of the AR4, i.e. mk1, mk2, mk3
 String MODEL = "";
@@ -158,7 +158,7 @@ void setup() {
   pinMode(ESTOP_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(ESTOP_PIN), estopPressed, FALLING);
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void setupSteppersMK1() {

@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <thread>
 
-#define FW_VERSION "2.0.0"
+#define FW_VERSION "2.1.0"
 
 namespace annin_ar4_driver {
 
@@ -123,8 +123,7 @@ void TeensyDriver::update(std::vector<double>& pos_commands,
 
 bool TeensyDriver::calibrateJoints(std::string calib_sequence) {
   std::string outMsg = "JC" + calib_sequence + "\n";
-  RCLCPP_INFO(logger_, "Sending calibration command: %s",
-    outMsg.c_str());
+  RCLCPP_INFO(logger_, "Sending calibration command: %s", outMsg.c_str());
   return sendCommand(outMsg);
 }
 
