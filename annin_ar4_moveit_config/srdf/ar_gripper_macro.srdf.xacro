@@ -13,10 +13,10 @@
       <passive_joint name="${tf_prefix}gripper_jaw2_joint" />
     </group>
     <group_state name="open" group="ar_gripper">
-      <joint name="${tf_prefix}gripper_jaw1_joint" value="0.012" />
+      <joint name="${tf_prefix}gripper_jaw1_joint" value="0.014" />
     </group_state>
     <group_state name="closed" group="ar_gripper">
-      <joint name="${tf_prefix}gripper_jaw1_joint" value="0.001" />
+      <joint name="${tf_prefix}gripper_jaw1_joint" value="0.000" />
     </group_state>
     <disable_collisions link1="${tf_prefix}gripper_base_link" link2="${tf_prefix}gripper_jaw1_link" reason="Adjacent" />
     <disable_collisions link1="${tf_prefix}gripper_base_link" link2="${tf_prefix}gripper_jaw2_link" reason="Adjacent" />

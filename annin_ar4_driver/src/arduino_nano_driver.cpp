@@ -1,6 +1,6 @@
 #include "annin_ar4_driver/arduino_nano_driver.hpp"
 
-#define FW_VERSION "0.0.1"
+#define FW_VERSION "0.1.0"
 
 namespace annin_ar4_driver {
 
@@ -114,6 +114,22 @@ bool ArduinoNanoDriver::writePosition(double position) {
     return false;
   }
   return true;
+}
+
+bool ArduinoNanoDriver::getCurrent(double& current) {
+  std::string reply = sendCommand("CR\n");
+  if (reply == "") {
+    RCLCPP_ERROR(logger_, "Failed to get current reading");
+    return false;
+  }
+
+  try {
+    current = std::stod(reply);
+    return true;
+  } catch (const std::exception& e) {
+    RCLCPP_ERROR(logger_, "Failed to convert current reading: %s", e.what());
+    return false;
+  }
 }
 
 }  // namespace annin_ar4_driver

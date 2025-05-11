@@ -24,6 +24,7 @@ add_library(annin_ar4_driver SHARED
   src/ar_servo_gripper_hw_interface.cpp
   src/teensy_driver.cpp
   src/arduino_nano_driver.cpp
+  src/gripper_overcurrent_protection.cpp
 )
 
 target_compile_features(annin_ar4_driver PUBLIC cxx_std_17)
