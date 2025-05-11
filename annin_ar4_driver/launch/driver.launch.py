@@ -45,18 +45,10 @@ def generate_launch_description():
 
     joint_controllers_cfg = PathJoinSubstitution(
         [FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"])
-
-    update_rate_config_file = PathJoinSubstitution([
-        FindPackageShare("annin_ar4_driver"),
-        "config",
-        "controller_update_rate.yaml",
-    ])
-
     controller_manager_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
-            update_rate_config_file,
             ParameterFile(joint_controllers_cfg, allow_substs=True),
             {
                 "tf_prefix": tf_prefix

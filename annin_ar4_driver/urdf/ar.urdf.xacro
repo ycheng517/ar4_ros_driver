@@ -41,6 +41,7 @@
       name="ar_servo_gripper"
       plugin_name="annin_ar4_driver/ARServoGripperHWInterface"
       serial_port="$(arg arduino_serial_port)"
+      driver_parameters_file="$(find annin_ar4_driver)/config/gripper_driver.yaml"
       tf_prefix="$(arg tf_prefix)"
     />
   </xacro:if>

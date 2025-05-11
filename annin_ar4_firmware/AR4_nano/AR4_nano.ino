@@ -9,40 +9,37 @@
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
 
-          Redistributions of source code must retain the above copyright
-          notice, this list of conditions and the following disclaimer.
-          Redistribution of this software in source or binary forms shall be
-   free of all charges or fees to the recipient of this software.
-          Redistributions in binary form must reproduce the above copyright
-          notice, this list of conditions and the following disclaimer in the
-          documentation and/or other materials provided with the distribution.
-          you must give appropriate credit and indicate if changes were made.
-   You may do so in any reasonable manner, but not in any way that suggests the
-          licensor endorses you or your use.
-          Selling AR2 software, robots, robot parts, or any versions of robots
-   or software based on this work is strictly prohibited.
+    Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    Redistribution of this software in source or binary forms shall be
+    free of all charges or fees to the recipient of this software.
+    Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    you must give appropriate credit and indicate if changes were made.
+    You may do so in any reasonable manner, but not in any way that suggests the
+    licensor endorses you or your use.
+    Selling AR2 software, robots, robot parts, or any versions of robots
+    or software based on this work is strictly prohibited.
 
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-   ARE DISCLAIMED. IN NO EVENT SHALL CHRIS ANNIN BE LIABLE FOR ANY DIRECT,
-   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED. IN NO EVENT SHALL CHRIS ANNIN BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     chris.annin@gmail.com
-
-    Log:
-
 */
 
 #include <Servo.h>
 
 // Firmware version
-const char* VERSION = "0.0.1";
+const char* VERSION = "0.1.0";
 
 String inData;
 
@@ -53,7 +50,6 @@ Servo servo3;
 Servo servo4;
 Servo servo5;
 Servo servo6;
-Servo servo7;
 
 const int Input2 = 2;
 const int Input3 = 3;
@@ -61,6 +57,7 @@ const int Input4 = 4;
 const int Input5 = 5;
 const int Input6 = 6;
 const int Input7 = 7;
+const int CurrentSensorPin = A7;  // Change to use A7 for current sensing
 
 const int Output8 = 8;
 const int Output9 = 9;
@@ -71,7 +68,7 @@ const int Output13 = 13;
 
 void setup() {
   // run once:
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   pinMode(A0, OUTPUT);
   pinMode(A1, OUTPUT);
@@ -80,7 +77,7 @@ void setup() {
   pinMode(A4, OUTPUT);
   pinMode(A5, OUTPUT);
   pinMode(A6, OUTPUT);
-  pinMode(A7, OUTPUT);
+  pinMode(CurrentSensorPin, INPUT);  // Set current sensor pin as input
 
   pinMode(Input2, INPUT_PULLUP);
   pinMode(Input3, INPUT_PULLUP);
@@ -103,12 +100,20 @@ void setup() {
   servo4.attach(A4);
   servo5.attach(A5);
   servo6.attach(A6);
-  servo7.attach(A7);
 
   // Make servo0 (the servo gripper) go to an arbitrary initial position,
   // otherwise it goes to some unknow position beyond the acceptable range
   servo0.write(30);
   
+}
+
+float readCurrent() {
+  int sensorValue = analogRead(CurrentSensorPin);
+  // Convert analog reading to current
+  // For ACS712 5A version: sensitivity is 185mV/A
+  float voltage = sensorValue * (5.0 / 1024.0);
+  float current = (voltage - 2.5) / 0.185;  // 2.5V is the offset at 0A
+  return current;
 }
 
 void loop() {
@@ -151,9 +156,6 @@ void loop() {
         if (servoNum == 6) {
           servo6.write(servoPOS);
         }
-        if (servoNum == 7) {
-          servo7.write(servoPOS);
-        }
         Serial.println("Done");
       }
 
@@ -181,9 +183,6 @@ void loop() {
         }
         if (servoNum == 6) {
           Serial.println(servo6.read());
-        }
-        if (servoNum == 7) {
-          Serial.println(servo7.read());
         }
       }
 
@@ -235,6 +234,13 @@ void loop() {
         }
         Serial.println("Done");
       }
+
+      //-----COMMAND TO READ CURRENT SENSOR-----
+      if (function == "CR") {
+        float current = readCurrent();
+        Serial.println(current);
+      }
+
       //-----COMMAND ECHO TEST MESSAGE-----
       if (function == "TM") {
         String echo = inData.substring(2);

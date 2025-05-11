@@ -34,6 +34,7 @@
     name="ARGripperFakeSystem"
     plugin_name="mock_components/GenericSystem"
     serial_port="/dev/ttyUSB0"
+    driver_parameters_file="$(find annin_ar4_driver)/config/gripper_driver.yaml"
     tf_prefix="$(arg tf_prefix)"
   />
 </robot>
