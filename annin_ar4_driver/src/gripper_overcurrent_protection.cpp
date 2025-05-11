@@ -41,7 +41,7 @@ void GripperOverCurrentProtection::AddCurrentSample(const rclcpp::Time& time,
   // Check if high current percentage exceeds threshold
   if (high_current_percentage > overcurrent_percent_samples_) {
     if (!overcurrent_) {
-      curr_adapt_amount_ = 0.0;
+      curr_adjust_amount_ = 0.0;
       overcurrent_ = true;
     }
   }
@@ -65,16 +65,16 @@ void GripperOverCurrentProtection::AddCurrentSample(const rclcpp::Time& time,
   }
 }
 
-double GripperOverCurrentProtection::AdaptGripperPosition(
+double GripperOverCurrentProtection::AdjustGripperPosition(
     double position_command, double min_position, double max_position) {
   if (overcurrent_) {
-    curr_adapt_amount_ += overcurrent_position_increment_;
+    curr_adjust_amount_ += overcurrent_position_increment_;
     overcurrent_cmd_pos_ = position_command;
   }
 
   double new_pos = position_command;
   if (overcurrent_ || position_command <= overcurrent_cmd_pos_) {
-    new_pos = overcurrent_cmd_pos_ + curr_adapt_amount_;
+    new_pos = overcurrent_cmd_pos_ + curr_adjust_amount_;
 
     // Clamp new position to joint limits
     new_pos = std::clamp(new_pos, min_position, max_position);

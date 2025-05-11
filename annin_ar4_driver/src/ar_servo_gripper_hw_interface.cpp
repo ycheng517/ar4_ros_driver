@@ -161,7 +161,7 @@ hardware_interface::return_type ARServoGripperHWInterface::write(
 
   // Apply overcurrent protection
   if (overcurrent_protection_) {
-    position_command = overcurrent_protection_->AdaptGripperPosition(
+    position_command = overcurrent_protection_->AdjustGripperPosition(
         position_command, closed_position_, open_position_);
   }
 

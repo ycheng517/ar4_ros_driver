@@ -13,8 +13,8 @@ class GripperOverCurrentProtection {
                                const rclcpp::Clock& clock);
 
   void AddCurrentSample(const rclcpp::Time& time, double current);
-  double AdaptGripperPosition(double position_command, double min_position,
-                              double max_position);
+  double AdjustGripperPosition(double position_command, double min_position,
+                               double max_position);
 
  private:
   // Current monitoring
@@ -27,7 +27,7 @@ class GripperOverCurrentProtection {
   bool overcurrent_ = false;
   double current_ = 0.0;
   // Total amount that the commanded position has been adjusted
-  double curr_adapt_amount_ = 0.0;
+  double curr_adjust_amount_ = 0.0;
   // The original commanded position when overcurrent started
   double overcurrent_cmd_pos_ = 0.0;
 
