@@ -17,7 +17,7 @@ class GripperOverCurrentProtection {
                                double max_position);
 
  private:
-  // Current monitoring
+  // For current measurement
   struct CurrentSample {
     rclcpp::Time timestamp;
     bool is_high_current;
@@ -31,7 +31,6 @@ class GripperOverCurrentProtection {
   // The original commanded position when overcurrent started
   double overcurrent_cmd_pos_ = 0.0;
 
-  // Logging
   rclcpp::Logger logger_;
   rclcpp::Clock clock_;
 
