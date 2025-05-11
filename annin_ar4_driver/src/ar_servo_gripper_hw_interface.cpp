@@ -2,7 +2,7 @@
 #include <annin_ar4_driver/ar_servo_gripper_hw_interface.hpp>
 #include <sstream>
 
-#include "annin_ar4_driver/gripper_over_current_protection.hpp"
+#include "annin_ar4_driver/gripper_overcurrent_protection.hpp"
 
 namespace annin_ar4_driver {
 
@@ -78,7 +78,7 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
   }
 
   std::string serial_port = info_.hardware_parameters.at("serial_port");
-  int baud_rate = 9600;
+  int baud_rate = 115200;
   bool success = driver_.init(serial_port, baud_rate);
   if (!success) {
     return hardware_interface::CallbackReturn::ERROR;

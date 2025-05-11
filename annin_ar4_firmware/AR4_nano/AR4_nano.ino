@@ -68,7 +68,7 @@ const int Output13 = 13;
 
 void setup() {
   // run once:
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   pinMode(A0, OUTPUT);
   pinMode(A1, OUTPUT);

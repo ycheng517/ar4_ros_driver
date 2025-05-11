@@ -10,7 +10,7 @@
 #include <thread>
 
 #include "annin_ar4_driver/arduino_nano_driver.hpp"
-#include "annin_ar4_driver/gripper_over_current_protection.hpp"
+#include "annin_ar4_driver/gripper_overcurrent_protection.hpp"
 
 using namespace hardware_interface;
 
@@ -38,7 +38,7 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
   rclcpp::Logger logger_ = rclcpp::get_logger("ar_servo_gripper_hw_interface");
   rclcpp::Clock clock_ = rclcpp::Clock(RCL_ROS_TIME);
   int closed_servo_angle_ = 0;  // will be loaded from parameters
-  int open_servo_angle_ = 0;   // will be loaded from parameters
+  int open_servo_angle_ = 0;    // will be loaded from parameters
 
   ArduinoNanoDriver driver_;
   // closed and open positions in physical space

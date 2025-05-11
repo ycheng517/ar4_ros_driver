@@ -1,15 +1,15 @@
-#include "annin_ar4_driver/gripper_over_current_protection.hpp"
+#include "annin_ar4_driver/gripper_overcurrent_protection.hpp"
 
 #include <algorithm>
 
 namespace annin_ar4_driver {
 
-GripperOverCurrentProtection::GripperOverCurrentProtection(const rclcpp::Logger& logger,
-                                                   const rclcpp::Clock& clock)
+GripperOverCurrentProtection::GripperOverCurrentProtection(
+    const rclcpp::Logger& logger, const rclcpp::Clock& clock)
     : logger_(logger), clock_(clock) {}
 
 void GripperOverCurrentProtection::AddCurrentSample(const rclcpp::Time& time,
-                                                double current) {
+                                                    double current) {
   current_ = current;
 
   // Add the current sample to the sliding window
@@ -39,7 +39,7 @@ void GripperOverCurrentProtection::AddCurrentSample(const rclcpp::Time& time,
       static_cast<double>(high_current_count) / current_samples_.size();
 
   // Check if high current percentage exceeds threshold
-  if (high_current_percentage > high_current_percentage_threshold_) {
+  if (high_current_percentage > overcurrent_percent_samples_) {
     if (!overcurrent_) {
       curr_adapt_amount_ = 0.0;
       overcurrent_ = true;
@@ -48,25 +48,25 @@ void GripperOverCurrentProtection::AddCurrentSample(const rclcpp::Time& time,
 
   if (overcurrent_) {
     // If current levels are normalized, reset overcurrent flag
-    if (high_current_percentage <=
-      high_current_percentage_threshold_ * 0.8) {
-        RCLCPP_INFO(
-            logger_,
-            "Current levels normalized: %.1f%% of measurements below threshold",
-            high_current_percentage * 100.0);
-        overcurrent_ = false;
+    if (high_current_percentage <= recovery_percent_samples_) {
+      RCLCPP_INFO(
+          logger_,
+          "Current levels normalized: %.1f%% of measurements below threshold",
+          high_current_percentage * 100.0);
+      overcurrent_ = false;
     } else {
-      RCLCPP_WARN_THROTTLE(logger_, clock_, 1000,
-        "Gripper current (%.3f A) exceeded %f A for %.1f%% of time in "
-        "the last %.1f seconds",
-        current_, max_current_threshold_, high_current_percentage * 100.0, current_tracking_window_);
+      RCLCPP_WARN_THROTTLE(
+          logger_, clock_, 1000,
+          "Gripper current (%.3f A) exceeded %f A for %.1f%% of time in "
+          "the last %.1f seconds",
+          current_, max_current_threshold_, high_current_percentage * 100.0,
+          current_tracking_window_);
     }
   }
 }
 
-double GripperOverCurrentProtection::AdaptGripperPosition(double position_command,
-                                                      double min_position,
-                                                      double max_position) {
+double GripperOverCurrentProtection::AdaptGripperPosition(
+    double position_command, double min_position, double max_position) {
   if (overcurrent_) {
     curr_adapt_amount_ += overcurrent_position_increment_;
     overcurrent_cmd_pos_ = position_command;
