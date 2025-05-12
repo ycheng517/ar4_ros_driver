@@ -29,8 +29,6 @@ const float MOTOR_STEPS_PER_DEG_MK2[] = {44.44444444, 55.55555556, 55.55555556,
 const float MOTOR_STEPS_PER_DEG_MK3[] = {44.44444444, 55.55555556, 55.55555556,
                                          49.77777777, 21.86024888, 22.22222222};
 
-const int MOTOR_STEPS_PER_REV[] = {400, 400, 400, 400, 800, 400};
-
 // set encoder pins
 Encoder encPos[6] = {Encoder(14, 15), Encoder(17, 16), Encoder(19, 18),
                      Encoder(20, 21), Encoder(23, 22), Encoder(24, 25)};
@@ -38,7 +36,7 @@ Encoder encPos[6] = {Encoder(14, 15), Encoder(17, 16), Encoder(19, 18),
 int ENC_DIR[] = {-1, 1, 1, 1, 1, 1};
 // +1 if encoder max value is at the minimum joint angle, 0 otherwise
 int ENC_MAX_AT_ANGLE_MIN[] = {1, 0, 1, 0, 0, 1};
-// motor steps * ENC_MULT = encoder steps
+// motor steps * ENC_MULT = encoder steps (4000 steps/rev)
 const float ENC_MULT[] = {10, 10, 10, 10, 5, 10};
 
 // define axis limits in degrees, for calibration
@@ -67,7 +65,7 @@ SM STATE = STATE_TRAJ;
 const int NUM_JOINTS = 6;
 AccelStepper stepperJoints[NUM_JOINTS];
 Bounce2::Button limitSwitches[NUM_JOINTS];
-const int DEBOUCE_INTERVAL = 10;  // ms
+const int DEBOUNCE_INTERVAL = 10;  // ms
 
 // calibration settings
 const int LIMIT_SWITCH_HIGH[] = {
@@ -75,8 +73,8 @@ const int LIMIT_SWITCH_HIGH[] = {
 const int CAL_DIR[] = {-1, -1, 1,
                        -1, -1, 1};  // joint rotation direction to limit switch
 const int CAL_SPEED = 500;          // motor steps per second
-const int CAL_SPEED_MULT[] = {
-    1, 1, 1, 2, 1, 1};  // multiplier to account for motor steps/rev
+const float CAL_SPEED_MULT[] = {
+    1, 1, 1, 1, 0.5, 1};  // multiplier to account for motor steps/rev
 // num of encoder steps in range of motion of joint
 int ENC_RANGE_STEPS[NUM_JOINTS];
 
@@ -151,7 +149,7 @@ void setup() {
   for (int i = 0; i < NUM_JOINTS; ++i) {
     limitSwitches[i] = Bounce2::Button();
     limitSwitches[i].attach(LIMIT_PINS[i], INPUT);
-    limitSwitches[i].interval(DEBOUCE_INTERVAL);
+    limitSwitches[i].interval(DEBOUNCE_INTERVAL);
     limitSwitches[i].setPressedState(LIMIT_SWITCH_HIGH[i]);
   }
 
@@ -568,12 +566,6 @@ bool doCalibrationRoutine(String& outputMsg, int calJoints[NUM_JOINTS],
     return false;
   }
 
-  // restore original max speed
-  for (int i = 0; i < NUM_JOINTS; ++i) {
-    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
-                                 MOTOR_STEPS_PER_DEG[MODEL][i]);
-  }
-
   // return to original position
   unsigned long startTime = millis();
   int curMotorSteps[NUM_JOINTS];
@@ -600,6 +592,11 @@ bool doCalibrationRoutine(String& outputMsg, int calJoints[NUM_JOINTS],
     }
   }
 
+  // restore original max speed
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
+                                 MOTOR_STEPS_PER_DEG[MODEL][i]);
+  }
   return true;
 }
 
