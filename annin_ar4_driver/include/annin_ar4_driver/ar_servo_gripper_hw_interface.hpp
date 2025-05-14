@@ -42,8 +42,8 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
 
   ArduinoNanoDriver driver_;
   // closed and open positions in physical space
-  double closed_position_;
-  double open_position_;
+  double closed_position_ = 0.0;
+  double open_position_ = 0.014;
   double position_ = 0.0;
   double velocity_ = 0.0;
   double current_ = 0.0;

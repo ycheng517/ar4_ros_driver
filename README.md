@@ -90,7 +90,7 @@ docker build -t ar4_ros_driver .
 
 # Adjust the volume mounting and devices based on your project and hardware
 rocker --ssh --x11 \
-  --devices /dev/ttyUSB0 /ttyACM0 \
+  --devices /dev/ttyUSB0 /dev/ttyACM0 \
   --volume $(pwd):/ar4_ws/src/ar4_ros_driver -- \
   ar4_ros_driver bash
 ```

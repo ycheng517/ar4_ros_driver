@@ -17,25 +17,6 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
 
   info_ = info;
 
-  // Extract position limits from robot description
-  if (!info_.limits.empty()) {
-    for (const auto& limit_pair : info_.limits) {
-      if (limit_pair.first == "gripper_jaw1_joint") {
-        if (limit_pair.second.has_position_limits) {
-          closed_position_ = limit_pair.second.min_position;
-          open_position_ = limit_pair.second.max_position;
-          RCLCPP_INFO(logger_, "Using joint limits: closed = %f m, open = %f m",
-                      closed_position_, open_position_);
-        }
-      }
-    }
-  }
-
-  if (closed_position_ == 0.0 && open_position_ == 0.0) {
-    RCLCPP_ERROR(logger_, "No joint limits found for gripper_jaw1_joint.");
-    return hardware_interface::CallbackReturn::ERROR;
-  }
-
   // Configure overcurrent protection (if enabled)
   if (info_.hardware_parameters.count("use_overcurrent_protection") > 0) {
     std::string overcurrent_protection =
