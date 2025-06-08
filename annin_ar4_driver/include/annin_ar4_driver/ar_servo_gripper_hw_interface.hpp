@@ -54,8 +54,7 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
 
   int linear_pos_to_servo_angle(double linear_pos) {
     double normalized_pos =
-        (linear_pos - closed_position_) /
-        static_cast<double>(open_position_ - closed_position_);
+        (linear_pos - closed_position_) / (open_position_ - closed_position_);
     return static_cast<int>(closed_servo_angle_ +
                             normalized_pos *
                                 (open_servo_angle_ - closed_servo_angle_));
