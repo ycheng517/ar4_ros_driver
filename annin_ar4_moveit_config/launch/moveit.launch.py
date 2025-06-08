@@ -2,12 +2,14 @@ import os
 import yaml
 
 from ament_index_python.packages import get_package_share_directory
+from launch_param_builder import ParameterBuilder
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
+from launch.conditions import IfCondition
 from launch.substitutions import (
     Command,
     FindExecutable,
@@ -29,6 +31,7 @@ def generate_launch_description():
     rviz_config_file = LaunchConfiguration("rviz_config_file")
     ar_model_config = LaunchConfiguration("ar_model")
     tf_prefix = LaunchConfiguration("tf_prefix")
+    moveit_servo = LaunchConfiguration("moveit_servo")
 
     declared_arguments = []
     declared_arguments.append(
@@ -65,6 +68,13 @@ def generate_launch_description():
             default_value="mk3",
             choices=["mk1", "mk2", "mk3"],
             description="Model of AR4",
+        ))
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "moveit_servo",
+            default_value="False",
+            choices=["True", "False"],
+            description="Run moveit2 servo",
         ))
 
     robot_description_content = Command([
@@ -203,5 +213,36 @@ def generate_launch_description():
         ],
     )
 
-    nodes_to_start = [move_group_node, rviz_node]
+    # Servo Configuration
+    servo_params = {
+        "moveit_servo":
+        ParameterBuilder("annin_ar4_moveit_config").yaml(
+            "config/moveit_servo.yaml").to_dict()
+    }
+
+    # This sets the update rate and planning group name for the acceleration limiting filter.
+    acceleration_filter_update_period = {"update_period": 0.01}
+    planning_group_name = {"planning_group_name": "ar_manipulator"}
+
+    servo_node = Node(
+        package="moveit_servo",
+        executable="servo_node",
+        parameters=[
+            servo_params,
+            acceleration_filter_update_period,
+            planning_group_name,
+            robot_description,
+            robot_description_semantic,
+            robot_description_kinematics,
+            joint_limits,
+            planning_scene_monitor_parameters,
+            {
+                "use_sim_time": use_sim_time
+            },
+        ],
+        output="screen",
+        condition=IfCondition(moveit_servo),
+    )
+
+    nodes_to_start = [move_group_node, rviz_node, servo_node]
     return LaunchDescription(declared_arguments + nodes_to_start)
