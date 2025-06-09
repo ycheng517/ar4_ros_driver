@@ -55,7 +55,7 @@ int JOINT_LIMIT_MAX_MK3[] = {170, 90, 52, 180, 105, 180};
 
 // roughly equals 0, 0, 0, 0, 0, 0 degrees without any user-defined offsets.
 std::map<String, const int*> REST_MOTOR_STEPS;
-const int REST_MOTOR_STEPS_MK1[] = {7555, 2333, 4944, 7049, 2295, 3431};
+const int REST_MOTOR_STEPS_MK1[] = {7555, 2333, 4944, 7049, 2295, 1650};
 const int REST_MOTOR_STEPS_MK2[] = {7555, 2333, 4944, 7049, 2295, 3431};
 const int REST_MOTOR_STEPS_MK3[] = {7555, 2333, 4944, 8960, 2295, 4000};
 

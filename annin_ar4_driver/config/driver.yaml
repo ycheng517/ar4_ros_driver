@@ -11,6 +11,6 @@
 #   - Any combination when type is set to '0' or '3'
 #   - type '1' and '2', when the joint order consists of adjacent joints
 #     - Example: '012','345' for type '1'; '01','23','45' for type '2'
-calib_sequence: '0012345'
+calib_sequence: '3543210'
 
 velocity_control_enabled: true

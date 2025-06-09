@@ -1,5 +1,5 @@
-use_overcurrent_protection: false
+use_overcurrent_protection: true
 
 # Servo angle configuration (in degrees)
-closed_servo_angle: 0
-open_servo_angle: 35
+closed_servo_angle: 55
+open_servo_angle: 120
