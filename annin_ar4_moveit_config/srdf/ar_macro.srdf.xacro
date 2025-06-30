@@ -30,6 +30,14 @@
       <joint name="${tf_prefix}joint_5" value="0" />
       <joint name="${tf_prefix}joint_6" value="0" />
     </group_state>
+    <group_state name="downward" group="ar_manipulator">
+      <joint name="${tf_prefix}joint_1" value="0" />
+      <joint name="${tf_prefix}joint_2" value="0.349" />
+      <joint name="${tf_prefix}joint_3" value="0.035" />
+      <joint name="${tf_prefix}joint_4" value="0" />
+      <joint name="${tf_prefix}joint_5" value="1.187" />
+      <joint name="${tf_prefix}joint_6" value="0" />
+    </group_state>
     <disable_collisions link1="${tf_prefix}base_link" link2="${tf_prefix}link_1" reason="Adjacent" />
     <disable_collisions link1="${tf_prefix}link_1" link2="${tf_prefix}link_2" reason="Adjacent" />
     <disable_collisions link1="${tf_prefix}link_1" link2="${tf_prefix}link_3" reason="Never" />
