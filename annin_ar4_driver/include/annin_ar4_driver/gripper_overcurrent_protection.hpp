@@ -36,7 +36,7 @@ class GripperOverCurrentProtection {
 
   // Parameters for tuning overcurrent protection
   double current_tracking_window_ = 2.0;  // seconds window for monitoring
-  double max_current_threshold_ = 2.0;    // Amps
+  double max_current_threshold_ = 1.0;    // Amps
   // Percentage of samples that must be over the max current threshold to
   // trigger overcurrent
   double overcurrent_percent_samples_ = 0.75;

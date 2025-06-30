@@ -103,7 +103,7 @@ void setup() {
 
   // Make servo0 (the servo gripper) go to an arbitrary initial position,
   // otherwise it goes to some unknow position beyond the acceptable range
-  servo0.write(120);
+  servo0.write(60);
 }
 
 float readCurrent() {

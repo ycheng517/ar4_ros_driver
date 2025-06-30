@@ -6,16 +6,16 @@
 # override_velocity_scaling_factor = 0.0 # valid range [0.0:1.0]
 
 ## Properties of outgoing commands
-publish_period: 0.04 # 1/Nominal publish rate [seconds]
-max_expected_latency: 0.2 # delay between sending a command and the robot executing it [seconds]
+publish_period: 0.02 # 1/Nominal publish rate [seconds]
+max_expected_latency: 0.1 # delay between sending a command and the robot executing it [seconds]
 
 command_in_type: "speed_units" # "unitless"> in the range [-1:1], as if from joystick. "speed_units"> cmds are in m/s and rad/s
 scale:
   # Scale parameters are only used if command_in_type=="unitless"
-  linear: 0.4 # Max linear velocity. Unit is [m/s]. Only used for Cartesian commands.
-  rotational: 0.8 # Max angular velocity. Unit is [rad/s]. Only used for Cartesian commands.
+  linear: 0.05 # Max linear velocity. Unit is [m/s]. Only used for Cartesian commands.
+  rotational: 0.25 # Max angular velocity. Unit is [rad/s]. Only used for Cartesian commands.
   # Max joint angular/linear velocity. Only used for joint commands on joint_command_in_topic.
-  joint: 0.5
+  joint: 0.25
 
 incoming_command_timeout: 0.5
 
