@@ -5,6 +5,9 @@
     joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
+    position_controller:
+      type: position_controllers/JointGroupPositionController
+
     gripper_controller:
       type: position_controllers/GripperActionController
 
@@ -55,6 +58,16 @@
       $(var tf_prefix)joint_4: 1.0
       $(var tf_prefix)joint_5: 1.0
       $(var tf_prefix)joint_6: 1.0
+
+/**/position_controller:
+  ros__parameters:
+    joints:
+      - $(var tf_prefix)joint_1
+      - $(var tf_prefix)joint_2
+      - $(var tf_prefix)joint_3
+      - $(var tf_prefix)joint_4
+      - $(var tf_prefix)joint_5
+      - $(var tf_prefix)joint_6
 
 /**/gripper_controller:
   ros__parameters:
