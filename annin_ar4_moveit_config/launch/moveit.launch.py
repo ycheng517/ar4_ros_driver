@@ -8,7 +8,7 @@ from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, TimerAction
 from launch.conditions import IfCondition
 from launch.substitutions import (
     Command,
@@ -244,5 +244,28 @@ def generate_launch_description():
         condition=IfCondition(moveit_servo),
     )
 
-    nodes_to_start = [move_group_node, rviz_node, servo_node]
+    # Add floor collision object to planning scene
+    floor_collision_node = Node(
+        package="annin_ar4_moveit_config",
+        executable="add_floor_collision.py",
+        output="screen",
+        parameters=[
+            {
+                "use_sim_time": use_sim_time
+            },
+        ],
+    )
+
+    # Delay floor_collision_node by 10 seconds
+    delayed_floor_collision_node = TimerAction(
+        period=10.0,
+        actions=[floor_collision_node],
+    )
+
+    nodes_to_start = [
+        move_group_node,
+        rviz_node,
+        servo_node,
+        delayed_floor_collision_node,
+    ]
     return LaunchDescription(declared_arguments + nodes_to_start)
