@@ -51,6 +51,8 @@ The following projects showcases additional features and capabilities built on t
 
 ## Installation
 
+> 💡 It's generally a good idea to first ensure that your robot arm works with the official [AR4 Control Software](https://anninrobotics.com/downloads/), where there's better tools for debugging mechanical and electrical issues. 
+
 - Install [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/Installation.html) for Ubuntu 24.04
 - Clone this repository:
   ```bash
