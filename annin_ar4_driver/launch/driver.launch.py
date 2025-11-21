@@ -138,7 +138,7 @@ def generate_launch_description():
     ld.add_action(
         DeclareLaunchArgument("ar_model",
                               default_value="mk3",
-                              choices=["mk1", "mk2", "mk3"],
+                              choices=["mk1", "mk2", "mk3", "mk3_v6_1"],
                               description="Model of AR4"))
     ld.add_action(controller_manager_node)
     ld.add_action(spawn_joint_controller)

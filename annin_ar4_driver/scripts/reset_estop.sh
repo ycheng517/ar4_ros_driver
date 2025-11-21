@@ -6,7 +6,7 @@ set -e # exit if error
 
 if [ -z "$1" ]; then
   printf "\tUsage: ros2 run annin_ar4_driver reset_estop.sh <AR_MODEL>\n"
-  printf "\twhere <AR_MODEL> is 'mk1', 'mk2' or 'mk3'\n"
+  printf "\twhere <AR_MODEL> is 'mk1', 'mk2', 'mk3', or 'mk3_v6_1'\n"
   exit 1
 fi
 

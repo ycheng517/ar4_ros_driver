@@ -9,7 +9,7 @@
 // Firmware version
 const char* VERSION = "2.1.0";
 
-// Model of the AR4, i.e. mk1, mk2, mk3
+// Model of the AR4, i.e. mk1, mk2, mk3, mk3_v6_1
 String MODEL = "";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,6 +28,8 @@ const float MOTOR_STEPS_PER_DEG_MK2[] = {44.44444444, 55.55555556, 55.55555556,
                                          49.77777777, 21.86024888, 22.22222222};
 const float MOTOR_STEPS_PER_DEG_MK3[] = {44.44444444, 55.55555556, 55.55555556,
                                          49.77777777, 21.86024888, 22.22222222};
+const float MOTOR_STEPS_PER_DEG_MK3_V6_1[] = {88.88888888, 111.11111112, 111.11111112,
+                                              99.55555554, 43.72049776, 44.44444444};
 
 // set encoder pins
 Encoder encPos[6] = {Encoder(14, 15), Encoder(17, 16), Encoder(19, 18),
@@ -44,10 +46,12 @@ std::map<String, const int*> JOINT_LIMIT_MIN;
 int JOINT_LIMIT_MIN_MK1[] = {-170, -42, -89, -165, -105, -155};
 int JOINT_LIMIT_MIN_MK2[] = {-170, -42, -89, -165, -105, -155};
 int JOINT_LIMIT_MIN_MK3[] = {-170, -42, -89, -180, -105, -180};
+int JOINT_LIMIT_MIN_MK3_V6_1[] = {-170, -42, -89, -180, -105, -180};
 std::map<String, const int*> JOINT_LIMIT_MAX;
 int JOINT_LIMIT_MAX_MK1[] = {170, 90, 52, 165, 105, 155};
 int JOINT_LIMIT_MAX_MK2[] = {170, 90, 52, 165, 105, 155};
 int JOINT_LIMIT_MAX_MK3[] = {170, 90, 52, 180, 105, 180};
+int JOINT_LIMIT_MAX_MK3_V6_1[] = {170, 90, 52, 180, 105, 180};
 
 ///////////////////////////////////////////////////////////////////////////////
 // ROS Driver Params
@@ -58,6 +62,7 @@ std::map<String, const int*> REST_MOTOR_STEPS;
 const int REST_MOTOR_STEPS_MK1[] = {7555, 2333, 4944, 7049, 2295, 3431};
 const int REST_MOTOR_STEPS_MK2[] = {7555, 2333, 4944, 7049, 2295, 3431};
 const int REST_MOTOR_STEPS_MK3[] = {7555, 2333, 4944, 8960, 2295, 4000};
+const int REST_MOTOR_STEPS_MK3_V6_1[] = {15110, 4666, 9888, 17920, 4590, 8000};
 
 enum SM { STATE_TRAJ, STATE_ERR };
 SM STATE = STATE_TRAJ;
@@ -72,7 +77,7 @@ const int LIMIT_SWITCH_HIGH[] = {
     1, 1, 1, 1, 1, 1};  // to account for both NC and NO limit switches
 const int CAL_DIR[] = {-1, -1, 1,
                        -1, -1, 1};  // joint rotation direction to limit switch
-const int CAL_SPEED = 500;          // motor steps per second
+const int CAL_SPEED = 1000;          // motor steps per second
 const float CAL_SPEED_MULT[] = {
     1, 1, 1, 1, 0.5, 1};  // multiplier to account for motor steps/rev
 // num of encoder steps in range of motion of joint
@@ -127,18 +132,22 @@ void setup() {
   MOTOR_STEPS_PER_DEG["mk1"] = MOTOR_STEPS_PER_DEG_MK1;
   MOTOR_STEPS_PER_DEG["mk2"] = MOTOR_STEPS_PER_DEG_MK2;
   MOTOR_STEPS_PER_DEG["mk3"] = MOTOR_STEPS_PER_DEG_MK3;
+  MOTOR_STEPS_PER_DEG["mk3_v6_1"] = MOTOR_STEPS_PER_DEG_MK3_V6_1;
 
   JOINT_LIMIT_MIN["mk1"] = JOINT_LIMIT_MIN_MK1;
   JOINT_LIMIT_MIN["mk2"] = JOINT_LIMIT_MIN_MK2;
   JOINT_LIMIT_MIN["mk3"] = JOINT_LIMIT_MIN_MK3;
+  JOINT_LIMIT_MIN["mk3_v6_1"] = JOINT_LIMIT_MIN_MK3_V6_1;
 
   JOINT_LIMIT_MAX["mk1"] = JOINT_LIMIT_MAX_MK1;
   JOINT_LIMIT_MAX["mk2"] = JOINT_LIMIT_MAX_MK2;
   JOINT_LIMIT_MAX["mk3"] = JOINT_LIMIT_MAX_MK3;
+  JOINT_LIMIT_MAX["mk3_v6_1"] = JOINT_LIMIT_MAX_MK3_V6_1;
 
   REST_MOTOR_STEPS["mk1"] = REST_MOTOR_STEPS_MK1;
   REST_MOTOR_STEPS["mk2"] = REST_MOTOR_STEPS_MK2;
   REST_MOTOR_STEPS["mk3"] = REST_MOTOR_STEPS_MK3;
+  REST_MOTOR_STEPS["mk3_v6_1"] = REST_MOTOR_STEPS_MK3_V6_1;
 
   for (int i = 0; i < NUM_JOINTS; ++i) {
     pinMode(STEP_PINS[i], OUTPUT);
@@ -212,7 +221,7 @@ bool initStateTraj(String inData) {
 
   String model = inData.substring(idxModel + 1, inData.length() - 1);
   int modelMatches = false;
-  if (model == "mk1" || model == "mk2" || model == "mk3") {
+  if (model == "mk1" || model == "mk2" || model == "mk3" || model == "mk3_v6_1") {
     modelMatches = true;
     MODEL = model;
 
@@ -226,7 +235,7 @@ bool initStateTraj(String inData) {
       setupSteppersMK1();
     } else if (model == "mk2") {
       setupSteppersMK2();
-    } else if (model == "mk3") {
+    } else if (model == "mk3" || model == "mk3_v6_1") {
       setupSteppersMK3();
     }
   }
