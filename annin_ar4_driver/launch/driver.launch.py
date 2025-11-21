@@ -56,6 +56,7 @@ def generate_launch_description():
         ],
         remappings=[('~/robot_description', 'robot_description')],
         output="screen",
+        arguments=['--ros-args', '--log-level', 'warn'],
     )
 
     spawn_joint_controller = Node(

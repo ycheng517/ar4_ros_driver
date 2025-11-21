@@ -220,22 +220,19 @@ def generate_launch_description():
             "config/moveit_servo.yaml").to_dict()
     }
 
-    # This sets the update rate and planning group name for the acceleration limiting filter.
-    acceleration_filter_update_period = {"update_period": 0.01}
-    planning_group_name = {"planning_group_name": "ar_manipulator"}
-
     servo_node = Node(
         package="moveit_servo",
         executable="servo_node",
         parameters=[
             servo_params,
-            acceleration_filter_update_period,
-            planning_group_name,
             robot_description,
             robot_description_semantic,
             robot_description_kinematics,
             joint_limits,
             planning_scene_monitor_parameters,
+            {
+                "planning_group_name": "ar_manipulator"
+            },
             {
                 "use_sim_time": use_sim_time
             },
@@ -249,16 +246,11 @@ def generate_launch_description():
         package="annin_ar4_moveit_config",
         executable="add_floor_collision.py",
         output="screen",
-        parameters=[
-            {
-                "use_sim_time": use_sim_time
-            },
-        ],
     )
 
-    # Delay floor_collision_node by 10 seconds
+    # Delay launching floor_collision_node
     delayed_floor_collision_node = TimerAction(
-        period=10.0,
+        period=15.0,
         actions=[floor_collision_node],
     )
 

@@ -16,8 +16,8 @@ class FloorCollisionSetup(Node):
         self.planning_scene_pub = self.create_publisher(
             PlanningScene, '/planning_scene', 10)
 
-        # Call add_floor_collision directly
-        self.add_floor_collision()
+        # Wait a moment for the publisher to be ready
+        self.timer = self.create_timer(2.0, self.add_floor_collision)
 
     def add_floor_collision(self):
         """Add a floor collision object to the planning scene"""
@@ -31,13 +31,13 @@ class FloorCollisionSetup(Node):
         # Define floor as a box primitive
         floor_box = SolidPrimitive()
         floor_box.type = SolidPrimitive.BOX
-        floor_box.dimensions = [1.0, 1.0, 0.02]
+        floor_box.dimensions = [0.6, 0.6, 0.01]  # 2m x 2m x 1cm floor
 
-        # Position the floor below the robot base
+        # Position the floor object
         floor_pose = Pose()
         floor_pose.position.x = 0.0
-        floor_pose.position.y = 0.0
-        floor_pose.position.z = -0.01  # 1cm below base_link
+        floor_pose.position.y = -0.4
+        floor_pose.position.z = 0.07
         floor_pose.orientation.w = 1.0
 
         # Add the primitive and pose to collision object
@@ -57,6 +57,9 @@ class FloorCollisionSetup(Node):
         self.get_logger().info(
             "Added floor collision object to planning scene")
 
+        # Stop the timer after adding the floor
+        self.timer.cancel()
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -64,7 +67,7 @@ def main(args=None):
 
     try:
         for _ in range(3):
-            rclpy.spin_once(floor_setup, timeout_sec=1.0)
+            rclpy.spin_once(floor_setup, timeout_sec=3.0)
     except KeyboardInterrupt:
         pass
     finally:
