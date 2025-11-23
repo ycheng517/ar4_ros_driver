@@ -24,5 +24,11 @@ the gripper as shown in the schematic below:
 To enable gripper overcurrent protection, set `use_overcurrent_protection` to
 `true` in the
 [gripper_driver.yaml](../annin_ar4_driver/config/gripper_driver.yaml)
-configuration file. Parameters for tuning this feature can be found in
+configuration file.
+
+The ACS712 module is available in 3 different versions: 5A, 20A, and 30A. If you have the 20A or 30A version, set `ACS712_version_current` to `20` or `30` in the
+[gripper_driver.yaml](../annin_ar4_driver/config/gripper_driver.yaml)
+configuration file.
+
+Parameters for tuning this feature can be found in
 [gripper_overcurrent_protection.hpp](../annin_ar4_driver/include/annin_ar4_driver/gripper_overcurrent_protection.hpp).

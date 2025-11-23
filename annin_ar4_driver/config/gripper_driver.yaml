@@ -1,4 +1,5 @@
 use_overcurrent_protection: false
+ACS712_version_current: 5
 
 # Servo angle configuration (in degrees)
 closed_servo_angle: 0

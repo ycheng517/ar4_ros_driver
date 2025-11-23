@@ -132,4 +132,15 @@ bool ArduinoNanoDriver::getCurrent(double& current) {
   }
 }
 
+bool ArduinoNanoDriver::writeACS712Version(int version) {
+  std::string msg = "ACX" + std::to_string(static_cast<int>(version)) + "\n";
+  std::string reply = sendCommand(msg);
+  if (reply != "Done") {
+    RCLCPP_ERROR(logger_, "Failed to write ACS712 Version %d, got reply: %s",
+                 version, reply.c_str());
+    return false;
+  }
+  return true;
+}
+
 }  // namespace annin_ar4_driver
