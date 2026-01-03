@@ -67,9 +67,9 @@ const int Output12 = 12;
 const int Output13 = 13;
 
 // ACS712 models have different sensitivities
-const float ACS712_5A = 185.0;    // Sensitivity in mV/A for ACS712 5A
-const float ACS712_20A = 100.0;   // Sensitivity in mV/A for ACS712 20A
-const float ACS712_30A = 66.0;    // Sensitivity in mV/A for ACS712 30A
+const float ACS712_5A = 185.0;        // Sensitivity in mV/A for ACS712 5A
+const float ACS712_20A = 100.0;       // Sensitivity in mV/A for ACS712 20A
+const float ACS712_30A = 66.0;        // Sensitivity in mV/A for ACS712 30A
 float ACS712Sensitivity = ACS712_5A;  // Set default version
 
 void setup() {
@@ -116,7 +116,8 @@ float readCurrent() {
   int sensorValue = analogRead(CurrentSensorPin);
   // Convert analog reading to current
   float voltage = sensorValue * (5.0 / 1024.0);
-  float current = (voltage - 2.5) / (ACS712Sensitivity / 1000.0);  // 2.5V is the offset at 0A
+  float current = (voltage - 2.5) /
+                  (ACS712Sensitivity / 1000.0);  // 2.5V is the offset at 0A
   return current;
 }
 
