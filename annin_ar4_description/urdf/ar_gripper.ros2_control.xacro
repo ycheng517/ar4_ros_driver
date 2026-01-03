@@ -17,6 +17,7 @@
         <plugin>${plugin_name}</plugin>
         <param name="serial_port">${serial_port}</param>
         <param name="use_overcurrent_protection">${driver_parameters['use_overcurrent_protection']}</param>
+        <param name="ACS712_version_current">${driver_parameters['ACS712_version_current']}</param>
         <param name="closed_servo_angle">${driver_parameters['closed_servo_angle']}</param>
         <param name="open_servo_angle">${driver_parameters['open_servo_angle']}</param>
         <param name="tf_prefix">${tf_prefix}</param>

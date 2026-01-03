@@ -91,6 +91,17 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_activate(
     const rclcpp_lifecycle::State& /*previous_state*/) {
   RCLCPP_INFO(logger_, "Activating hardware interface...");
 
+  // Write ACS712 version if specified
+  if (overcurrent_protection_ && info_.hardware_parameters.count("ACS712_version_current") > 0) {
+    int current_version =
+        std::stoi(info_.hardware_parameters.at("ACS712_version_current"));
+    RCLCPP_INFO(logger_, "Setting ACS712 version to %dA", current_version);
+    if (!driver_.writeACS712Version(current_version)) {
+      RCLCPP_ERROR(logger_, "Failed to set ACS712 version");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+  }
+
   // initialize gripper position
   int pos_deg;
   bool success = driver_.getPosition(pos_deg);

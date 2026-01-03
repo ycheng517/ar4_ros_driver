@@ -66,6 +66,12 @@ const int Output11 = 11;
 const int Output12 = 12;
 const int Output13 = 13;
 
+// ACS712 models have different sensitivities
+const float ACS712_5A = 185.0;    // Sensitivity in mV/A for ACS712 5A
+const float ACS712_20A = 100.0;   // Sensitivity in mV/A for ACS712 20A
+const float ACS712_30A = 66.0;    // Sensitivity in mV/A for ACS712 30A
+float ACS712Sensitivity = ACS712_5A;  // Set default version
+
 void setup() {
   // run once:
   Serial.begin(115200);
@@ -109,9 +115,8 @@ void setup() {
 float readCurrent() {
   int sensorValue = analogRead(CurrentSensorPin);
   // Convert analog reading to current
-  // For ACS712 5A version: sensitivity is 185mV/A
   float voltage = sensorValue * (5.0 / 1024.0);
-  float current = (voltage - 2.5) / 0.185;  // 2.5V is the offset at 0A
+  float current = (voltage - 2.5) / (ACS712Sensitivity / 1000.0);  // 2.5V is the offset at 0A
   return current;
 }
 
@@ -238,6 +243,21 @@ void loop() {
       if (function == "CR") {
         float current = readCurrent();
         Serial.println(current);
+      }
+
+      //-----COMMAND TO CHANGE ACS712 VERSION/SENSITIVITY -----
+      if (function == "AC") {
+        int dataStart = inData.indexOf('X');
+        int outputNum = inData.substring(dataStart + 1).toInt();
+        if (outputNum == 20) {
+          ACS712Sensitivity = ACS712_20A;
+        } else if (outputNum == 30) {
+          ACS712Sensitivity = ACS712_30A;
+        } else {
+          // Default to 5A version
+          ACS712Sensitivity = ACS712_5A;
+        }
+        Serial.println("Done");
       }
 
       //-----COMMAND ECHO TEST MESSAGE-----

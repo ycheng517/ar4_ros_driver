@@ -19,6 +19,7 @@ class ArduinoNanoDriver {
   bool getPosition(int& position);
   bool writePosition(double position);
   bool getCurrent(double& current);
+  bool writeACS712Version(int version);
 
   ArduinoNanoDriver();
 
