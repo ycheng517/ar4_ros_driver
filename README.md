@@ -51,7 +51,7 @@ The following projects showcases additional features and capabilities built on t
 
 ## Installation
 
-> 💡 It's generally a good idea to first ensure that your robot arm works with the official [AR4 Control Software](https://anninrobotics.com/downloads/), where there's better tools for debugging mechanical and electrical issues. 
+> 💡 It's generally a good idea to first ensure that your robot arm works with the official [AR4 Control Software](https://anninrobotics.com/downloads/), where there's better tools for debugging mechanical and electrical issues.
 
 - Install [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/Installation.html) for Ubuntu 24.04
 - Clone this repository:
@@ -83,6 +83,10 @@ are compatible with the default hardware. To flash it, follow the same
 procedure as specified in [AR4 Robot Setup](https://www.youtube.com/watch?v=OL6lXu8VU4s).
 An extra step required is to install [Bounce2](https://github.com/thomasfredericks/Bounce2)
 from the Library Manager in Arduino.
+
+### Hardware Settings
+
+⚠️ This repo currently uses AR4 motor driver DIP switch settings **prior to** AR4 Control Software V6.1. The difference is illustrated [here](./docs/ar4_dip_switch_settings.png).
 
 ### [Optional] Running in Docker Container
 
