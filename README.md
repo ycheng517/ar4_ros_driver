@@ -94,13 +94,26 @@ A docker container and run script has been provided that can be used to run the
 robot and any GUI programs. It requires [rocker](https://github.com/osrf/rocker) to be installed. Then you can start the docker container with:
 
 ```bash
-docker build -t ar4_ros_driver .
+docker build -t ar4_ros_driver -f docker/Dockerfile .
 
 # Adjust the volume mounting and devices based on your project and hardware
 rocker --ssh --x11 \
   --devices /dev/ttyUSB0 /dev/ttyACM0 \
-  --volume $(pwd):/ar4_ws/src/ar4_ros_driver -- \
+  --volume $(pwd):/ar4_ws/src -- \
   ar4_ros_driver bash
+```
+
+The docker image runs colcon build during the docker image build process, and will source the `setup.bash` file when the container starts (see `docker/entrypoint.sh`).
+Therefor the image can be used to directly run ros2 commands.
+
+For example, to run the annin_ar4_driver node directly:
+
+```bash
+rocker --ssh --x11 \
+  --devices /dev/ttyUSB0 /dev/ttyACM0 \
+  --volume $(pwd):/ar4_ws/src -- \
+  ar4_ros_driver \
+  ros2 launch annin_ar4_driver driver.launch.py calibrate:=True ar_model:="mk2"
 ```
 
 ## Usage
