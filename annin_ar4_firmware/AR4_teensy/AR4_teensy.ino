@@ -26,8 +26,8 @@ const float MOTOR_STEPS_PER_DEG_MK1[] = {44.44444444, 55.55555556, 55.55555556,
                                          42.72664356, 21.86024888, 22.22222222};
 const float MOTOR_STEPS_PER_DEG_MK2[] = {44.44444444, 55.55555556, 55.55555556,
                                          49.77777777, 21.86024888, 22.22222222};
-const float MOTOR_STEPS_PER_DEG_MK3[] = {44.44444444, 55.55555556, 55.55555556,
-                                         49.77777777, 21.86024888, 22.22222222};
+const float MOTOR_STEPS_PER_DEG_MK3[] = {88.88888888, 111.11111112, 111.11111112,
+                                         99.55555554, 43.72049776, 44.44444444};
 
 // set encoder pins
 Encoder encPos[6] = {Encoder(14, 15), Encoder(17, 16), Encoder(19, 18),
@@ -37,7 +37,10 @@ int ENC_DIR[] = {-1, 1, 1, 1, 1, 1};
 // +1 if encoder max value is at the minimum joint angle, 0 otherwise
 int ENC_MAX_AT_ANGLE_MIN[] = {1, 0, 1, 0, 0, 1};
 // motor steps * ENC_MULT = encoder steps (4000 steps/rev)
-const float ENC_MULT[] = {10, 10, 10, 10, 5, 10};
+std::map<String, const float*> ENC_MULT;
+const float ENC_MULT_MK1[] = {10, 10, 10, 10, 5, 10};
+const float ENC_MULT_MK2[] = {10, 10, 10, 10, 5, 10};
+const float ENC_MULT_MK3[] = {5, 5, 5, 5, 2.5, 5};
 
 // define axis limits in degrees, for calibration
 std::map<String, const int*> JOINT_LIMIT_MIN;
@@ -127,6 +130,10 @@ void setup() {
   MOTOR_STEPS_PER_DEG["mk1"] = MOTOR_STEPS_PER_DEG_MK1;
   MOTOR_STEPS_PER_DEG["mk2"] = MOTOR_STEPS_PER_DEG_MK2;
   MOTOR_STEPS_PER_DEG["mk3"] = MOTOR_STEPS_PER_DEG_MK3;
+
+  ENC_MULT["mk1"] = ENC_MULT_MK1;
+  ENC_MULT["mk2"] = ENC_MULT_MK2;
+  ENC_MULT["mk3"] = ENC_MULT_MK3;
 
   JOINT_LIMIT_MIN["mk1"] = JOINT_LIMIT_MIN_MK1;
   JOINT_LIMIT_MIN["mk2"] = JOINT_LIMIT_MIN_MK2;
@@ -219,7 +226,7 @@ bool initStateTraj(String inData) {
     for (int i = 0; i < NUM_JOINTS; ++i) {
       int joint_range = JOINT_LIMIT_MAX[MODEL][i] - JOINT_LIMIT_MIN[MODEL][i];
       ENC_RANGE_STEPS[i] = static_cast<int>(MOTOR_STEPS_PER_DEG[MODEL][i] *
-                                            joint_range * ENC_MULT[i]);
+                                            joint_range * ENC_MULT[MODEL][i]);
     }
 
     if (model == "mk1") {
@@ -249,7 +256,7 @@ int sgn(T val) {
 
 void readMotorSteps(int* motorSteps) {
   for (int i = 0; i < NUM_JOINTS; ++i) {
-    motorSteps[i] = encPos[i].read() / ENC_MULT[i];
+    motorSteps[i] = encPos[i].read() / ENC_MULT[MODEL][i];
   }
 }
 
