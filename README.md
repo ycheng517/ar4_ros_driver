@@ -86,7 +86,7 @@ from the Library Manager in Arduino.
 
 ### Hardware Settings
 
-⚠️ This repo currently uses AR4 motor driver DIP switch settings **prior to** AR4 Control Software V6.1. The difference is illustrated [here](./docs/ar4_dip_switch_settings.png).
+⚠️ For MK3, new DIP switch settings introduced after AR4 Control Software V6.1 is used. The difference is illustrated [here](./docs/ar4_dip_switch_settings.png).
 
 ### [Optional] Running in Docker Container
 
